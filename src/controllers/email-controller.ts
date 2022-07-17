@@ -1,5 +1,5 @@
 import  nodemailer from 'nodemailer'
-import {settings} from "../settings";
+import {settings} from '../settings'
 import {usersRepository} from "../repositories/users-repository";
 
 export const emailController = {
@@ -8,7 +8,7 @@ export const emailController = {
           service: 'gmail',
           auth: {
               user: "anton.pavlovskiy1990@gmail.com",
-              pass: settings.MAIL_PASS,
+              pass: settings.mailPass,
           },
       });
 

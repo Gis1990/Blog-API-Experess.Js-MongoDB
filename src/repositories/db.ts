@@ -5,7 +5,7 @@ import {
     CommentDBType,
     PostDBType, UserAccountDBType,
 } from "./types";
-
+require('dotenv').config()
 
 const bloggersSchema = new mongoose.Schema<BloggerDBType>({
     id:String,
@@ -61,9 +61,10 @@ export const CommentsModel = mongoose.model('comments', commentsSchema);
 
 export async function runDb ( ) {
   try {
-    await mongoose.connect(settings.MONGO_URI);
+    await mongoose.connect(settings.mongo_URI);
     console.log ( "Connected successfully to mongo server" ) ;
   } catch {
+      console.log("Error connecting to mongo server")
       await mongoose.disconnect() ;
   }
 }
