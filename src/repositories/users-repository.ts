@@ -1,14 +1,14 @@
-import {UserAccountDBType, UserDBTypePagination} from "./types";
-import {UsersAccountModel} from "./db";
+import {getNewUserAccountType, UserAccountDBType, UserDBTypePagination} from "./types";
+import {UsersAccountModelClass} from "./db";
 import {v4 as uuidv4} from "uuid";
 
 
 export const usersRepository = {
      async getAllUsers (PageNumber: number, PageSize: number ): Promise<UserDBTypePagination> {
         const skips = PageSize * (PageNumber - 1)
-        const allUsers=await UsersAccountModel.find({}, { projection: { _id:0,"accountData.id":1,"accountData.login":1} }).skip(skips).limit(PageSize).lean()
+        const allUsers=await UsersAccountModelClass.find({}, {_id:0,"accountData.id":1,"accountData.login":1}).skip(skips).limit(PageSize).lean()
         const cursor=allUsers.map(user=>user.accountData)
-        const totalCount=await UsersAccountModel.count({})
+        const totalCount=await UsersAccountModelClass.count({})
         return {
             pagesCount: Math.ceil(totalCount/PageSize),
             page: PageNumber,
@@ -18,7 +18,7 @@ export const usersRepository = {
         }
     },
     async findUserById(id: string): Promise<UserAccountDBType | null> {
-        let user = await UsersAccountModel.findOne({"accountData.id": id})
+        let user = await UsersAccountModelClass.findOne({"accountData.id": id},{_id:0,emailConfirmation:0,loginAttempts:0,"accountData.passwordHash":0,"accountData.createdAt":0,refreshTokensBlackList:0,})
         if (user) {
             return user
         } else {
@@ -26,34 +26,47 @@ export const usersRepository = {
         }
     },
     async findByLoginOrEmail(loginOrEmail: string) {
-        return UsersAccountModel.findOne(({$or: [{"accountData.email": loginOrEmail}, {"accountData.login": loginOrEmail}]}));
+        return UsersAccountModelClass.findOne(({$or: [{"accountData.email": loginOrEmail}, {"accountData.login": loginOrEmail}]}));
     },
     async findUserByConfirmationCode(emailConfirmationCode: string) {
-        return UsersAccountModel.findOne({"emailConfirmation.confirmationCode": emailConfirmationCode});
+        return UsersAccountModelClass.findOne({"emailConfirmation.confirmationCode": emailConfirmationCode});
     },
     async updateConfirmation (id: string) {
-        const result = await UsersAccountModel.updateOne({"accountData.id": id}, {$set: {"emailConfirmation.isConfirmed": true}})
+        const result = await UsersAccountModelClass.updateOne({"accountData.id": id}, {$set: {"emailConfirmation.isConfirmed": true}})
         return result.modifiedCount === 1
     },
     async updateConfirmationCode (id: string) {
         const newConfirmationCode=uuidv4()
-        const result = await UsersAccountModel.updateOne({"accountData.id": id}, {$set: {"emailConfirmation.confirmationCode": newConfirmationCode}})
+        const result = await UsersAccountModelClass.updateOne({"accountData.id": id}, {$set: {"emailConfirmation.confirmationCode": newConfirmationCode}})
         return result.modifiedCount === 1
     },
     async addLoginAttempt (id: string, ip:string) {
-        let result = await UsersAccountModel.updateOne({"accountData.id": id}, {$push: {"accountData.loginAttempts": new Date(),ip:ip}})
+        const loginAttempt={attemptDate: new Date(),ip:ip}
+        const result = await UsersAccountModelClass.updateOne({"accountData.id": id}, {$push: {"loginAttempts": loginAttempt}})
         return result.modifiedCount === 1
     },
     async addEmailLog (email: string) {
-        let result = await UsersAccountModel.updateOne({"accountData.email": email}, {$push: {"emailConfirmation.sentEmails": new Date()}})
+        const emailData={sentDate: new Date()}
+        const result = await UsersAccountModelClass.updateOne({"accountData.email": email}, {$push: {"emailConfirmation.sentEmails": emailData}})
         return result.modifiedCount === 1
     },
-    async createUser (newUser:UserAccountDBType): Promise<UserAccountDBType>  {
-         await UsersAccountModel.insertMany([newUser]);
-         return newUser;
+    async addRefreshTokenIntoBlackList(id: string,token:string) {
+        const result = await UsersAccountModelClass.updateOne({"accountData.id": id}, {$push: {refreshTokensBlackList: token}})
+        return result.modifiedCount === 1
+    },
+    async findRefreshTokenInBlackList(id: string,token:string) {
+        return  UsersAccountModelClass.findOne({"accountData.id": id,refreshTokensBlackList : {$in :token}},{_id:1}).lean()
+    },
+    async createUser (newUser:UserAccountDBType): Promise<getNewUserAccountType>  {
+         await UsersAccountModelClass.insertMany([newUser]);
+         const {_id,...newUserWithoutIdAndTokens}=newUser
+         const {passwordHash,createdAt,refreshTokensBlackList,...newUserWithoutHashAndDate}=newUserWithoutIdAndTokens.accountData
+         const user={...newUserWithoutHashAndDate,emailConfirmation:newUser.emailConfirmation}
+         return user;
     },
     async deleteUserById(id: string): Promise<boolean> {
-        const result = await UsersAccountModel.deleteOne({"accountData.id": id});
+        const result = await UsersAccountModelClass.deleteOne({"accountData.id": id});
         return result.deletedCount === 1
     }
+
 }

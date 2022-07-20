@@ -1,14 +1,14 @@
 import {CommentDBType, CommentDBTypePagination} from "./types";
-import {CommentsModel} from "./db";
+import {CommentsModelClass} from "./db";
 
 export const commentsRepository = {
     async getCommentById(id: string): Promise<CommentDBType | null> {
-        return CommentsModel.findOne({ id: id }, { projection: { _id:0,postId:0  } })
+        return CommentsModelClass.findOne({ id: id }, { _id:1,postId:0  } )
     },
     async getAllCommentsForSpecificPost(PageNumber:number,PageSize:number,postId:string):Promise<CommentDBTypePagination> {
         const skips = PageSize * (PageNumber - 1)
-        const cursor=await CommentsModel.find({postId:postId}, { projection: { _id:0,postId:0 } }).skip(skips).limit(PageSize).lean()
-        const totalCount=await CommentsModel.count({postId:postId})
+        const cursor=await CommentsModelClass.find({postId:postId}, { _id:0,postId:0 } ).skip(skips).limit(PageSize).lean()
+        const totalCount=await CommentsModelClass.count({postId:postId})
         return {
             pagesCount: Math.ceil(totalCount/PageSize),
             page: PageNumber,
@@ -18,15 +18,15 @@ export const commentsRepository = {
         }
     },
     async createComment(comment:CommentDBType): Promise<CommentDBType> {
-        await CommentsModel.insertMany([comment]);
+        await CommentsModelClass.insertMany([comment]);
         return comment;
     },
     async deleteCommentById(id: string): Promise<boolean> {
-        const result = await CommentsModel.deleteOne({id: id});
+        const result = await CommentsModelClass.deleteOne({id: id});
         return result.deletedCount === 1
     },
     async updateCommentById(id: string, content: string): Promise<boolean> {
-        const result=await CommentsModel.updateOne({id:id},{$set:{content}})
+        const result=await CommentsModelClass.updateOne({id:id},{$set:{content}})
         return result.matchedCount===1
     }
 }

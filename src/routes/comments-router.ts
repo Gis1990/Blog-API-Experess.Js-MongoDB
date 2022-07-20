@@ -1,6 +1,6 @@
 import {Request, Response, Router} from "express";
 import {commentsService} from "../domain/comments-service";
-import {authTokenMiddleware} from "../middlewares/authentication-middleware";
+import {authAccessTokenMiddleware} from "../middlewares/authentication-middleware";
 import {commentsIdValidation, commentsInputValidation} from "../middlewares/input - validation - middleware";
 
 export const commentsRouter = Router ({})
@@ -16,7 +16,7 @@ commentsRouter.get('/:commentId',
 
 commentsRouter.delete('/:commentId',
     commentsIdValidation,
-    authTokenMiddleware,
+    authAccessTokenMiddleware,
     async  (req: Request, res: Response) => {
     const comment = await commentsService.getCommentById(req.params.commentId)
     if (req.user?.accountData.id!==comment?.userId) {
@@ -29,7 +29,7 @@ commentsRouter.delete('/:commentId',
 
 commentsRouter.put('/:commentId',
     commentsIdValidation,
-    authTokenMiddleware,
+    authAccessTokenMiddleware,
     commentsInputValidation,
     async  (req: Request, res: Response) => {
     const comment = await commentsService.getCommentById(req.params.commentId)

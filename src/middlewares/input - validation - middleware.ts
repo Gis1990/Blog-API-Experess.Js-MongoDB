@@ -1,7 +1,7 @@
 import {NextFunction, Request, Response} from "express";
 import {validationResult, Schema, param, ValidationChain, checkSchema} from "express-validator";
 import {ErrorType} from "../repositories/types";
-import {BloggersModel, CommentsModel, PostsModel, UsersAccountModel} from "../repositories/db";
+import {BloggersModelClass, CommentsModelClass, PostsModelClass, UsersAccountModelClass} from "../repositories/db";
 import {usersService} from "../domain/users-service";
 import {usersRepository} from "../repositories/users-repository";
 
@@ -103,7 +103,7 @@ export const validationSchemaForPosts:Schema = {
         },
         custom: {
             options: async(id) => {
-                const blogger = await BloggersModel.findOne({id: id})
+                const blogger = await BloggersModelClass.findOne({id: id})
                 return (!!blogger)?Promise.resolve():Promise.reject()
             },
             errorMessage: "The field bloggerId does not exist"
@@ -289,7 +289,7 @@ const errorHandlerForIdValidation = (rq: Request, rs: Response, nxt: NextFunctio
 
 export const postsIdValidation = async (req: Request, res: Response, next: NextFunction) => {
     await param("postId","Id is not exist").custom(async postId=>{
-        const posts = await PostsModel.findOne({id: postId})
+        const posts = await PostsModelClass.findOne({id: postId})
         return (!!posts)?Promise.resolve():Promise.reject()}).run(req)
     errorHandlerForIdValidation(req,res,next)
 }
@@ -297,21 +297,21 @@ export const postsIdValidation = async (req: Request, res: Response, next: NextF
 
 export const bloggersIdValidation = async (req: Request, res: Response, next: NextFunction) => {
          await param("bloggerId", "Id does not exist").custom(async bloggerId => {
-            const blogger =await BloggersModel.findOne({id: bloggerId})
+            const blogger =await BloggersModelClass.findOne({id: bloggerId})
             return (!!blogger)?Promise.resolve():Promise.reject()}).run(req)
         errorHandlerForIdValidation(req,res,next)
 }
 
 export const usersIdValidation = async (req: Request, res: Response, next: NextFunction) => {
     await param("userId", "Id does not exist").custom(async userId => {
-        const user =await UsersAccountModel.findOne({"accountData.id": userId})
+        const user =await UsersAccountModelClass.findOne({"accountData.id": userId})
         return (!!user)?Promise.resolve():Promise.reject()}).run(req)
     errorHandlerForIdValidation(req,res,next)
 }
 
 export const commentsIdValidation = async (req: Request, res: Response, next: NextFunction) => {
     await param("commentId", "Id does not exist").custom(async commentId => {
-        const user =await CommentsModel.findOne({id: commentId})
+        const user =await CommentsModelClass.findOne({id: commentId})
         return (!!user)?Promise.resolve():Promise.reject()}).run(req)
     errorHandlerForIdValidation(req,res,next)
 }

@@ -2,8 +2,8 @@ import {settings} from "../settings";
 import mongoose from 'mongoose';
 import {
     BloggerDBType,
-    CommentDBType,
-    PostDBType, UserAccountDBType,
+    CommentDBType, LoginAttemptType,
+    PostDBType, SentConfirmationEmailType, UserAccountDBType,
 } from "./types";
 require('dotenv').config()
 
@@ -11,6 +11,8 @@ const bloggersSchema = new mongoose.Schema<BloggerDBType>({
     id:String,
     name: String,
     youtubeUrl: String
+}, {
+    versionKey: false
 });
 
 const postsSchema = new mongoose.Schema<PostDBType>({
@@ -20,7 +22,19 @@ const postsSchema = new mongoose.Schema<PostDBType>({
     content: String,
     bloggerId: String,
     bloggerName: String
+},{
+    versionKey: false
 });
+
+const loginAttemptsSchema = new mongoose.Schema<LoginAttemptType>({
+    attemptDate: Date,
+    ip: String
+}, { _id : false })
+
+const sentEmailsSchema = new mongoose.Schema<SentConfirmationEmailType>({
+    sentDate: Date
+}, { _id : false })
+
 
 const usersAccountSchema = new mongoose.Schema<UserAccountDBType>({
     accountData: {
@@ -30,17 +44,16 @@ const usersAccountSchema = new mongoose.Schema<UserAccountDBType>({
         passwordHash: String,
         createdAt: Date
     },
-    loginAttempts: [{
-        attemptDate: Date,
-        ip: String
-    }],
+    loginAttempts: [loginAttemptsSchema],
     emailConfirmation: {
         isConfirmed: Boolean,
         confirmationCode: String,
         expirationDate: Date,
-        sentEmails: [{sentDate: Date}]
+        sentEmails: [sentEmailsSchema]
     }
-});
+},{
+    versionKey: false
+})
 
 
 const commentsSchema = new mongoose.Schema<CommentDBType>({
@@ -50,12 +63,14 @@ const commentsSchema = new mongoose.Schema<CommentDBType>({
     userLogin: String,
     postId: String,
     addedAt: String
-})
+},{
+    versionKey: false
+});
 
-export const BloggersModel = mongoose.model('bloggers', bloggersSchema);
-export const PostsModel = mongoose.model('posts', postsSchema);
-export const UsersAccountModel = mongoose.model('users', usersAccountSchema);
-export const CommentsModel = mongoose.model('comments', commentsSchema);
+export const BloggersModelClass = mongoose.model('bloggers', bloggersSchema);
+export const PostsModelClass = mongoose.model('posts', postsSchema);
+export const UsersAccountModelClass = mongoose.model('users', usersAccountSchema);
+export const CommentsModelClass = mongoose.model('comments', commentsSchema);
 
 
 

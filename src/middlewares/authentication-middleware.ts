@@ -14,13 +14,13 @@ export const authenticationMiddleware = async (req: Request, res: Response, next
     }
 }
 
-export const authTokenMiddleware = async (req: Request , res: Response, next: NextFunction) => {
+export const authAccessTokenMiddleware = async (req: Request , res: Response, next: NextFunction) => {
     if (!req.headers.authorization) {
         res.sendStatus(401)
         return
     }
     const token = req.headers.authorization.split(' ')[1]
-    const userId = await jwtService.getUserIdByToken(token)
+    const userId = await jwtService.getUserIdByAccessToken(token)
     let userData
     if (userId) {
          userData = await usersService.findUserById(userId)
@@ -36,6 +36,7 @@ export const authTokenMiddleware = async (req: Request , res: Response, next: Ne
         return
     }
 }
+
 
 
 

@@ -76,6 +76,7 @@ export type UserAccountType = {
     login: string
     email: string
     passwordHash: string
+    refreshTokensBlackList: RefreshTokenType[]
     createdAt: Date
 }
 
@@ -95,3 +96,13 @@ export type EmailConfirmationType = {
     sentEmails: SentConfirmationEmailType[]
 }
 
+export type getNewUserAccountType = {
+    id: string
+    login: string
+    email: string
+    emailConfirmation: EmailConfirmationType
+}
+
+export type RefreshTokenType = {
+    token: string
+}

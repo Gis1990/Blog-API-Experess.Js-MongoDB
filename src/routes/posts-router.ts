@@ -4,7 +4,7 @@ import {
     postsIdValidation,
     postsInputValidation,
 } from "../middlewares/input - validation - middleware";
-import {authenticationMiddleware, authTokenMiddleware} from "../middlewares/authentication-middleware";
+import {authenticationMiddleware, authAccessTokenMiddleware} from "../middlewares/authentication-middleware";
 import {postsService} from "../domain/posts-service";
 
 import {commentsService} from "../domain/comments-service";
@@ -47,7 +47,7 @@ postsRouter.get('/:postId',
 
 
 postsRouter.post('/:postId/comments',
-    authTokenMiddleware,
+    authAccessTokenMiddleware,
     postsIdValidation,
     commentsInputValidation,
     async (req: Request, res: Response) => {

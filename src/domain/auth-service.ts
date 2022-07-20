@@ -1,16 +1,18 @@
 import {ObjectId} from "mongodb";
-import { UserAccountDBType} from "../repositories/types";
+import {getNewUserAccountType, UserAccountDBType} from "../repositories/types";
 import {usersRepository} from "../repositories/users-repository";
 import bcrypt from "bcrypt";
 import {v4 as uuidv4} from "uuid";
 import add from "date-fns/add";
+import {jwtService} from "../application/jwt-service";
+
 
 
 
 
 
 export const authService = {
-    async createUserWithConfirmationEmail(login: string,email:string, password: string): Promise<UserAccountDBType> {
+    async createUserWithConfirmationEmail(login: string,email:string, password: string): Promise<getNewUserAccountType> {
         const passwordHash = await this._generateHash(password)
         const newUser: UserAccountDBType = {
             _id: new ObjectId(),
@@ -19,6 +21,7 @@ export const authService = {
                 login: login,
                 email:email,
                 passwordHash:passwordHash,
+                refreshTokensBlackList: [],
                 createdAt: new Date()
             },
             loginAttempts: [],
@@ -27,11 +30,11 @@ export const authService = {
                 confirmationCode: uuidv4(),
                 expirationDate: add (new Date(),{hours:1}),
                 isConfirmed: false
-            }
+            },
         }
         return usersRepository.createUser(newUser)
     },
-    async createUserWithoutConfirmationEmail(login: string,email:string, password: string): Promise<UserAccountDBType> {
+    async createUserWithoutConfirmationEmail(login: string,email:string, password: string): Promise<getNewUserAccountType> {
         const passwordHash = await this._generateHash(password)
         const newUser: UserAccountDBType = {
             _id: new ObjectId(),
@@ -40,6 +43,7 @@ export const authService = {
                 login: login,
                 email:email,
                 passwordHash:passwordHash,
+                refreshTokensBlackList: [],
                 createdAt: new Date()
             },
             loginAttempts: [],
@@ -48,7 +52,7 @@ export const authService = {
                 confirmationCode: uuidv4(),
                 expirationDate: add (new Date(),{hours:1}),
                 isConfirmed: true
-            }
+            },
         }
         return usersRepository.createUser(newUser)
     },
@@ -62,6 +66,18 @@ export const authService = {
         } else {
             return null
         }
+    },
+    async checkRefreshTokenCredentials(token: string) {
+        const userId = await jwtService.getUserIdByRefreshToken(token)
+        const user = await usersRepository.findUserById(userId)
+        const blackListedTokens=await usersRepository.findRefreshTokenInBlackList(userId,token)
+        console.log(blackListedTokens)
+        if (blackListedTokens) {
+            return user
+        } else {
+            return null
+        }
+
     },
     async _generateHash(password: string) {
         return await bcrypt.hash(password, 10)
@@ -80,5 +96,8 @@ export const authService = {
     },
     async updateConfirmationCode(id: string): Promise<boolean> {
         return  usersRepository.updateConfirmationCode(id)
+    },
+    async addRefreshTokenIntoBlackList(id: string,token:string): Promise<boolean> {
+        return  usersRepository.addRefreshTokenIntoBlackList(id,token)
     },
 }

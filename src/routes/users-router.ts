@@ -17,9 +17,8 @@ usersRouter.post("/",
     usersInputValidation,
     async (req: Request, res: Response) => {
     const newUser=await authService.createUserWithoutConfirmationEmail(req.body.login,req.body.email,req.body.password)
-    const {_id,...newUserWithoutId}=newUser
-    const {passwordHash,createdAt,...newUserWithoutHashAndDate}=newUserWithoutId.accountData
-    res.status(201).json(newUserWithoutHashAndDate)
+    const{emailConfirmation,email,...newUserWithoutEmailData}=newUser
+    res.status(201).json(newUserWithoutEmailData)
 })
 
 usersRouter.delete("/:userId",

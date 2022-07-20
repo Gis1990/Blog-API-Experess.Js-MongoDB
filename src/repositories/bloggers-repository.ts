@@ -1,5 +1,5 @@
 import {BloggerDBType, BloggerDBTypePagination} from "./types";
-import {BloggersModel} from "./db";
+import {BloggersModelClass} from "./db";
 
 
 export const bloggersRepository = {
@@ -8,11 +8,11 @@ export const bloggersRepository = {
         let cursor
         let totalCount
         if (SearchNameTerm) {
-            cursor =await BloggersModel.find({name: { $regex: SearchNameTerm }}, { projection: { _id:0 } }).skip(skips).limit(PageSize).lean()
-            totalCount=await BloggersModel.count({name: { $regex: SearchNameTerm }})
+            cursor =await BloggersModelClass.find({name: { $regex: SearchNameTerm }}, { _id:0 }).skip(skips).limit(PageSize).lean()
+            totalCount=await BloggersModelClass.count({name: { $regex: SearchNameTerm }})
         } else{
-            cursor =await BloggersModel.find({}, { projection: { _id:0 } }).skip(skips).limit(PageSize).lean()
-            totalCount=await BloggersModel.count({})
+            cursor =await BloggersModelClass.find({},  { _id:0 }).skip(skips).limit(PageSize).lean()
+            totalCount=await BloggersModelClass.count({})
         }
         return {
             pagesCount: Math.ceil(totalCount/PageSize),
@@ -23,18 +23,18 @@ export const bloggersRepository = {
         }
     },
     async getBloggerById(id: string):Promise<BloggerDBType|null>{
-        return BloggersModel.findOne({ id: id }, { projection: { _id:0 } })
+        return BloggersModelClass.findOne({ id: id }, { _id:0 } )
     },
     async createBlogger(blogger: BloggerDBType):Promise<BloggerDBType> {
-        await BloggersModel.insertMany([blogger]);
+        await BloggersModelClass.insertMany([blogger]);
         return blogger;
     },
     async updateBlogger(id: string, name: string, youtubeUrl: string):Promise<boolean> {
-        const result=await BloggersModel.updateOne({id:id},{$set:{name,youtubeUrl}})
+        const result=await BloggersModelClass.updateOne({id:id},{$set:{name,youtubeUrl}})
         return result.matchedCount===1
     },
     async deleteBloggerById(id: string): Promise<boolean> {
-        const result = await BloggersModel.deleteOne({id: id});
+        const result = await BloggersModelClass.deleteOne({id: id});
         return result.deletedCount === 1
     },
 }

@@ -1,5 +1,5 @@
 import {Request, Response, Router} from "express";
-import {BloggersModel, CommentsModel, PostsModel, UsersAccountModel} from "../repositories/db";
+import {BloggersModelClass, CommentsModelClass, PostsModelClass, UsersAccountModelClass} from "../repositories/db";
 
 export const testingRouter = Router({});
 
@@ -7,9 +7,9 @@ export const testingRouter = Router({});
 
 testingRouter.delete("/all-data",
     async (req: Request, res: Response) => {
-        await BloggersModel.deleteMany({});
-        await PostsModel.deleteMany({})
-        await CommentsModel.deleteMany({})
-        await UsersAccountModel.deleteMany({})
+        await BloggersModelClass.deleteMany({});
+        await PostsModelClass.deleteMany({})
+        await CommentsModelClass.deleteMany({})
+        await UsersAccountModelClass.deleteMany({})
         res.sendStatus(204)
     })

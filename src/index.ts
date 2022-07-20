@@ -7,13 +7,20 @@ import {commentsRouter} from "./routes/comments-router";
 import {usersRouter} from "./routes/users-router";
 import {authRouter} from "./routes/auth-router";
 import {testingRouter} from "./routes/testing-router";
+import cookieParser from "cookie-parser";
 
+
+const corsOptions = {
+    credentials: true,
+}
 
 const app = express()
 
-app.use(cors())
+app.use(cors(corsOptions))
 
 app.use(express.json())
+
+app.use(cookieParser())
 
 const port = process.env.PORT || 500
 

@@ -14,7 +14,11 @@ import {
     rateLimiterForLogin,
     rateLimiterForRegistration, rateLimiterForRegistrationConfirmation
 } from "../controllers/rate-limit-controller";
+
+
 export const authRouter = Router({})
+
+
 
 
 authRouter.post('/registration-confirmation',
@@ -69,11 +73,48 @@ authRouter.post('/login',
     async (req: Request, res: Response) => {
         const user = await authService.checkCredentials(req.body.login, req.body.password,req.ip)
         if ((user)&&user.emailConfirmation.isConfirmed) {
-            const accessToken = await jwtService.createJWT(user)
+            const accessToken = await jwtService.createAccessJWT(user)
+            const refreshToken = await jwtService.createRefreshJWT(user)
+            res.cookie('refreshToken', refreshToken, {
+                httpOnly: true,
+                secure: true,
+                maxAge: 20  * 1000 // 20 seconds
+            });
             res.status(200).json({accessToken})
         } else {
             res.sendStatus(401)
         }
+    })
+
+authRouter.post('/refresh-token',
+    async (req: Request, res: Response) => {
+        const refreshToken = req.cookies.refreshToken
+        const user = await authService.checkRefreshTokenCredentials(refreshToken)
+        if (user){
+            await authService.addRefreshTokenIntoBlackList(user.accountData.id,refreshToken)
+            const accessToken = await jwtService.createAccessJWT(user)
+            const newRefreshToken = await jwtService.createRefreshJWT(user)
+            res.cookie('refreshToken', newRefreshToken, {
+                httpOnly: true,
+                secure: true,
+                maxAge: 20  * 1000 // 20 seconds
+            });
+            res.status(200).json({accessToken})
+        } else {
+            res.sendStatus(401)
+        }
+    })
+
+
+
+
+authRouter.post('/logout',
+    async (req: Request, res: Response) => {
+    })
+
+
+authRouter.get('/me',
+    async (req: Request, res: Response) => {
     })
 
 
