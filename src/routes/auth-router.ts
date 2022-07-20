@@ -129,8 +129,12 @@ authRouter.post('/logout',
 authRouter.get('/me',
     authAccessTokenMiddleware,
     async (req: Request, res: Response) => {
-        const refreshToken = req.cookies.refreshToken
-        const user = await jwtService.getUserIdByRefreshToken(refreshToken)
+        let AccessToken
+        let user
+        if (req.headers.authorization) {
+            AccessToken = req.headers.authorization.split(' ')[1]
+            user = await jwtService.getUserIdByAccessToken(AccessToken)
+        }
         if (user){
             res.status(200).json(user)
         } else {
