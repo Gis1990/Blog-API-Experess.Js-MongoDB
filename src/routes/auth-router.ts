@@ -14,6 +14,7 @@ import {
     rateLimiterForLogin,
     rateLimiterForRegistration, rateLimiterForRegistrationConfirmation
 } from "../controllers/rate-limit-controller";
+import {authAccessTokenMiddleware} from "../middlewares/authentication-middleware";
 
 
 export const authRouter = Router({})
@@ -106,15 +107,35 @@ authRouter.post('/refresh-token',
     })
 
 
-
-
 authRouter.post('/logout',
     async (req: Request, res: Response) => {
+        const refreshToken = req.cookies.refreshToken
+        const user = await authService.checkRefreshTokenCredentials(refreshToken)
+        if (user){
+            await authService.addRefreshTokenIntoBlackList(user.accountData.id,refreshToken)
+            const newRefreshToken = await jwtService.createRefreshJWT(user)
+            res.cookie('refreshToken', newRefreshToken, {
+                httpOnly: true,
+                secure: true,
+                maxAge: 20  * 1000 // 20 seconds
+            });
+            res.sendStatus(204)
+        } else {
+            res.sendStatus(401)
+        }
     })
 
 
 authRouter.get('/me',
+    authAccessTokenMiddleware,
     async (req: Request, res: Response) => {
+        const refreshToken = req.cookies.refreshToken
+        const user = await jwtService.getUserIdByRefreshToken(refreshToken)
+        if (user){
+            res.status(200).json(user)
+        } else {
+            res.sendStatus(401)
+        }
     })
 
 
