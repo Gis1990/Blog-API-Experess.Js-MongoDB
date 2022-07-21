@@ -71,7 +71,6 @@ export const authService = {
         const userId = await jwtService.getUserIdByRefreshToken(token)
         const user = await usersRepository.findUserById(userId)
         const blackListedTokens=await usersRepository.findRefreshTokenInBlackList(userId,token)
-        console.log(blackListedTokens)
         if (blackListedTokens) {
             return user
         } else {

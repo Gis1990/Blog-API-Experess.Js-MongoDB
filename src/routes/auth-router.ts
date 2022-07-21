@@ -129,13 +129,12 @@ authRouter.post('/logout',
 authRouter.get('/me',
     authAccessTokenMiddleware,
     async (req: Request, res: Response) => {
-        let AccessToken
-        let user
-        if (req.headers.authorization) {
-            AccessToken = req.headers.authorization.split(' ')[1]
-            user = await jwtService.getUserIdByAccessToken(AccessToken)
-        }
-        if (user){
+        if (req.user?.accountData){
+            const user={
+                userId:req.user.accountData.id,
+                login:req.user.accountData.login,
+                email:req.user.accountData.email,
+            }
             res.status(200).json(user)
         } else {
             res.sendStatus(401)
