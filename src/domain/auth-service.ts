@@ -21,10 +21,10 @@ export const authService = {
                 login: login,
                 email:email,
                 passwordHash:passwordHash,
-                refreshTokensBlackList: [],
                 createdAt: new Date()
             },
             loginAttempts: [],
+            refreshTokensBlackList: [],
             emailConfirmation: {
                 sentEmails: [],
                 confirmationCode: uuidv4(),
@@ -43,10 +43,10 @@ export const authService = {
                 login: login,
                 email:email,
                 passwordHash:passwordHash,
-                refreshTokensBlackList: [],
                 createdAt: new Date()
             },
             loginAttempts: [],
+            refreshTokensBlackList: [],
             emailConfirmation: {
                 sentEmails: [],
                 confirmationCode: uuidv4(),

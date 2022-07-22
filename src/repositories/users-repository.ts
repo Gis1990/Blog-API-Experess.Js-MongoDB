@@ -51,7 +51,8 @@ export const usersRepository = {
         return result.modifiedCount === 1
     },
     async addRefreshTokenIntoBlackList(id: string,token:string) {
-        const result = await UsersAccountModelClass.updateOne({"accountData.id": id}, {$push: {refreshTokensBlackList: token}})
+        const tokenForBlackList={token}
+        const result = await UsersAccountModelClass.updateOne({"accountData.id": id},{$push: {"refreshTokensBlackList": tokenForBlackList}})
         return result.modifiedCount === 1
     },
     async findRefreshTokenInBlackList(id: string,token:string) {
@@ -59,8 +60,8 @@ export const usersRepository = {
     },
     async createUser (newUser:UserAccountDBType): Promise<getNewUserAccountType>  {
          await UsersAccountModelClass.insertMany([newUser]);
-         const {_id,...newUserWithoutIdAndTokens}=newUser
-         const {passwordHash,createdAt,refreshTokensBlackList,...newUserWithoutHashAndDate}=newUserWithoutIdAndTokens.accountData
+         const {_id,refreshTokensBlackList,...newUserWithoutIdAndTokens}=newUser
+         const {passwordHash,createdAt,...newUserWithoutHashAndDate}=newUserWithoutIdAndTokens.accountData
          const user={...newUserWithoutHashAndDate,emailConfirmation:newUser.emailConfirmation}
          return user;
     },
