@@ -90,6 +90,7 @@ authRouter.post('/login',
 authRouter.post('/refresh-token',
     async (req: Request, res: Response) => {
         const refreshToken = req.cookies.refreshToken
+        console.log(refreshToken)
         const user = await authService.checkRefreshTokenCredentials(refreshToken)
         if (user){
             await authService.addRefreshTokenIntoBlackList(user.accountData.id,refreshToken)
@@ -98,7 +99,7 @@ authRouter.post('/refresh-token',
             res.cookie('refreshToken', newRefreshToken, {
                 httpOnly: true,
                 secure: true,
-                maxAge: 20  * 1000 // 20 seconds
+                maxAge: 20 * 1000 // 20 seconds
             });
             res.status(200).json({accessToken})
         } else {
@@ -117,7 +118,7 @@ authRouter.post('/logout',
             res.cookie('refreshToken', newRefreshToken, {
                 httpOnly: true,
                 secure: true,
-                maxAge: 20  * 1000 // 20 seconds
+                maxAge: 2000  * 1000 // 20 seconds
             });
             res.sendStatus(204)
         } else {
