@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import {
     BloggerDBType,
     CommentDBType, LoginAttemptType,
-    PostDBType, SentConfirmationEmailType, UserAccountDBType,
+    PostDBType, RefreshTokenType, SentConfirmationEmailType, UserAccountDBType,
 } from "./types";
 require('dotenv').config()
 
@@ -35,6 +35,10 @@ const sentEmailsSchema = new mongoose.Schema<SentConfirmationEmailType>({
     sentDate: Date
 }, { _id : false })
 
+const blacklistedRefreshTokensSchema = new mongoose.Schema<RefreshTokenType>({
+    token: String
+}, { _id : false })
+
 
 const usersAccountSchema = new mongoose.Schema<UserAccountDBType>({
     accountData: {
@@ -50,7 +54,8 @@ const usersAccountSchema = new mongoose.Schema<UserAccountDBType>({
         confirmationCode: String,
         expirationDate: Date,
         sentEmails: [sentEmailsSchema]
-    }
+    },
+    blacklistedRefreshTokens: [blacklistedRefreshTokensSchema]
 },{
     versionKey: false
 })

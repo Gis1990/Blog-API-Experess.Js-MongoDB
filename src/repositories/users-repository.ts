@@ -18,7 +18,7 @@ export const usersRepository = {
         }
     },
     async findUserById(id: string): Promise<UserAccountDBType | null> {
-        let user = await UsersAccountModelClass.findOne({"accountData.id": id},{_id:0,emailConfirmation:0,loginAttempts:0,"accountData.passwordHash":0,"accountData.createdAt":0,refreshTokensBlackList:0,})
+        let user = await UsersAccountModelClass.findOne({"accountData.id": id},{_id:0,emailConfirmation:0,loginAttempts:0,"accountData.passwordHash":0,"accountData.createdAt":0,"blacklistedRefreshTokens":0,})
         if (user) {
             return user
         } else {
@@ -51,16 +51,16 @@ export const usersRepository = {
         return result.modifiedCount === 1
     },
     async addRefreshTokenIntoBlackList(id: string,token:string) {
-        const tokenForBlackList={token}
-        const result = await UsersAccountModelClass.updateOne({"accountData.id": id},{$push: {"refreshTokensBlackList": tokenForBlackList}})
+        const tokenForBlackList={token:token}
+        const result = await UsersAccountModelClass.updateOne({"accountData.id": id},{$push: {"blacklistedRefreshTokens": tokenForBlackList}})
         return result.modifiedCount === 1
     },
     async findRefreshTokenInBlackList(id: string,token:string) {
-        return  UsersAccountModelClass.findOne({"accountData.id": id,refreshTokensBlackList : {$in :token}},{_id:1}).lean()
+        return  UsersAccountModelClass.findOne({"accountData.id": id,blacklistedRefreshTokens: {$in :{token}}},{_id:1}).lean()
     },
     async createUser (newUser:UserAccountDBType): Promise<getNewUserAccountType>  {
          await UsersAccountModelClass.insertMany([newUser]);
-         const {_id,refreshTokensBlackList,...newUserWithoutIdAndTokens}=newUser
+         const {_id,blacklistedRefreshTokens,...newUserWithoutIdAndTokens}=newUser
          const {passwordHash,createdAt,...newUserWithoutHashAndDate}=newUserWithoutIdAndTokens.accountData
          const user={...newUserWithoutHashAndDate,emailConfirmation:newUser.emailConfirmation}
          return user;

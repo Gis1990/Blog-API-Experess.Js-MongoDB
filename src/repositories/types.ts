@@ -67,8 +67,8 @@ export type UserDBTypePagination ={
 export type UserAccountDBType = WithId<{
     accountData: UserAccountType,
     loginAttempts: LoginAttemptType[],
-    refreshTokensBlackList: RefreshTokenType[]
     emailConfirmation: EmailConfirmationType
+    blacklistedRefreshTokens: RefreshTokenType[]
 }>
 
 

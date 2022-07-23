@@ -90,7 +90,6 @@ authRouter.post('/login',
 authRouter.post('/refresh-token',
     async (req: Request, res: Response) => {
         const refreshToken = req.cookies.refreshToken
-        console.log(refreshToken)
         const user = await authService.checkRefreshTokenCredentials(refreshToken)
         if (user){
             await authService.addRefreshTokenIntoBlackList(user.accountData.id,refreshToken)

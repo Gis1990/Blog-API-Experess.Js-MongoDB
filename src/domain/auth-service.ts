@@ -1,5 +1,5 @@
 import {ObjectId} from "mongodb";
-import {getNewUserAccountType, UserAccountDBType} from "../repositories/types";
+import {getNewUserAccountType, RefreshTokenType, UserAccountDBType} from "../repositories/types";
 import {usersRepository} from "../repositories/users-repository";
 import bcrypt from "bcrypt";
 import {v4 as uuidv4} from "uuid";
@@ -21,16 +21,16 @@ export const authService = {
                 login: login,
                 email:email,
                 passwordHash:passwordHash,
-                createdAt: new Date()
+                createdAt: new Date(),
             },
             loginAttempts: [],
-            refreshTokensBlackList: [],
             emailConfirmation: {
-                sentEmails: [],
+                sentEmails:  [],
                 confirmationCode: uuidv4(),
                 expirationDate: add (new Date(),{hours:1}),
                 isConfirmed: false
             },
+            blacklistedRefreshTokens: []
         }
         return usersRepository.createUser(newUser)
     },
@@ -43,16 +43,16 @@ export const authService = {
                 login: login,
                 email:email,
                 passwordHash:passwordHash,
-                createdAt: new Date()
+                createdAt: new Date(),
             },
             loginAttempts: [],
-            refreshTokensBlackList: [],
             emailConfirmation: {
                 sentEmails: [],
                 confirmationCode: uuidv4(),
                 expirationDate: add (new Date(),{hours:1}),
                 isConfirmed: true
             },
+            blacklistedRefreshTokens: []
         }
         return usersRepository.createUser(newUser)
     },
@@ -71,12 +71,11 @@ export const authService = {
         const userId = await jwtService.getUserIdByRefreshToken(token)
         const user = await usersRepository.findUserById(userId)
         const blackListedTokens=await usersRepository.findRefreshTokenInBlackList(userId,token)
-        if (blackListedTokens) {
+        if (!blackListedTokens) {
             return user
         } else {
             return null
         }
-
     },
     async _generateHash(password: string) {
         return await bcrypt.hash(password, 10)
