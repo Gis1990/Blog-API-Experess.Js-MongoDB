@@ -1,8 +1,12 @@
 import  nodemailer from 'nodemailer'
 import {settings} from '../settings'
-import {usersRepository} from "../repositories/users-repository";
+import {UsersRepository} from "../repositories/users-repository";
 
-export const emailController = {
+
+
+
+export class EmailController  {
+  constructor(protected usersRepository: UsersRepository) {}
   async sendEmail (email: string,confirmationCode: string) {
       const transport = nodemailer.createTransport({
           service: 'gmail',
@@ -11,7 +15,6 @@ export const emailController = {
               pass: settings.mailPass,
           },
       });
-
       const info = await transport.sendMail({
           from: 'Anton Pavlovskiy',
           to: email,
@@ -19,7 +22,9 @@ export const emailController = {
           text: `https://somesite.com/confirm-email?code=${confirmationCode}`,
           html: `<a href="https://somesite.com/confirm-email?code=${confirmationCode}"</a>`
       });
-      await usersRepository.addEmailLog(email)
+      await this.usersRepository.addEmailLog(email)
       return true
   }
 }
+
+

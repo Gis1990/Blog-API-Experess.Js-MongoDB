@@ -1,18 +1,18 @@
 import {settings} from "../settings";
-import {UserAccountDBType} from "../repositories/types";
+import {UserAccountDBClass} from "../repositories/types";
 import jwt from 'jsonwebtoken'
 
 
 
-export const jwtService = {
-    async createAccessJWT(user: UserAccountDBType) {
-        const accessToken = jwt.sign({userId: user.accountData.id}, settings.jwtAccessTokenSecret, {expiresIn: '10s'})
+class JwtService {
+    async createAccessJWT(user: UserAccountDBClass) {
+        const accessToken = jwt.sign({userId: user.id}, settings.jwtAccessTokenSecret, {expiresIn: '1h'})
         return accessToken
-    },
-    async createRefreshJWT(user: UserAccountDBType) {
-        const refreshToken = jwt.sign({userId: user.accountData.id}, settings.jwtRefreshTokenSecret, {expiresIn: '20s'})
+    }
+    async createRefreshJWT(user: UserAccountDBClass) {
+        const refreshToken = jwt.sign({userId: user.id}, settings.jwtRefreshTokenSecret, {expiresIn: '1h'})
         return refreshToken
-    },
+    }
     async getUserIdByAccessToken(token: string) {
         try {
             const result: any = jwt.verify(token, settings.jwtAccessTokenSecret)
@@ -20,7 +20,7 @@ export const jwtService = {
         } catch (error) {
             return null
         }
-    },
+    }
     async getUserIdByRefreshToken(token: string) {
         try {
             const result: any = jwt.verify(token, settings.jwtRefreshTokenSecret)
@@ -30,4 +30,8 @@ export const jwtService = {
         }
     }
 }
+
+
+
+export const jwtService = new JwtService()
 

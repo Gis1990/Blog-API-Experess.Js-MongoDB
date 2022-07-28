@@ -1,19 +1,22 @@
-import {UserDBTypePagination,UserAccountDBType} from "../repositories/types";
-import {usersRepository} from "../repositories/users-repository";
+import {UserDBClassPagination,UserAccountDBClass} from "../repositories/types";
+import {UsersRepository} from "../repositories/users-repository";
 
 
-export const usersService = {
-    async getAllUsers (obj: { PageNumber?: number, PageSize?: number }): Promise<UserDBTypePagination>  {
+export class  UsersService  {
+    constructor(protected usersRepository: UsersRepository) {}
+    async getAllUsers (obj: { PageNumber?: number, PageSize?: number }): Promise<UserDBClassPagination>  {
         const {PageNumber=1,PageSize=10}=obj
-        return usersRepository.getAllUsers(Number(PageNumber),Number(PageSize))
-    },
-    async findUserById(id: string): Promise<UserAccountDBType | null> {
-        return usersRepository.findUserById(id)
-    },
-    async findByLoginOrEmail(loginOrEmail: string): Promise<UserAccountDBType | null> {
-        return usersRepository.findByLoginOrEmail(loginOrEmail)
-    },
+        return this.usersRepository.getAllUsers(Number(PageNumber),Number(PageSize))
+    }
+    async findUserById(id: string): Promise<UserAccountDBClass | null> {
+        return this.usersRepository.findUserById(id)
+    }
+    async findByLoginOrEmail(loginOrEmail: string): Promise<UserAccountDBClass | null> {
+        return this.usersRepository.findByLoginOrEmail(loginOrEmail)
+    }
     async deleteUser(userId: string): Promise<boolean>  {
-        return usersRepository.deleteUserById(userId)
-    },
+        return this.usersRepository.deleteUserById(userId)
+    }
 }
+
+

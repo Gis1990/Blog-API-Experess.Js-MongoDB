@@ -1,13 +1,13 @@
 import {settings} from "../settings";
 import mongoose from 'mongoose';
 import {
-    BloggerDBType,
-    CommentDBType, LoginAttemptType,
-    PostDBType, RefreshTokenType, SentConfirmationEmailType, UserAccountDBType,
+    BloggerDBClass,
+    CommentDBClass,
+    PostDBClass, UserAccountDBClass, RefreshTokenClass, sentEmailsClass,LoginAttemptsClass
 } from "./types";
 require('dotenv').config()
 
-const bloggersSchema = new mongoose.Schema<BloggerDBType>({
+const bloggersSchema = new mongoose.Schema<BloggerDBClass>({
     id:String,
     name: String,
     youtubeUrl: String
@@ -15,39 +15,42 @@ const bloggersSchema = new mongoose.Schema<BloggerDBType>({
     versionKey: false
 });
 
-const postsSchema = new mongoose.Schema<PostDBType>({
+const postsSchema = new mongoose.Schema<PostDBClass>({
     id:String,
     title: String,
     shortDescription: String,
     content: String,
     bloggerId: String,
-    bloggerName: String
+    bloggerName: String,
+    likesInfo: {
+        likesCount: Number,
+        dislikesCount: Number,
+        myStatus: String
+    }
 },{
     versionKey: false
 });
 
-const loginAttemptsSchema = new mongoose.Schema<LoginAttemptType>({
-    attemptDate: Date,
+const loginAttemptsSchema = new mongoose.Schema<LoginAttemptsClass>({
+    attemptDate: String,
     ip: String
 }, { _id : false })
 
-const sentEmailsSchema = new mongoose.Schema<SentConfirmationEmailType>({
-    sentDate: Date
+const sentEmailsSchema = new mongoose.Schema<sentEmailsClass>({
+    sentDate: String
 }, { _id : false })
 
-const blacklistedRefreshTokensSchema = new mongoose.Schema<RefreshTokenType>({
+const blacklistedRefreshTokensSchema = new mongoose.Schema<RefreshTokenClass>({
     token: String
 }, { _id : false })
 
 
-const usersAccountSchema = new mongoose.Schema<UserAccountDBType>({
-    accountData: {
-        id:String,
-        login: String,
-        email: String,
-        passwordHash: String,
-        createdAt: Date
-    },
+const usersAccountSchema = new mongoose.Schema<UserAccountDBClass>({
+    id:String,
+    login: String,
+    email: String,
+    passwordHash: String,
+    createdAt: String,
     loginAttempts: [loginAttemptsSchema],
     emailConfirmation: {
         isConfirmed: Boolean,
@@ -61,16 +64,22 @@ const usersAccountSchema = new mongoose.Schema<UserAccountDBType>({
 })
 
 
-const commentsSchema = new mongoose.Schema<CommentDBType>({
+const commentsSchema = new mongoose.Schema<CommentDBClass>({
     id:String,
     content: String,
     userId: String,
     userLogin: String,
     postId: String,
-    addedAt: String
+    addedAt: String,
+    likesInfo: {
+        likesCount: Number,
+        dislikesCount: Number,
+        myStatus: String
+    }
 },{
     versionKey: false
 });
+
 
 export const BloggersModelClass = mongoose.model('bloggers', bloggersSchema);
 export const PostsModelClass = mongoose.model('posts', postsSchema);

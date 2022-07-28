@@ -1,27 +1,28 @@
-import {CommentDBType, CommentDBTypePagination,UserAccountDBType} from "../repositories/types";
+import {CommentDBClass, CommentDBClassPagination, LikesInfoClass, UserAccountDBClass} from "../repositories/types";
 import {ObjectId} from "mongodb";
-import {commentsRepository} from "../repositories/comments-repository";
+import {CommentsRepository} from "../repositories/comments-repository";
 
-
-export const commentsService = {
-    async getCommentById(id: string): Promise<CommentDBType | null> {
-        return commentsRepository.getCommentById(id)
-    },
-    async getAllCommentsForSpecificPost(obj:{PageNumber?:number,PageSize?:number},postId:string): Promise<CommentDBTypePagination> {
+export class CommentsService  {
+    constructor(protected commentsRepository: CommentsRepository) {}
+    async getCommentById(id: string): Promise<CommentDBClass | null> {
+        return this.commentsRepository.getCommentById(id)
+    }
+    async getAllCommentsForSpecificPost(obj:{PageNumber?:number,PageSize?:number},postId:string): Promise<CommentDBClassPagination> {
         const {PageNumber=1,PageSize=10}=obj
-        return commentsRepository.getAllCommentsForSpecificPost(Number(PageNumber),Number(PageSize),postId)
-    },
-    async createComment(content: string,postId:string, user:UserAccountDBType): Promise<CommentDBType> {
-        const userId=user.accountData.id
-        const userLogin=user.accountData.login
-        const id=Number((new Date())).toString()
-        const comment= {_id: new ObjectId(),id, content, userId, userLogin,postId, addedAt: new Date().toISOString()}
-        return  commentsRepository.createComment(comment)
-    },
+        return this.commentsRepository.getAllCommentsForSpecificPost(Number(PageNumber),Number(PageSize),postId)
+    }
+    async createComment(content: string,postId:string, user:UserAccountDBClass): Promise<CommentDBClass> {
+        const likes: LikesInfoClass= new LikesInfoClass(0,0,"None")
+        const comment:CommentDBClass = new CommentDBClass (new ObjectId(),Number((new Date())).toString() ,content,user.id,user.login,postId,new Date().toISOString(),likes)
+        return  this.commentsRepository.createComment(comment)
+    }
     async deleteCommentById(id: string): Promise<boolean> {
-        return commentsRepository.deleteCommentById(id)
-    },
+        return this.commentsRepository.deleteCommentById(id)
+    }
     async updateCommentById(id: string, content: string): Promise<boolean> {
-        return commentsRepository.updateCommentById(id, content)
+        return this.commentsRepository.updateCommentById(id, content)
     }
 }
+
+
+

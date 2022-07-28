@@ -1,73 +1,66 @@
-import {getNewUserAccountType, UserAccountDBType, UserDBTypePagination} from "./types";
+import { RefreshTokenClass, sentEmailsClass, UserAccountDBClass, UserDBClassPagination} from "./types";
 import {UsersAccountModelClass} from "./db";
 import {v4 as uuidv4} from "uuid";
+import {LoginAttemptsClass} from "./types";
 
 
-export const usersRepository = {
-     async getAllUsers (PageNumber: number, PageSize: number ): Promise<UserDBTypePagination> {
+export  class UsersRepository  {
+     async getAllUsers (PageNumber: number, PageSize: number ): Promise<UserDBClassPagination> {
         const skips = PageSize * (PageNumber - 1)
-        const allUsers=await UsersAccountModelClass.find({}, {_id:0,"accountData.id":1,"accountData.login":1}).skip(skips).limit(PageSize).lean()
-        const cursor=allUsers.map(user=>user.accountData)
+        const cursor=await UsersAccountModelClass.find({}, {_id:0,id:1,login:1}).skip(skips).limit(PageSize).lean()
         const totalCount=await UsersAccountModelClass.count({})
-        return {
-            pagesCount: Math.ceil(totalCount/PageSize),
-            page: PageNumber,
-            pageSize:PageSize,
-            totalCount: totalCount,
-            items: cursor
-        }
-    },
-    async findUserById(id: string): Promise<UserAccountDBType | null> {
-        let user = await UsersAccountModelClass.findOne({"accountData.id": id},{_id:0,emailConfirmation:0,loginAttempts:0,"accountData.passwordHash":0,"accountData.createdAt":0,"blacklistedRefreshTokens":0,})
+        return new UserDBClassPagination(Math.ceil(totalCount/PageSize),PageNumber,PageSize,totalCount,cursor)
+    }
+    async findUserById(id: string): Promise<UserAccountDBClass | null> {
+        let user = await UsersAccountModelClass.findOne({"id": id},{_id:0,emailConfirmation:0,loginAttempts:0,passwordHash:0,createdAt:0,blacklistedRefreshTokens:0,})
         if (user) {
             return user
         } else {
             return null
         }
-    },
+    }
     async findByLoginOrEmail(loginOrEmail: string) {
-        return UsersAccountModelClass.findOne(({$or: [{"accountData.email": loginOrEmail}, {"accountData.login": loginOrEmail}]}));
-    },
+        return UsersAccountModelClass.findOne(({$or: [{email: loginOrEmail}, {login: loginOrEmail}]}));
+    }
     async findUserByConfirmationCode(emailConfirmationCode: string) {
         return UsersAccountModelClass.findOne({"emailConfirmation.confirmationCode": emailConfirmationCode});
-    },
+    }
     async updateConfirmation (id: string) {
-        const result = await UsersAccountModelClass.updateOne({"accountData.id": id}, {$set: {"emailConfirmation.isConfirmed": true}})
+        const result = await UsersAccountModelClass.updateOne({id: id}, {$set: {"emailConfirmation.isConfirmed": true}})
         return result.modifiedCount === 1
-    },
+    }
     async updateConfirmationCode (id: string) {
         const newConfirmationCode=uuidv4()
-        const result = await UsersAccountModelClass.updateOne({"accountData.id": id}, {$set: {"emailConfirmation.confirmationCode": newConfirmationCode}})
+        const result = await UsersAccountModelClass.updateOne({id: id}, {$set: {"emailConfirmation.confirmationCode": newConfirmationCode}})
         return result.modifiedCount === 1
-    },
+    }
     async addLoginAttempt (id: string, ip:string) {
-        const loginAttempt={attemptDate: new Date(),ip:ip}
-        const result = await UsersAccountModelClass.updateOne({"accountData.id": id}, {$push: {"loginAttempts": loginAttempt}})
+        const loginAttempt: LoginAttemptsClass=new LoginAttemptsClass(new Date(),ip)
+        const result = await UsersAccountModelClass.updateOne({id: id}, {$push: {loginAttempts: loginAttempt}})
         return result.modifiedCount === 1
-    },
+    }
     async addEmailLog (email: string) {
-        const emailData={sentDate: new Date()}
-        const result = await UsersAccountModelClass.updateOne({"accountData.email": email}, {$push: {"emailConfirmation.sentEmails": emailData}})
+        const emailData: sentEmailsClass=new sentEmailsClass(Number((new Date())).toString())
+        const result = await UsersAccountModelClass.updateOne({email: email}, {$push: {"emailConfirmation.sentEmails": emailData}})
         return result.modifiedCount === 1
-    },
+    }
     async addRefreshTokenIntoBlackList(id: string,token:string) {
-        const tokenForBlackList={token:token}
-        const result = await UsersAccountModelClass.updateOne({"accountData.id": id},{$push: {"blacklistedRefreshTokens": tokenForBlackList}})
+        const tokenForBlackList: RefreshTokenClass=new RefreshTokenClass(token)
+        const result = await UsersAccountModelClass.updateOne({id: id},{$push: {"blacklistedRefreshTokens": tokenForBlackList}})
         return result.modifiedCount === 1
-    },
+    }
     async findRefreshTokenInBlackList(id: string,token:string) {
-        return  UsersAccountModelClass.findOne({"accountData.id": id,blacklistedRefreshTokens: {$in :{token}}},{_id:1}).lean()
-    },
-    async createUser (newUser:UserAccountDBType): Promise<getNewUserAccountType>  {
+        return  UsersAccountModelClass.findOne({id: id,blacklistedRefreshTokens: {$in :{token}}},{_id:1}).lean()
+    }
+    async createUser (newUser:UserAccountDBClass): Promise<UserAccountDBClass>  {
          await UsersAccountModelClass.insertMany([newUser]);
-         const {_id,blacklistedRefreshTokens,...newUserWithoutIdAndTokens}=newUser
-         const {passwordHash,createdAt,...newUserWithoutHashAndDate}=newUserWithoutIdAndTokens.accountData
-         const user={...newUserWithoutHashAndDate,emailConfirmation:newUser.emailConfirmation}
-         return user;
-    },
+         return newUser;
+    }
     async deleteUserById(id: string): Promise<boolean> {
-        const result = await UsersAccountModelClass.deleteOne({"accountData.id": id});
+        const result = await UsersAccountModelClass.deleteOne({id: id});
         return result.deletedCount === 1
     }
 
 }
+
+

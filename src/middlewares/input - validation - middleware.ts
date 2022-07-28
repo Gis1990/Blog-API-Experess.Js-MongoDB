@@ -2,13 +2,13 @@ import {NextFunction, Request, Response} from "express";
 import {validationResult, Schema, param, ValidationChain, checkSchema} from "express-validator";
 import {ErrorType} from "../repositories/types";
 import {BloggersModelClass, CommentsModelClass, PostsModelClass, UsersAccountModelClass} from "../repositories/db";
-import {usersService} from "../domain/users-service";
-import {usersRepository} from "../repositories/users-repository";
-
+import {usersService} from "../composition-root";
+import {usersRepository} from "../composition-root";
 
 
 const pattern=/^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/
 const patternForEmail=/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/
+
 
 export const bloggersValidationSchema:Schema = {
     name: {

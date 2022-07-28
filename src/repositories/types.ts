@@ -1,4 +1,60 @@
-import { WithId} from 'mongodb'
+import {ObjectId} from 'mongodb'
+
+export class BloggerDBClass {
+    constructor(
+        public _id: ObjectId,
+        public id: string,
+        public name: string,
+        public youtubeUrl: string
+    ) {
+    }
+}
+
+export class CommentDBClass {
+    constructor(
+        public _id: ObjectId,
+        public id: string,
+        public content: string,
+        public userId: string,
+        public userLogin: string,
+        public postId: string,
+        public addedAt: string,
+        public likesInfo: LikesInfoClass,
+    ) {
+    }
+}
+
+
+export class PostDBClass {
+    constructor(
+        public _id: ObjectId,
+        public id: string,
+        public title: string,
+        public shortDescription: string,
+        public content: string,
+        public bloggerId: string,
+        public bloggerName: string,
+        public likesInfo: LikesInfoClass,
+    ) {
+    }
+}
+
+export class GetPostClass {
+    constructor(
+        public _id: ObjectId,
+        public id: string,
+        public title: string,
+        public shortDescription: string,
+        public content: string,
+        public bloggerId: string,
+        public bloggerName: string,
+        public extendedLikesInfo: LikesInfoClass,
+    ) {
+    }
+}
+
+
+
 
 
 export type ErrorType={
@@ -6,103 +62,114 @@ export type ErrorType={
     field: string
 }
 
-export type PostDBType=WithId<{
-    id:string
-    title: string
-    shortDescription: string
-    content: string
-    bloggerId: string
-    bloggerName: string
-}>
-
-export type BloggerDBType=WithId< {
-    id:string
-    name: string
-    youtubeUrl: string
-}>
-
-export type CommentDBType=WithId<{
-    id:string
-    content: string
-    userId: string
-    userLogin: string
-    postId: string
-    addedAt: string
-}>
 
 
-export type BloggerDBTypePagination={
-    pagesCount: number
-    page: number
-    pageSize: number
-    totalCount: number
-    items: BloggerDBType[]
+export class BloggerDBClassPagination {
+    constructor(
+        public pagesCount: number,
+        public page: number,
+        public pageSize: number,
+        public totalCount: number,
+        public items: BloggerDBClass[]
+    ) {
+    }
 }
 
-export type PostDBTypePagination ={
-    pagesCount: number
-    page: number
-    pageSize: number
-    totalCount: number
-    items: PostDBType[]
-}
-
-export type CommentDBTypePagination ={
-    pagesCount: number
-    page: number
-    pageSize: number
-    totalCount: number
-    items: CommentDBType[]
+export class PostDBClassPagination {
+    constructor(
+        public pagesCount: number,
+        public page: number,
+        public pageSize: number,
+        public totalCount: number,
+        public items: PostDBClass[]
+    ) {
+    }
 }
 
 
-export type UserDBTypePagination ={
-    pagesCount: number
-    page: number
-    pageSize: number
-    totalCount: number
-    items: {id:string,login:string}[]
+export class CommentDBClassPagination {
+    constructor(
+        public pagesCount: number,
+        public page: number,
+        public pageSize: number,
+        public totalCount: number,
+        public items: CommentDBClass[]
+    ) {
+    }
 }
 
-export type UserAccountDBType = WithId<{
-    accountData: UserAccountType,
-    loginAttempts: LoginAttemptType[],
-    emailConfirmation: EmailConfirmationType
-    blacklistedRefreshTokens: RefreshTokenType[]
-}>
 
 
-export type UserAccountType = {
-    id:string
-    login: string
-    email: string
-    passwordHash: string
-    createdAt: Date
+export class UserDBClassPagination {
+    constructor(
+        public pagesCount: number,
+        public page: number,
+        public pageSize: number,
+        public totalCount: number,
+        public items: UserAccountDBClass[]
+    ) {
+    }
 }
 
-export type SentConfirmationEmailType = {
-    sentDate: Date
+
+export class UserAccountDBClass {
+    constructor(
+        public _id: ObjectId,
+        public id: string,
+        public login: string,
+        public email: string,
+        public passwordHash: string,
+        public createdAt: string,
+        public loginAttempts: LoginAttemptsClass[],
+        public emailConfirmation: UserAccountEmailClass,
+        public blacklistedRefreshTokens: RefreshTokenClass[]
+    ) {
+    }
 }
 
-export type LoginAttemptType = {
-    attemptDate: Date
-    ip: string
+
+export class UserAccountEmailClass {
+    constructor(
+        public sentEmails: sentEmailsClass[],
+        public confirmationCode: string,
+        public expirationDate: Date,
+        public isConfirmed: boolean
+    ) {
+    }
 }
 
-export type EmailConfirmationType = {
-    isConfirmed: boolean
-    confirmationCode: string
-    expirationDate: Date
-    sentEmails: SentConfirmationEmailType[]
+export class NewUserClass {
+    constructor(
+        public id: string,
+        public login: string,
+    ) {
+    }
 }
 
-export type getNewUserAccountType = {
-    id: string
-    login: string
-    email: string
-    emailConfirmation: EmailConfirmationType
+
+export class LoginAttemptsClass {
+    constructor(
+        public attemptDate: Date,
+        public ip: string) {
+    }
 }
 
-export type RefreshTokenType = {
-    token: string
+export class RefreshTokenClass {
+    constructor(public token: string) {
+    }
+}
+
+
+export class sentEmailsClass {
+    constructor(public sentDate: string) {
+    }
+}
+
+export class LikesInfoClass {
+    constructor(
+        public likesCount: number,
+        public dislikesCount: number,
+        public myStatus: string
+    ) {
+    }
 }

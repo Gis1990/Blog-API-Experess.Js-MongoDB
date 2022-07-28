@@ -1,56 +1,41 @@
-import {Request, Response, Router} from 'express'
-import {bloggersService} from "../domain/bloggers-service";
+import { Router} from 'express'
 import {bloggersInputValidation, bloggersIdValidation, postsInputValidation}
     from "../middlewares/input - validation - middleware";
 import {authenticationMiddleware} from "../middlewares/authentication-middleware";
-import {postsService} from "../domain/posts-service";
+import {bloggersController} from "../composition-root";
+import {postsController} from "../composition-root";
 
 
 export const bloggersRouter = Router ({})
 
 
-bloggersRouter.get('/',async  (req: Request, res: Response) => {
-    const allBloggers= await bloggersService.getAllBloggers(req.query)
-    res.json(allBloggers)
-})
+bloggersRouter.get('/',bloggersController.getAllBloggers.bind(bloggersController))
 
 
 bloggersRouter.get('/:bloggerId',
     bloggersIdValidation,
-    async (req: Request, res: Response) => {
-        const blogger =await bloggersService.getBloggerById(req.params.bloggerId)
-        res.json(blogger)
-})
+    bloggersController.getBlogger.bind(bloggersController))
+
 
 
 bloggersRouter.get('/:bloggerId/posts',
     bloggersIdValidation,
-    async (req: Request, res: Response) => {
-        const posts =await postsService.getAllPostsForSpecificBlogger(req.query,req.params.bloggerId)
-        res.json(posts)
-    })
+    postsController.getAllPostsForSpecificBlogger.bind(postsController))
 
 
 
 bloggersRouter.post('/',
     authenticationMiddleware,
     bloggersInputValidation,
-    async (req: Request, res: Response) => {
-        const newBlogger= await bloggersService.createBlogger(req.body.name,req.body.youtubeUrl)
-        const {_id,...newBloggerRest}=newBlogger
-        res.status(201).json(newBloggerRest)
-})
+    bloggersController.createBlogger.bind(bloggersController))
+
 
 
 bloggersRouter.post('/:bloggerId/posts',
     authenticationMiddleware,
     bloggersIdValidation,
     postsInputValidation,
-    async (req: Request, res: Response) => {
-        const newPost = await postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, req.params.bloggerId)
-        const {_id,...newPostRest}=newPost
-        res.status(201).json(newPostRest)
-    })
+    postsController.createPost.bind(postsController))
 
 
 
@@ -58,17 +43,12 @@ bloggersRouter.put('/:bloggerId',
     authenticationMiddleware,
     bloggersIdValidation,
     bloggersInputValidation,
-     async (req: Request, res: Response) => {
-         await bloggersService.updateBlogger(req.params.bloggerId, req.body.name, req.body.youtubeUrl)
-         res.sendStatus(204)
-     })
+    bloggersController.updateBlogger.bind(bloggersController))
+
 
 
 bloggersRouter.delete('/:bloggerId',
     authenticationMiddleware,
     bloggersIdValidation,
-    async (req: Request, res: Response) => {
-        await bloggersService.deleteBlogger(req.params.bloggerId)
-        res.sendStatus(204)
-    })
+    bloggersController.deleteBlogger.bind(bloggersController))
 

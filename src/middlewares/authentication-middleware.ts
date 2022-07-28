@@ -1,6 +1,6 @@
 import {NextFunction, Request, Response} from "express";
 import {header, validationResult} from "express-validator";
-import {usersService} from '../domain/users-service'
+import {usersService} from "../composition-root";
 import {jwtService} from '../application/jwt-service'
 
 

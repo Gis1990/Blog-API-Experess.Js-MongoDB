@@ -5,76 +5,59 @@ import {
     postsInputValidation,
 } from "../middlewares/input - validation - middleware";
 import {authenticationMiddleware, authAccessTokenMiddleware} from "../middlewares/authentication-middleware";
-import {postsService} from "../domain/posts-service";
-
-import {commentsService} from "../domain/comments-service";
+import {postsController} from "../composition-root";
+import {commentsController} from "../composition-root";
 
 
 export const postsRouter = Router ({})
 
 
-postsRouter.get('/', async (req: Request, res: Response) => {
-    const allPosts = await postsService.getAllPosts(req.query)
-    res.json(allPosts)
-})
+postsRouter.get('/',postsController.getAllPosts.bind(postsController))
+
 
 postsRouter.post('/',
     authenticationMiddleware,
     postsInputValidation,
-    async (req: Request, res: Response) => {
-        const newPost = await postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, req.body.bloggerId)
-        const {_id,...newPostRest}=newPost
-        res.status(201).json(newPostRest)
-    })
+    postsController.createPost.bind(postsController))
 
 
 postsRouter.get('/:postId/comments',
     postsIdValidation,
-    async (req: Request, res: Response) => {
-        const comments = await commentsService.getAllCommentsForSpecificPost(req.query, req.params.postId)
-        res.status(200).json(comments)
-    })
-
+    commentsController.getAllCommentsForSpecificPost.bind(commentsController))
 
 
 
 postsRouter.get('/:postId',
     postsIdValidation,
-    async (req: Request, res: Response) => {
-        const post = await postsService.getPostById(req.params.postId)
-        res.json(post);
-    })
+    postsController.getPost.bind(postsController))
+
 
 
 postsRouter.post('/:postId/comments',
     authAccessTokenMiddleware,
     postsIdValidation,
     commentsInputValidation,
-    async (req: Request, res: Response) => {
-        const newComment = await commentsService.createComment(req.body.content,req.params.postId, req.user!)
-        const {_id,postId,...newCommentRest}=newComment
-        res.status(201).json(newCommentRest)
-    })
+    commentsController.createComment.bind(commentsController))
 
 
 postsRouter.put('/:postId',
     authenticationMiddleware,
     postsIdValidation,
     postsInputValidation,
-    async (req: Request, res: Response) => {
-        await postsService.updatePost(req.params.postId, req.body.title, req.body.shortDescription, req.body.content, req.body.bloggerId)
-        res.sendStatus(204)
-
-    })
+    postsController.updatePost.bind(postsController))
 
 
 
 postsRouter.delete('/:postId',
     authenticationMiddleware,
     postsIdValidation,
+    postsController.deletePost.bind(postsController))
+
+
+postsRouter.post('/:postId/like-status',
+    authAccessTokenMiddleware,
+    postsIdValidation,
     async (req: Request, res: Response) => {
-        await postsService.deletePost(req.params.postId)
-        res.sendStatus(204)
     })
 
 
