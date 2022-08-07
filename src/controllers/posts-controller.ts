@@ -15,7 +15,7 @@ export class PostsController {
     }
     async createPost(req: Request, res: Response) {
         const newPost= await this.postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, req.params.bloggerId)
-        const {_id,...newPostRest}=newPost
+        const {_id,usersLikesInfo,...newPostRest}=newPost
         res.status(201).json(newPostRest)
     }
     async createPostWithExtendedData(req: Request, res: Response) {

@@ -34,6 +34,7 @@ export class PostDBClass {
         public content: string,
         public bloggerId: string,
         public bloggerName: string,
+        public addedAt: Date,
         public extendedLikesInfo: ExtendedLikesInfoClass,
         public usersLikesInfo: UsersLikesInfoClass,
     ) {

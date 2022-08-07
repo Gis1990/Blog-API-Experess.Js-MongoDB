@@ -24,7 +24,7 @@ export class PostsService  {
         (blogger)?bloggerName=blogger.name:bloggerName=""
         const likesInfo: ExtendedLikesInfoClass= new ExtendedLikesInfoClass(0,0,"None",[])
         const usersLikesInfo: UsersLikesInfoClass= new UsersLikesInfoClass([],[])
-        let post:PostDBClass=new PostDBClass(new ObjectId, Number((new Date())).toString(),title,shortDescription,content,bloggerId,bloggerName,likesInfo,usersLikesInfo)
+        let post:PostDBClass=new PostDBClass(new ObjectId, Number((new Date())).toString(),title,shortDescription,content,bloggerId,bloggerName,new Date(),likesInfo,usersLikesInfo)
         return  this.postsRepository.createPost(post)
     }
     async updatePost(id: string,title: string, shortDescription: string, content: string, bloggerId: string): Promise<boolean> {
