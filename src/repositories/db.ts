@@ -3,7 +3,12 @@ import mongoose from 'mongoose';
 import {
     BloggerDBClass,
     CommentDBClass,
-    PostDBClass, UserAccountDBClass, RefreshTokenClass, sentEmailsClass,LoginAttemptsClass
+    PostDBClass,
+    UserAccountDBClass,
+    RefreshTokenClass,
+    SentEmailsClass,
+    LoginAttemptsClass,
+    NewestLikesClass
 } from "./types";
 require('dotenv').config()
 
@@ -15,6 +20,13 @@ const bloggersSchema = new mongoose.Schema<BloggerDBClass>({
     versionKey: false
 });
 
+const newestLikesSchema = new mongoose.Schema<NewestLikesClass>({
+    addedAt: Date,
+    userId: String,
+    login: String
+}, { _id : false })
+
+
 const postsSchema = new mongoose.Schema<PostDBClass>({
     id:String,
     title: String,
@@ -22,27 +34,32 @@ const postsSchema = new mongoose.Schema<PostDBClass>({
     content: String,
     bloggerId: String,
     bloggerName: String,
-    likesInfo: {
+    extendedLikesInfo: {
         likesCount: Number,
         dislikesCount: Number,
-        myStatus: String
+        myStatus: String,
+        newestLikes:[newestLikesSchema]
+    },
+    usersLikesInfo: {
+        usersWhoPutLike: [String],
+        usersWhoPutDislike: [String]
     }
-},{
-    versionKey: false
-});
+    },{versionKey: false}
+);
 
 const loginAttemptsSchema = new mongoose.Schema<LoginAttemptsClass>({
     attemptDate: String,
     ip: String
 }, { _id : false })
 
-const sentEmailsSchema = new mongoose.Schema<sentEmailsClass>({
+const sentEmailsSchema = new mongoose.Schema<SentEmailsClass>({
     sentDate: String
 }, { _id : false })
 
 const blacklistedRefreshTokensSchema = new mongoose.Schema<RefreshTokenClass>({
     token: String
 }, { _id : false })
+
 
 
 const usersAccountSchema = new mongoose.Schema<UserAccountDBClass>({

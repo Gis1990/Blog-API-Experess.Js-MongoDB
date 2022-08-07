@@ -88,6 +88,52 @@ export const validationSchemaForPosts:Schema = {
             options: {max: 1000},
             errorMessage: "The field content has invalid length",
         }
+    }
+}
+
+
+export const validationSchemaForPostsWithExtendedData:Schema = {
+    title: {
+        in: ["query","body"],
+        exists: {
+            errorMessage: "The field Title is required."
+        },
+        trim:true,
+        notEmpty: {
+            errorMessage: "The field Title is required."
+        },
+        isLength: {
+            options: {max: 30},
+            errorMessage: "The field Title has invalid length",
+        }
+    },
+    shortDescription: {
+        in: ["query","body"],
+        exists: {
+            errorMessage: "The field shortDescription is required."
+        },
+        trim:true,
+        notEmpty: {
+            errorMessage: "The field shortDescription is required."
+        },
+        isLength: {
+            options: {max: 100},
+            errorMessage: "The field shortDescription has invalid length",
+        }
+    },
+    content: {
+        in: ["query","body"],
+        exists: {
+            errorMessage: "The field content is required."
+        },
+        trim:true,
+        notEmpty: {
+            errorMessage: "The field content is required."
+        },
+        isLength: {
+            options: {max: 1000},
+            errorMessage: "The field content has invalid length",
+        }
     },
     bloggerId: {
         in: ["query","body","params"],
@@ -110,6 +156,9 @@ export const validationSchemaForPosts:Schema = {
         }
     }
 }
+
+
+
 
 export const validationSchemaForUsers:Schema = {
     login: {
@@ -274,6 +323,23 @@ export const validationSchemaForLogins:Schema = {
 }
 
 
+export const validationSchemaForLikes:Schema = {
+    likeStatus: {
+        in: ["body"],
+        exists: {
+            errorMessage: "The field likeStatus is required."
+        },
+        trim:true,
+        notEmpty: {
+            errorMessage: "The field likeStatus is required."
+        },
+        isIn: {
+            options: [["None", "Like", "Dislike"]],
+            errorMessage: "Incorrect value of likeStatus"
+        }
+}}
+
+
 
 
 const errorHandlerForIdValidation = (rq: Request, rs: Response, nxt: NextFunction) => {
@@ -339,12 +405,16 @@ const validate = (validations: ValidationChain[]) => {
 
 
 export const bloggersInputValidation=validate(checkSchema(bloggersValidationSchema))
-export const postsInputValidation=validate(checkSchema(validationSchemaForPosts))
+export const postsWithExtendedDataInputValidation=validate(checkSchema(validationSchemaForPostsWithExtendedData))
 export const usersInputValidation=validate(checkSchema(validationSchemaForUsers))
 export const commentsInputValidation=validate(checkSchema(validationSchemaForComments))
 export const loginsInputValidation=validate(checkSchema(validationSchemaForLogins))
 export const emailsInputValidation=validate(checkSchema(validationSchemaForEmails))
 export const confirmationCodesValidation=validate(checkSchema(validationSchemaForConfirmationCodes))
+export const postsInputValidation=validate(checkSchema(validationSchemaForPosts))
+export const likesInputValidation=validate(checkSchema(validationSchemaForLikes))
+
+
 
 
 

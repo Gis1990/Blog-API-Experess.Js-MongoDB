@@ -1,4 +1,4 @@
-import { RefreshTokenClass, sentEmailsClass, UserAccountDBClass, UserDBClassPagination} from "./types";
+import { RefreshTokenClass, SentEmailsClass, UserAccountDBClass, UserDBClassPagination} from "./types";
 import {UsersAccountModelClass} from "./db";
 import {v4 as uuidv4} from "uuid";
 import {LoginAttemptsClass} from "./types";
@@ -40,7 +40,7 @@ export  class UsersRepository  {
         return result.modifiedCount === 1
     }
     async addEmailLog (email: string) {
-        const emailData: sentEmailsClass=new sentEmailsClass(Number((new Date())).toString())
+        const emailData: SentEmailsClass=new SentEmailsClass(Number((new Date())).toString())
         const result = await UsersAccountModelClass.updateOne({email: email}, {$push: {"emailConfirmation.sentEmails": emailData}})
         return result.modifiedCount === 1
     }

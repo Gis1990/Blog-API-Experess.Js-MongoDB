@@ -34,21 +34,8 @@ export class PostDBClass {
         public content: string,
         public bloggerId: string,
         public bloggerName: string,
-        public likesInfo: LikesInfoClass,
-    ) {
-    }
-}
-
-export class GetPostClass {
-    constructor(
-        public _id: ObjectId,
-        public id: string,
-        public title: string,
-        public shortDescription: string,
-        public content: string,
-        public bloggerId: string,
-        public bloggerName: string,
-        public extendedLikesInfo: LikesInfoClass,
+        public extendedLikesInfo: ExtendedLikesInfoClass,
+        public usersLikesInfo: UsersLikesInfoClass,
     ) {
     }
 }
@@ -130,7 +117,7 @@ export class UserAccountDBClass {
 
 export class UserAccountEmailClass {
     constructor(
-        public sentEmails: sentEmailsClass[],
+        public sentEmails: SentEmailsClass[],
         public confirmationCode: string,
         public expirationDate: Date,
         public isConfirmed: boolean
@@ -160,10 +147,43 @@ export class RefreshTokenClass {
 }
 
 
-export class sentEmailsClass {
+export class SentEmailsClass {
     constructor(public sentDate: string) {
     }
 }
+
+export class ExtendedLikesInfoClass {
+    constructor(
+        public likesCount: number,
+        public dislikesCount: number,
+        public myStatus: string,
+        public newestLikes: NewestLikesClass[]
+    ) {
+    }
+}
+
+export class UsersLikesInfoClass {
+    constructor(
+        public usersWhoPutLike: string[],
+        public usersWhoPutDislike: string[],
+
+    ) {
+    }
+}
+
+
+
+
+
+export class NewestLikesClass {
+    constructor(
+        public addedAt: Date,
+        public userId: string,
+        public login: string
+    ) {
+    }
+}
+
 
 export class LikesInfoClass {
     constructor(

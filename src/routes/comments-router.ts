@@ -1,6 +1,10 @@
 import {Request, Response, Router} from "express";
 import {authAccessTokenMiddleware} from "../middlewares/authentication-middleware";
-import {commentsIdValidation, commentsInputValidation} from "../middlewares/input - validation - middleware";
+import {
+    commentsIdValidation,
+    commentsInputValidation,
+    likesInputValidation
+} from "../middlewares/input - validation - middleware";
 import {commentsController} from "../composition-root";
 
 export const commentsRouter = Router ({})
@@ -28,6 +32,7 @@ commentsRouter.put('/:commentId',
 commentsRouter.put('/:commentId/like-status',
     commentsIdValidation,
     authAccessTokenMiddleware,
+    likesInputValidation,
     async  (req: Request, res: Response) => {
     })
 

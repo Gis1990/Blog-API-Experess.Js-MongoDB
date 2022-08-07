@@ -1,5 +1,9 @@
 import { Router} from 'express'
-import {bloggersInputValidation, bloggersIdValidation, postsInputValidation}
+import {
+    bloggersInputValidation,
+    bloggersIdValidation,
+    postsInputValidation,
+}
     from "../middlewares/input - validation - middleware";
 import {authenticationMiddleware} from "../middlewares/authentication-middleware";
 import {bloggersController} from "../composition-root";

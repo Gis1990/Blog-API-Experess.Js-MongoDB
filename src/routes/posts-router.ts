@@ -1,8 +1,8 @@
-import {Request, Response, Router} from "express";
+import {Router} from "express";
 import {
-    commentsInputValidation,
-    postsIdValidation,
-    postsInputValidation,
+    commentsInputValidation, likesInputValidation,
+    postsIdValidation, postsWithExtendedDataInputValidation,
+
 } from "../middlewares/input - validation - middleware";
 import {authenticationMiddleware, authAccessTokenMiddleware} from "../middlewares/authentication-middleware";
 import {postsController} from "../composition-root";
@@ -17,8 +17,8 @@ postsRouter.get('/',postsController.getAllPosts.bind(postsController))
 
 postsRouter.post('/',
     authenticationMiddleware,
-    postsInputValidation,
-    postsController.createPost.bind(postsController))
+    postsWithExtendedDataInputValidation,
+    postsController.createPostWithExtendedData.bind(postsController))
 
 
 postsRouter.get('/:postId/comments',
@@ -43,7 +43,7 @@ postsRouter.post('/:postId/comments',
 postsRouter.put('/:postId',
     authenticationMiddleware,
     postsIdValidation,
-    postsInputValidation,
+    postsWithExtendedDataInputValidation,
     postsController.updatePost.bind(postsController))
 
 
@@ -57,7 +57,8 @@ postsRouter.delete('/:postId',
 postsRouter.post('/:postId/like-status',
     authAccessTokenMiddleware,
     postsIdValidation,
-    async (req: Request, res: Response) => {
-    })
+    likesInputValidation,
+    postsController.likeOperation.bind(postsController))
+
 
 

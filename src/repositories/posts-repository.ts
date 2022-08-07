@@ -1,22 +1,21 @@
-import { PostDBClass, PostDBClassPagination} from "./types";
+import { NewestLikesClass, PostDBClass, PostDBClassPagination} from "./types";
 import {PostsModelClass} from "./db";
-import {GetPostClass} from "./types";
 
 export class PostsRepository  {
     async getAllPosts(PageNumber:number,PageSize:number):Promise<PostDBClassPagination> {
         const skips = PageSize * (PageNumber - 1)
-        const cursor=await PostsModelClass.find({}, { _id:0 }).skip(skips).limit(PageSize).lean()
+        const cursor=await PostsModelClass.find({}, { _id:0,usersLikesInfo:0 ,"extendedLikesInfo.newestLikes": { $slice: [ 1, 3 ] }}).skip(skips).limit(PageSize).lean()
         const totalCount=await PostsModelClass.count({})
         return new PostDBClassPagination(Math.ceil(totalCount/PageSize),PageNumber,PageSize,totalCount,cursor)
     }
     async getAllPostsForSpecificBlogger(PageNumber:number,PageSize:number,bloggerId:string):Promise<PostDBClassPagination> {
         const skips = PageSize * (PageNumber - 1)
-        const cursor=await PostsModelClass.find({bloggerId:bloggerId},{ _id:0 }).skip(skips).limit(PageSize).lean()
+        const cursor=await PostsModelClass.find({bloggerId:bloggerId},{ _id:0 ,usersLikesInfo:0,"extendedLikesInfo.newestLikes": { $slice: [ 1, 3 ] }}).skip(skips).limit(PageSize).lean()
         const totalCount=await PostsModelClass.count({bloggerId:bloggerId})
         return new PostDBClassPagination(Math.ceil(totalCount/PageSize),PageNumber,PageSize,totalCount,cursor)
     }
-    async getPostById(id: string):Promise<GetPostClass|null> {
-        return PostsModelClass.findOne({ id: id },{_id:0})
+    async getPostById(id: string):Promise<PostDBClass|null> {
+        return PostsModelClass.findOne({ id: id },{_id:0,usersLikesInfo:0,"extendedLikesInfo.newestLikes": { $slice: [ 1, 3 ] }})
     }
     async createPost(post: PostDBClass):Promise<PostDBClass> {
         await PostsModelClass.insertMany([post]);
@@ -34,6 +33,37 @@ export class PostsRepository  {
     async deletePostById(id: string): Promise<boolean> {
         const result = await PostsModelClass.deleteOne({id: id});
         return result.deletedCount === 1
+    }
+    async likeOperation(id: string,userId:string,login:string,likeStatus: string): Promise<boolean> {
+        const post=await PostsModelClass.findOne({id:id})
+        const newLikes: NewestLikesClass=new NewestLikesClass(new Date(),userId,login)
+        if ((likeStatus==="Like")&&(post!.extendedLikesInfo.myStatus==="None")){
+            let newLikesCount=post!.extendedLikesInfo.likesCount
+            newLikesCount+=1
+            await PostsModelClass.updateOne({id:id},{$set: {"extendedLikesInfo.likesCount": newLikesCount,"extendedLikesInfo.myStatus":likeStatus}})
+            const result=await PostsModelClass.updateOne({id:id},{$push: {"extendedLikesInfo.newestLikes": newLikes,"usersLikesInfo.usersWhoPutLike": userId}})
+            return result.matchedCount===1
+        }
+        if ((likeStatus==="Dislike")&&(post!.extendedLikesInfo.myStatus==="None")){
+            let newDislikesCount=post!.extendedLikesInfo.dislikesCount
+            newDislikesCount+=1
+            await PostsModelClass.updateOne({id:id},{$push: {"usersLikesInfo.usersWhoPutDislike": userId}})
+            const result=await PostsModelClass.updateOne({id:id},{$set: {"extendedLikesInfo.dislikesCount": newDislikesCount,"extendedLikesInfo.myStatus":likeStatus}})
+            return result.matchedCount===1
+        }return true
+/*        if (post!.extendedLikesInfo.myStatus==="Like"){
+                let newLikesCount=post!.extendedLikesInfo.likesCount
+                newLikesCount-=1
+                await PostsModelClass.updateOne({id:id},{$pull: {"usersLikesInfo.usersWhoPutLike": userId}})
+                const result=await PostsModelClass.updateOne({id:id},{$set: {"extendedLikesInfo.likesCount": newLikesCount,"extendedLikesInfo.myStatus":likeStatus}})
+                return result.matchedCount===1
+            }else{
+                let newDislikesCount=post!.extendedLikesInfo.dislikesCount
+                newDislikesCount-=1
+                await PostsModelClass.updateOne({id:id},{$pull: {"usersLikesInfo.usersWhoPutDislike": userId}})
+                const result=await PostsModelClass.updateOne({id:id},{$set: {"extendedLikesInfo.dislikesCount": newDislikesCount,"extendedLikesInfo.myStatus":likeStatus}})
+                 return result.matchedCount===1
+            }*/
     }
 }
 

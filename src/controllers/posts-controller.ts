@@ -14,8 +14,13 @@ export class PostsController {
         res.json(post)
     }
     async createPost(req: Request, res: Response) {
-        const newPost= await this.postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, req.body.bloggerId)
+        const newPost= await this.postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, req.params.bloggerId)
         const {_id,...newPostRest}=newPost
+        res.status(201).json(newPostRest)
+    }
+    async createPostWithExtendedData(req: Request, res: Response) {
+        const newPost= await this.postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, req.body.bloggerId)
+        const {_id,usersLikesInfo,...newPostRest}=newPost
         res.status(201).json(newPostRest)
     }
     async updatePost(req: Request, res: Response) {
@@ -29,6 +34,10 @@ export class PostsController {
     async getAllPostsForSpecificBlogger(req: Request, res: Response) {
         const posts =await this.postsService.getAllPostsForSpecificBlogger(req.query,req.params.bloggerId)
         res.json(posts)
+    }
+    async likeOperation(req: Request, res: Response) {
+        await this.postsService.likeOperation(req.params.postId,req.user!.id,req.user!.login,req.body.likeStatus)
+        res.sendStatus(204)
     }
 }
 
