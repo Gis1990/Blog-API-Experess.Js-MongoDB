@@ -3,7 +3,7 @@ import {CommentsModelClass} from "./db";
 
 export class CommentsRepository  {
     async getCommentById(id: string): Promise<CommentDBClass | null> {
-        return CommentsModelClass.findOne({ id: id }, { _id:1,postId:0  } )
+        return CommentsModelClass.findOne({ id: id }, { _id:0,postId:0  } )
     }
     async getAllCommentsForSpecificPost(PageNumber:number,PageSize:number,postId:string):Promise<CommentDBClassPagination> {
         const skips = PageSize * (PageNumber - 1)
