@@ -93,6 +93,10 @@ const commentsSchema = new mongoose.Schema<CommentDBClass>({
         likesCount: Number,
         dislikesCount: Number,
         myStatus: String
+    },
+    usersLikesInfo: {
+        usersWhoPutLike: [String],
+        usersWhoPutDislike: [String]
     }
 },{
     versionKey: false

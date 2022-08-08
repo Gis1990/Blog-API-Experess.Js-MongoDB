@@ -1,4 +1,4 @@
-import {Request, Response, Router} from "express";
+import { Router} from "express";
 import {authAccessTokenMiddleware} from "../middlewares/authentication-middleware";
 import {
     commentsIdValidation,
@@ -33,6 +33,4 @@ commentsRouter.put('/:commentId/like-status',
     commentsIdValidation,
     authAccessTokenMiddleware,
     likesInputValidation,
-    async  (req: Request, res: Response) => {
-    })
-
+    commentsController.likeOperation.bind(commentsController))

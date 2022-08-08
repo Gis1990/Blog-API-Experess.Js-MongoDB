@@ -14,7 +14,7 @@ export class CommentsController{
     }
     async createComment(req: Request, res: Response) {
         const newComment = await this.commentsService.createComment(req.body.content,req.params.postId, req.user!)
-        const {_id,postId,...newCommentRest}=newComment
+        const {_id,postId,usersLikesInfo,...newCommentRest}=newComment
         res.status(201).json(newCommentRest)
     }
     async updateComment(req: Request, res: Response) {
@@ -33,6 +33,10 @@ export class CommentsController{
             return
         }
         await this.commentsService.deleteCommentById(req.params.commentId)
+        res.sendStatus(204)
+    }
+    async likeOperation(req: Request, res: Response) {
+        await this.commentsService.likeOperation(req.params.commentId,req.user!.id,req.body.likeStatus)
         res.sendStatus(204)
     }
 }

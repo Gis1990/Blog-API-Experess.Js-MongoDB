@@ -1,4 +1,10 @@
-import {CommentDBClass, CommentDBClassPagination, LikesInfoClass, UserAccountDBClass} from "../repositories/types";
+import {
+    CommentDBClass,
+    CommentDBClassPagination,
+    LikesInfoClass,
+    UserAccountDBClass,
+    UsersLikesInfoClass
+} from "../repositories/types";
 import {ObjectId} from "mongodb";
 import {CommentsRepository} from "../repositories/comments-repository";
 
@@ -13,7 +19,8 @@ export class CommentsService  {
     }
     async createComment(content: string,postId:string, user:UserAccountDBClass): Promise<CommentDBClass> {
         const likes: LikesInfoClass= new LikesInfoClass(0,0,"None")
-        const comment:CommentDBClass = new CommentDBClass (new ObjectId(),Number((new Date())).toString() ,content,user.id,user.login,postId,new Date().toISOString(),likes)
+        const usersLikesInfo: UsersLikesInfoClass= new UsersLikesInfoClass([],[])
+        const comment:CommentDBClass = new CommentDBClass (new ObjectId(),Number((new Date())).toString() ,content,user.id,user.login,postId,new Date().toISOString(),likes,usersLikesInfo)
         return  this.commentsRepository.createComment(comment)
     }
     async deleteCommentById(id: string): Promise<boolean> {
@@ -21,6 +28,9 @@ export class CommentsService  {
     }
     async updateCommentById(id: string, content: string): Promise<boolean> {
         return this.commentsRepository.updateCommentById(id, content)
+    }
+    async likeOperation(id: string,userId: string,likeStatus: string): Promise<boolean> {
+        return  this.commentsRepository.likeOperation(id,userId,likeStatus)
     }
 }
 

@@ -20,6 +20,7 @@ export class CommentDBClass {
         public postId: string,
         public addedAt: string,
         public likesInfo: LikesInfoClass,
+        public usersLikesInfo: UsersLikesInfoClass
     ) {
     }
 }

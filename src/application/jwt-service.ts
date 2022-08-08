@@ -6,11 +6,11 @@ import jwt from 'jsonwebtoken'
 
 class JwtService {
     async createAccessJWT(user: UserAccountDBClass) {
-        const accessToken = jwt.sign({userId: user.id}, settings.jwtAccessTokenSecret, {expiresIn: '1h'})
+        const accessToken = jwt.sign({userId: user.id}, settings.jwtAccessTokenSecret, {expiresIn: '10sec'})
         return accessToken
     }
     async createRefreshJWT(user: UserAccountDBClass) {
-        const refreshToken = jwt.sign({userId: user.id}, settings.jwtRefreshTokenSecret, {expiresIn: '1h'})
+        const refreshToken = jwt.sign({userId: user.id}, settings.jwtRefreshTokenSecret, {expiresIn: '20sec'})
         return refreshToken
     }
     async getUserIdByAccessToken(token: string) {
