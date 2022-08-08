@@ -31,6 +31,6 @@ commentsRouter.put('/:commentId',
 
 commentsRouter.put('/:commentId/like-status',
     commentsIdValidation,
-    likesInputValidation,
     authAccessTokenMiddleware,
+    likesInputValidation,
     commentsController.likeOperation.bind(commentsController))

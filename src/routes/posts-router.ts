@@ -56,8 +56,8 @@ postsRouter.delete('/:postId',
 
 postsRouter.put('/:postId/like-status',
     authAccessTokenMiddleware,
-    likesInputValidation,
     postsIdValidation,
+    likesInputValidation,
     postsController.likeOperation.bind(postsController))
 
 
