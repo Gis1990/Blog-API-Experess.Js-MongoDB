@@ -39,10 +39,10 @@ export class PostsRepository  {
         if (!post) {
             return false
         }
-        const newLikes: NewestLikesClass=new NewestLikesClass(new Date(),userId,login)
         const findUsersLikes=post.usersLikesInfo.usersWhoPutLike.filter(user => user === userId)
         const findUsersDislikes=post.usersLikesInfo.usersWhoPutDislike.filter(user => user === userId)
         if ((findUsersLikes!.length===0)&&(likeStatus==="Like")){
+            const newLikes: NewestLikesClass=new NewestLikesClass(new Date(),userId,login)
             let newLikesCount=post.extendedLikesInfo.likesCount
             newLikesCount++
             await PostsModelClass.updateOne({id:id},{$set: {"extendedLikesInfo.likesCount": newLikesCount,"extendedLikesInfo.myStatus":likeStatus}})
