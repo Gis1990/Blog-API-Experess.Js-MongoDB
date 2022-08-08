@@ -61,7 +61,7 @@ export class AuthController{
             res.cookie('refreshToken', newRefreshToken, {
                 httpOnly: true,
                 secure: true,
-                maxAge: 20 * 1000 // 20 seconds
+                maxAge: 2000 * 1000 // 20 seconds
             });
             res.status(200).json({accessToken})
         } else {
