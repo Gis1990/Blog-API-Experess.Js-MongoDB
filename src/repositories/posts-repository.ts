@@ -41,7 +41,7 @@ export class PostsRepository  {
         }
         const findUsersLikes=post.usersLikesInfo.usersWhoPutLike.filter(user => user === userId)
         const findUsersDislikes=post.usersLikesInfo.usersWhoPutDislike.filter(user => user === userId)
-        if ((findUsersLikes!.length===0)&&(likeStatus==="Like")){
+        if ((findUsersLikes!.length===0)&&(likeStatus==="Like")&&(findUsersDislikes!.length===0)){
             const newLikes: NewestLikesClass=new NewestLikesClass(new Date(),userId,login)
             let newLikesCount=post.extendedLikesInfo.likesCount
             newLikesCount++
@@ -49,7 +49,7 @@ export class PostsRepository  {
             const result=await PostsModelClass.updateOne({id:id},{$push: {"extendedLikesInfo.newestLikes": newLikes,"usersLikesInfo.usersWhoPutLike": userId}})
             return result.matchedCount===1
         }
-        if ((findUsersDislikes!.length===0)&&(likeStatus==="Dislike")){
+        if ((findUsersDislikes!.length===0)&&(likeStatus==="Dislike")&&(findUsersLikes!.length===0)){
             let newDislikesCount=post.extendedLikesInfo.dislikesCount
             newDislikesCount++
             await PostsModelClass.updateOne({id:id},{$push: {"usersLikesInfo.usersWhoPutDislike": userId}})
