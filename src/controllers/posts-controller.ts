@@ -8,17 +8,20 @@ export class PostsController {
         const allPosts= await this.postsService.getAllPosts(req.query)
         if (req.user){
             for (let i=0; i<allPosts.items.length; i++){
+                allPosts.items[i].extendedLikesInfo.newestLikes=allPosts.items[i].extendedLikesInfo.newestLikes.slice(-3)
                 allPosts.items[i].extendedLikesInfo.myStatus=await this.postsService.returnUsersLikeStatus(allPosts.items[i].id, req.user!.id)
             }
             res.status(200).json(allPosts)
         }
         else{
             allPosts.items.forEach(elem=>elem.extendedLikesInfo.myStatus="None")
+            allPosts.items.forEach(elem=>elem.extendedLikesInfo.newestLikes=elem.extendedLikesInfo.newestLikes.slice(-3))
             res.status(200).json(allPosts)
         }
     }
     async getPost(req: Request, res: Response) {
         const post= await this.postsService.getPostById(req.params.postId)
+        post!.extendedLikesInfo.newestLikes=post!.extendedLikesInfo.newestLikes.slice(-3)
         if (req.user){
             post!.extendedLikesInfo.myStatus=await this.postsService.returnUsersLikeStatus(req.params.postId, req.user!.id)
             res.json(post)
@@ -50,11 +53,13 @@ export class PostsController {
         const posts =await this.postsService.getAllPostsForSpecificBlogger(req.query,req.params.bloggerId)
         if (req.user){
             for (let i=0; i<posts.items.length; i++){
+                posts.items[i].extendedLikesInfo.newestLikes=posts.items[i].extendedLikesInfo.newestLikes.slice(-3)
                 posts.items[i].extendedLikesInfo.myStatus=await this.postsService.returnUsersLikeStatus(posts.items[i].id, req.user!.id)
             }
             res.status(200).json(posts)
         }
         else{
+            posts.items.forEach(elem=>elem.extendedLikesInfo.newestLikes=elem.extendedLikesInfo.newestLikes.slice(-3))
             posts.items.forEach(elem=>elem.extendedLikesInfo.myStatus="None")
             res.status(200).json(posts)
         }

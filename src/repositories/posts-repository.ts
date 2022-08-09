@@ -4,18 +4,18 @@ import {PostsModelClass} from "./db";
 export class PostsRepository  {
     async getAllPosts(PageNumber:number,PageSize:number):Promise<PostDBClassPagination> {
         const skips = PageSize * (PageNumber - 1)
-        const cursor=await PostsModelClass.find({}, { _id:0,usersLikesInfo:0 ,"extendedLikesInfo.newestLikes": { $slice: [ 0,2 ] }}).skip(skips).limit(PageSize).lean()
+        const cursor=await PostsModelClass.find({}, { _id:0,usersLikesInfo:0}).skip(skips).limit(PageSize).lean()
         const totalCount=await PostsModelClass.count({})
         return new PostDBClassPagination(Math.ceil(totalCount/PageSize),PageNumber,PageSize,totalCount,cursor)
     }
     async getAllPostsForSpecificBlogger(PageNumber:number,PageSize:number,bloggerId:string):Promise<PostDBClassPagination> {
         const skips = PageSize * (PageNumber - 1)
-        const cursor=await PostsModelClass.find({bloggerId:bloggerId},{ _id:0 ,usersLikesInfo:0,"extendedLikesInfo.newestLikes": { $slice: [ 0, 2 ] }}).skip(skips).limit(PageSize).lean()
+        const cursor=await PostsModelClass.find({bloggerId:bloggerId},{ _id:0 ,usersLikesInfo:0}).skip(skips).limit(PageSize).lean()
         const totalCount=await PostsModelClass.count({bloggerId:bloggerId})
         return new PostDBClassPagination(Math.ceil(totalCount/PageSize),PageNumber,PageSize,totalCount,cursor)
     }
     async getPostById(id: string):Promise<PostDBClass|null> {
-        return PostsModelClass.findOne({ id: id },{_id:0,usersLikesInfo:0,"extendedLikesInfo.newestLikes": { $slice: [ 0, 2 ] }})
+        return PostsModelClass.findOne({ id: id },{_id:0,usersLikesInfo:0})
     }
     async createPost(post: PostDBClass):Promise<PostDBClass> {
         await PostsModelClass.insertMany([post]);
