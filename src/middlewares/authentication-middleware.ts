@@ -36,6 +36,22 @@ export const authAccessTokenMiddleware = async (req: Request , res: Response, ne
         return
     }
 }
+export const authMiddlewareForUnauthorizedUser = async (req: Request , res: Response, next: NextFunction) => {
+    if (!req.headers.authorization) {
+        next()
+    }else{
+        const token = req.headers.authorization.split(' ')[1]
+        const userId = await jwtService.getUserIdByAccessToken(token)
+        let userData
+        if (userId) {
+            userData = await usersService.findUserById(userId)
+            if (userData) {
+                req.user=userData
+                next()
+            }
+        }
+    }
+}
 
 
 

@@ -1,5 +1,5 @@
 import { Router} from "express";
-import {authAccessTokenMiddleware} from "../middlewares/authentication-middleware";
+import {authAccessTokenMiddleware, authMiddlewareForUnauthorizedUser} from "../middlewares/authentication-middleware";
 import {
     commentsIdValidation,
     commentsInputValidation,
@@ -12,6 +12,7 @@ export const commentsRouter = Router ({})
 
 
 commentsRouter.get('/:commentId',
+    authMiddlewareForUnauthorizedUser,
     commentsIdValidation,
     commentsController.getComment.bind(commentsController))
 

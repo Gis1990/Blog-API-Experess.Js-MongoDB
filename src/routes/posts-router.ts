@@ -4,7 +4,11 @@ import {
     postsIdValidation, postsWithExtendedDataInputValidation,
 
 } from "../middlewares/input - validation - middleware";
-import {authenticationMiddleware, authAccessTokenMiddleware} from "../middlewares/authentication-middleware";
+import {
+    authenticationMiddleware,
+    authAccessTokenMiddleware,
+    authMiddlewareForUnauthorizedUser
+} from "../middlewares/authentication-middleware";
 import {postsController} from "../composition-root";
 import {commentsController} from "../composition-root";
 
@@ -12,7 +16,9 @@ import {commentsController} from "../composition-root";
 export const postsRouter = Router ({})
 
 
-postsRouter.get('/',postsController.getAllPosts.bind(postsController))
+postsRouter.get('/',
+    authMiddlewareForUnauthorizedUser,
+    postsController.getAllPosts.bind(postsController))
 
 
 postsRouter.post('/',
@@ -22,12 +28,14 @@ postsRouter.post('/',
 
 
 postsRouter.get('/:postId/comments',
+    authMiddlewareForUnauthorizedUser,
     postsIdValidation,
     commentsController.getAllCommentsForSpecificPost.bind(commentsController))
 
 
 
 postsRouter.get('/:postId',
+    authMiddlewareForUnauthorizedUser,
     postsIdValidation,
     postsController.getPost.bind(postsController))
 

@@ -75,6 +75,18 @@ export class CommentsRepository {
         }
         return true
     }
+    async returnUsersLikeStatus(id: string,userId:string): Promise<string> {
+        const comment = await CommentsModelClass.findOne({id: id})
+        const findUsersLikes=comment!.usersLikesInfo.usersWhoPutLike.filter(user => user === userId)
+        const findUsersDislikes=comment!.usersLikesInfo.usersWhoPutDislike.filter(user => user === userId)
+        if (findUsersLikes!.length===1){
+            return "Like"
+        }
+        if (findUsersDislikes!.length===1){
+            return "Dislike"
+        }
+        return "None"
+    }
 }
 
 

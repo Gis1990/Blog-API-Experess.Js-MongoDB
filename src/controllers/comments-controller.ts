@@ -1,16 +1,32 @@
-import {Request,Response} from "express";
+import {Request, Response} from "express";
 import {CommentsService} from "../domain/comments-service";
 
 
 export class CommentsController{
     constructor(protected commentsService: CommentsService) {}
     async getComment(req: Request, res: Response) {
-            const comment = await this.commentsService.getCommentById(req.params.commentId)
-            res.json(comment)
+        const comment = await this.commentsService.getCommentById(req.params.commentId)
+        if (req.user){
+            comment!.likesInfo.myStatus=await this.commentsService.returnUsersLikeStatus(req.params.commentId, req.user!.id)
+            res.status(200).json(comment)
+        }
+        else{
+            comment!.likesInfo.myStatus="None"
+            res.status(200).json(comment)
+        }
     }
     async getAllCommentsForSpecificPost(req: Request, res: Response) {
         const comments = await this.commentsService.getAllCommentsForSpecificPost(req.query, req.params.postId)
-        res.status(200).json(comments)
+        if (req.user){
+            for (let i=0; i<comments.items.length; i++){
+                comments.items[i].likesInfo.myStatus=await this.commentsService.returnUsersLikeStatus(comments.items[i].id, req.user!.id)
+            }
+            res.status(200).json(comments)
+        }
+        else{
+            comments.items.forEach(elem=>elem.likesInfo.myStatus="None")
+            res.status(200).json(comments)
+        }
     }
     async createComment(req: Request, res: Response) {
         const newComment = await this.commentsService.createComment(req.body.content,req.params.postId, req.user!)

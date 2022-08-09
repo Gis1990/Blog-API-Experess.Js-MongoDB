@@ -2,16 +2,31 @@ import {Request, Response} from "express";
 import {PostsService} from "../domain/posts-service";
 
 
-
 export class PostsController {
     constructor(protected postsService: PostsService) {}
     async getAllPosts (req: Request, res: Response) {
         const allPosts= await this.postsService.getAllPosts(req.query)
-        res.json(allPosts)
+        if (req.user){
+            for (let i=0; i<allPosts.items.length; i++){
+                allPosts.items[i].extendedLikesInfo.myStatus=await this.postsService.returnUsersLikeStatus(allPosts.items[i].id, req.user!.id)
+            }
+            res.status(200).json(allPosts)
+        }
+        else{
+            allPosts.items.forEach(elem=>elem.extendedLikesInfo.myStatus="None")
+            res.status(200).json(allPosts)
+        }
     }
     async getPost(req: Request, res: Response) {
         const post= await this.postsService.getPostById(req.params.postId)
-        res.json(post)
+        if (req.user){
+            post!.extendedLikesInfo.myStatus=await this.postsService.returnUsersLikeStatus(req.params.postId, req.user!.id)
+            res.json(post)
+        }
+        else{
+            post!.extendedLikesInfo.myStatus="None"
+            res.status(200).json(post)
+        }
     }
     async createPost(req: Request, res: Response) {
         const newPost= await this.postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, req.params.bloggerId)
@@ -33,7 +48,16 @@ export class PostsController {
     }
     async getAllPostsForSpecificBlogger(req: Request, res: Response) {
         const posts =await this.postsService.getAllPostsForSpecificBlogger(req.query,req.params.bloggerId)
-        res.json(posts)
+        if (req.user){
+            for (let i=0; i<posts.items.length; i++){
+                posts.items[i].extendedLikesInfo.myStatus=await this.postsService.returnUsersLikeStatus(posts.items[i].id, req.user!.id)
+            }
+            res.status(200).json(posts)
+        }
+        else{
+            posts.items.forEach(elem=>elem.extendedLikesInfo.myStatus="None")
+            res.status(200).json(posts)
+        }
     }
     async likeOperation(req: Request, res: Response) {
         await this.postsService.likeOperation(req.params.postId,req.user!.id,req.user!.login,req.body.likeStatus)

@@ -77,6 +77,18 @@ export class PostsRepository  {
             return result.matchedCount===1
         }return true
     }
+    async returnUsersLikeStatus(id: string,userId:string): Promise<string> {
+        const post=await PostsModelClass.findOne({id:id})
+        const findUsersLikes=post!.usersLikesInfo.usersWhoPutLike.filter(user => user === userId)
+        const findUsersDislikes=post!.usersLikesInfo.usersWhoPutDislike.filter(user => user === userId)
+        if (findUsersLikes!.length===1){
+            return "Like"
+        }
+        if (findUsersDislikes!.length===1){
+            return "Dislike"
+        }
+        return "None"
+    }
 }
 
 

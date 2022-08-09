@@ -5,7 +5,7 @@ import {
     postsInputValidation,
 }
     from "../middlewares/input - validation - middleware";
-import {authenticationMiddleware} from "../middlewares/authentication-middleware";
+import {authenticationMiddleware, authMiddlewareForUnauthorizedUser} from "../middlewares/authentication-middleware";
 import {bloggersController} from "../composition-root";
 import {postsController} from "../composition-root";
 
@@ -23,6 +23,7 @@ bloggersRouter.get('/:bloggerId',
 
 
 bloggersRouter.get('/:bloggerId/posts',
+    authMiddlewareForUnauthorizedUser,
     bloggersIdValidation,
     postsController.getAllPostsForSpecificBlogger.bind(postsController))
 

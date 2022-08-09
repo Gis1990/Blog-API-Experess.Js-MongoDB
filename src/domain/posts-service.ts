@@ -36,5 +36,8 @@ export class PostsService  {
     async likeOperation(id: string,userId: string,login:string,likeStatus: string): Promise<boolean> {
         return  this.postsRepository.likeOperation(id,userId,login,likeStatus)
     }
+    async returnUsersLikeStatus(id: string,userId: string): Promise<string> {
+        return  this.postsRepository.returnUsersLikeStatus(id,userId)
+    }
 }
 

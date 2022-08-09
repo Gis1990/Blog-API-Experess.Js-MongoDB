@@ -32,6 +32,9 @@ export class CommentsService  {
     async likeOperation(id: string,userId: string,likeStatus: string): Promise<boolean> {
         return  this.commentsRepository.likeOperation(id,userId,likeStatus)
     }
+    async returnUsersLikeStatus(id: string,userId: string): Promise<string> {
+        return  this.commentsRepository.returnUsersLikeStatus(id,userId)
+    }
 }
 
 
