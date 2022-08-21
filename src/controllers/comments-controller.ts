@@ -1,7 +1,6 @@
 import {Request, Response} from "express";
 import {CommentsService} from "../domain/comments-service";
 
-
 export class CommentsController{
     constructor(protected commentsService: CommentsService) {}
     async getComment(req: Request, res: Response) {

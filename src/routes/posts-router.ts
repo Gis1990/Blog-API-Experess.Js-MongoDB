@@ -6,10 +6,8 @@ import {
 } from "../middlewares/input - validation - middleware";
 import {
     authenticationMiddleware,
-    authAccessTokenMiddleware,
-    authMiddlewareForUnauthorizedUser
 } from "../middlewares/authentication-middleware";
-import {postsController} from "../composition-root";
+import {authAccessTokenController, postsController} from "../composition-root";
 import {commentsController} from "../composition-root";
 
 
@@ -17,7 +15,7 @@ export const postsRouter = Router ({})
 
 
 postsRouter.get('/',
-    authMiddlewareForUnauthorizedUser,
+    authAccessTokenController.authMiddlewareForUnauthorizedUser.bind(authAccessTokenController),
     postsController.getAllPosts.bind(postsController))
 
 
@@ -28,21 +26,21 @@ postsRouter.post('/',
 
 
 postsRouter.get('/:postId/comments',
-    authMiddlewareForUnauthorizedUser,
+    authAccessTokenController.authMiddlewareForUnauthorizedUser.bind(authAccessTokenController),
     postsIdValidation,
     commentsController.getAllCommentsForSpecificPost.bind(commentsController))
 
 
 
 postsRouter.get('/:postId',
-    authMiddlewareForUnauthorizedUser,
+    authAccessTokenController.authMiddlewareForUnauthorizedUser.bind(authAccessTokenController),
     postsIdValidation,
     postsController.getPost.bind(postsController))
 
 
 
 postsRouter.post('/:postId/comments',
-    authAccessTokenMiddleware,
+    authAccessTokenController.authAccessToken.bind(authAccessTokenController),
     postsIdValidation,
     commentsInputValidation,
     commentsController.createComment.bind(commentsController))
@@ -63,7 +61,7 @@ postsRouter.delete('/:postId',
 
 
 postsRouter.put('/:postId/like-status',
-    authAccessTokenMiddleware,
+    authAccessTokenController.authAccessToken.bind(authAccessTokenController),
     postsIdValidation,
     likesInputValidation,
     postsController.likeOperation.bind(postsController))

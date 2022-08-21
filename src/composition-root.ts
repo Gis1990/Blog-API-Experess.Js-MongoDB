@@ -13,19 +13,22 @@ import {UsersController} from "./controllers/users-controller";
 import {EmailController} from "./controllers/email-controller";
 import {AuthService} from "./domain/auth-service";
 import {AuthController} from "./controllers/auth-controller";
+import {JwtService} from "./application/jwt-service";
+import {AuthAccessTokenController} from "./middlewares/authentication-middleware";
+import {QuizController} from "./controllers/pair-game-quiz-controller";
 
-const bloggersRepository = new BloggersRepository();
-const bloggersService = new BloggersService(bloggersRepository);
-const postsRepository = new PostsRepository();
-const postsService = new PostsService(postsRepository,bloggersRepository);
-const commentsRepository = new CommentsRepository();
-const commentsService = new CommentsService(commentsRepository);
+
 export const usersRepository = new UsersRepository();
+const bloggersRepository = new BloggersRepository();
+const postsRepository = new PostsRepository();
+const commentsRepository = new CommentsRepository();
+const bloggersService = new BloggersService(bloggersRepository);
+const postsService = new PostsService(postsRepository,bloggersRepository);
+const commentsService = new CommentsService(commentsRepository);
+const jwtService = new JwtService()
 export const usersService = new UsersService(usersRepository);
-const authService= new AuthService(usersRepository);
-
-
-
+const emailController = new EmailController();
+const authService= new AuthService(usersRepository,emailController,usersService,jwtService);
 
 
 
@@ -34,5 +37,7 @@ export const bloggersController = new BloggersController(bloggersService);
 export const postsController = new PostsController(postsService);
 export const commentsController = new CommentsController(commentsService);
 export const usersController = new UsersController(usersService,authService);
-export const emailController = new EmailController(usersRepository);
-export const authController = new AuthController(authService,emailController,usersService);
+export const authController = new AuthController(authService);
+export const authAccessTokenController = new AuthAccessTokenController(usersService,jwtService);
+export const quizController = new QuizController();
+

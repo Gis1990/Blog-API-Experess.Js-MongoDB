@@ -2,8 +2,13 @@ import {Request,Response} from "express";
 import {UsersService} from "../domain/users-service";
 import {AuthService} from "../domain/auth-service";
 
+
+
+
+
 export class UsersController{
-    constructor(protected usersService:UsersService,protected authService:AuthService) {}
+    constructor(protected usersService:UsersService,
+                protected authService:AuthService) {}
     async getAllUsers(req:Request,res:Response){
         const allUsers=await this.usersService.getAllUsers(req.query)
         res.json(allUsers)
@@ -14,8 +19,7 @@ export class UsersController{
     }
     async createUser(req:Request,res:Response){
         const newUser=await this.authService.createUserWithoutConfirmationEmail(req.body.login,req.body.email,req.body.password)
-        const{_id,emailConfirmation,blacklistedRefreshTokens,createdAt,loginAttempts,passwordHash,email,...newUserData}=newUser
-        res.status(201).json(newUserData)
+        res.status(201).json(newUser)
     }
 }
 

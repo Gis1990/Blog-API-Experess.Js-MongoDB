@@ -1,6 +1,7 @@
 import { NewestLikesClass, PostDBClass, PostDBClassPagination} from "./types";
 import {PostsModelClass} from "./db";
 
+
 export class PostsRepository  {
     async getAllPosts(PageNumber:number,PageSize:number):Promise<PostDBClassPagination> {
         const skips = PageSize * (PageNumber - 1)

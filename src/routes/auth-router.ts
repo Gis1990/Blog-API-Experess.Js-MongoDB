@@ -1,5 +1,5 @@
 import { Router} from 'express'
-import {authController} from '../composition-root'
+import {authAccessTokenController, authController} from '../composition-root'
 import {
     confirmationCodesValidation,
     emailsInputValidation,
@@ -11,7 +11,7 @@ import {
     rateLimiterForLogin,
     rateLimiterForRegistration, rateLimiterForRegistrationConfirmation
 } from "../controllers/rate-limit-controller";
-import {authAccessTokenMiddleware} from "../middlewares/authentication-middleware";
+
 
 
 export const authRouter = Router({})
@@ -46,7 +46,7 @@ authRouter.post('/login',
     authController.login.bind(authController))
 
 
-authRouter.post('/refresh-token',authController.refreshToken.bind(authController))
+authRouter.post('/refresh-token',authController.refreshAllTokens.bind(authController))
 
 
 
@@ -55,7 +55,7 @@ authRouter.post('/logout',authController.logout.bind(authController))
 
 
 authRouter.get('/me',
-    authAccessTokenMiddleware,
+    authAccessTokenController.authAccessToken.bind(authAccessTokenController),
     authController.me.bind(authController))
 
 

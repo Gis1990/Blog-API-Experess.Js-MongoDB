@@ -1,37 +1,36 @@
 import { Router} from "express";
-import {authAccessTokenMiddleware, authMiddlewareForUnauthorizedUser} from "../middlewares/authentication-middleware";
 import {
     commentsIdValidation,
     commentsInputValidation,
     likesInputValidation
 } from "../middlewares/input - validation - middleware";
-import {commentsController} from "../composition-root";
+import {authAccessTokenController, commentsController} from "../composition-root";
 
 export const commentsRouter = Router ({})
 
 
 
 commentsRouter.get('/:commentId',
-    authMiddlewareForUnauthorizedUser,
+    authAccessTokenController.authMiddlewareForUnauthorizedUser.bind(authAccessTokenController),
     commentsIdValidation,
     commentsController.getComment.bind(commentsController))
 
 
 commentsRouter.delete('/:commentId',
     commentsIdValidation,
-    authAccessTokenMiddleware,
+    authAccessTokenController.authAccessToken.bind(authAccessTokenController),
     commentsController.deleteComment.bind(commentsController))
 
 
 commentsRouter.put('/:commentId',
     commentsIdValidation,
-    authAccessTokenMiddleware,
+    authAccessTokenController.authAccessToken.bind(authAccessTokenController),
     commentsInputValidation,
     commentsController.updateComment.bind(commentsController))
 
 
 commentsRouter.put('/:commentId/like-status',
     commentsIdValidation,
-    authAccessTokenMiddleware,
+    authAccessTokenController.authAccessToken.bind(authAccessTokenController),
     likesInputValidation,
     commentsController.likeOperation.bind(commentsController))

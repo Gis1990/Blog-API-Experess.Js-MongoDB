@@ -1,6 +1,10 @@
 import {CommentDBClass, CommentDBClassPagination} from "./types";
 import {CommentsModelClass} from "./db";
 
+
+
+
+
 export class CommentsRepository {
     async getCommentById(id: string): Promise<CommentDBClass | null> {
         return CommentsModelClass.findOne({id: id}, {_id: 0, postId: 0,usersLikesInfo:0 })

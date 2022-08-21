@@ -1,6 +1,10 @@
 import {Request, Response} from "express";
 import {BloggersService} from "../domain/bloggers-service";
 
+
+
+
+
 export class BloggersController{
     constructor(protected  bloggersService: BloggersService) {}
     async getAllBloggers (req: Request, res: Response) {
@@ -13,8 +17,7 @@ export class BloggersController{
     }
     async createBlogger(req: Request, res: Response) {
         const newBlogger= await this.bloggersService.createBlogger(req.body.name,req.body.youtubeUrl)
-        const {_id,...newBloggerRest}=newBlogger
-        res.status(201).json(newBloggerRest)
+        res.status(201).json(newBlogger)
     }
     async updateBlogger(req: Request, res: Response) {
         await this.bloggersService.updateBlogger(req.params.bloggerId, req.body.name, req.body.youtubeUrl)

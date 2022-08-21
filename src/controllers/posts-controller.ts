@@ -1,7 +1,6 @@
 import {Request, Response} from "express";
 import {PostsService} from "../domain/posts-service";
 
-
 export class PostsController {
     constructor(protected postsService: PostsService) {}
     async getAllPosts (req: Request, res: Response) {

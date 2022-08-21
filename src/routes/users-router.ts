@@ -6,6 +6,9 @@ import {usersController} from "../composition-root";
 export const usersRouter = Router ({})
 
 
+
+
+
 usersRouter.get("/",usersController.getAllUsers.bind(usersController))
 
 

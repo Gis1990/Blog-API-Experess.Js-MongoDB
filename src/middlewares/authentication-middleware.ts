@@ -1,7 +1,8 @@
 import {NextFunction, Request, Response} from "express";
 import {header, validationResult} from "express-validator";
 import {usersService} from "../composition-root";
-import {jwtService} from '../application/jwt-service'
+import {UsersService} from "../domain/users-service";
+import {JwtService} from "../application/jwt-service";
 
 
 export const authenticationMiddleware = async (req: Request, res: Response, next: NextFunction) => {
@@ -14,40 +15,47 @@ export const authenticationMiddleware = async (req: Request, res: Response, next
     }
 }
 
-export const authAccessTokenMiddleware = async (req: Request , res: Response, next: NextFunction) => {
-    if (!req.headers.authorization) {
-        res.sendStatus(401)
-        return
+
+export class  AuthAccessTokenController {
+    constructor(protected usersService: UsersService,
+                protected jwtService: JwtService) {
     }
-    const token = req.headers.authorization.split(' ')[1]
-    const userId = await jwtService.getUserIdByAccessToken(token)
-    let userData
-    if (userId) {
-         userData = await usersService.findUserById(userId)
-    }else{
-        res.sendStatus(401)
-        return
-    }
-    if (userData) {
-        req.user=userData
-        next()
-    }else{
-        res.sendStatus(401)
-        return
-    }
-}
-export const authMiddlewareForUnauthorizedUser = async (req: Request , res: Response, next: NextFunction) => {
-    if (!req.headers.authorization) {
-        next()
-    }else{
+
+    async authAccessToken(req: Request, res: Response, next: NextFunction) {
+        if (!req.headers.authorization) {
+            res.sendStatus(401)
+            return
+        }
         const token = req.headers.authorization.split(' ')[1]
-        const userId = await jwtService.getUserIdByAccessToken(token)
+        const userId = await this.jwtService.getUserIdByAccessToken(token)
         let userData
         if (userId) {
-            userData = await usersService.findUserById(userId)
-            if (userData) {
-                req.user=userData
-                next()
+            userData = await this.usersService.findUserById(userId)
+        } else {
+            res.sendStatus(401)
+            return
+        }
+        if (userData) {
+            req.user = userData
+            next()
+        } else {
+            res.sendStatus(401)
+            return
+        }
+    }
+    async authMiddlewareForUnauthorizedUser(req: Request, res: Response, next: NextFunction) {
+        if (!req.headers.authorization) {
+            next()
+        } else {
+            const token = req.headers.authorization.split(' ')[1]
+            const userId = await this.jwtService.getUserIdByAccessToken(token)
+            let userData
+            if (userId) {
+                userData = await usersService.findUserById(userId)
+                if (userData) {
+                    req.user = userData
+                    next()
+                }
             }
         }
     }

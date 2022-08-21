@@ -8,7 +8,7 @@ import {
     RefreshTokenClass,
     SentEmailsClass,
     LoginAttemptsClass,
-    NewestLikesClass
+    NewestLikesClass, QuizGameDBClass, PlayerClass, GameQuestionClass
 } from "./types";
 require('dotenv').config()
 
@@ -62,6 +62,29 @@ const blacklistedRefreshTokensSchema = new mongoose.Schema<RefreshTokenClass>({
 }, { _id : false })
 
 
+const playerSchema = new mongoose.Schema<PlayerClass>({
+    answers: [
+        {
+            questionId: String,
+            answerStatus: String,
+            addedAt: Date
+        }
+    ],
+    user: {
+        id: String,
+        login: String
+    },
+    score: Number
+}, { _id : false })
+
+
+
+const gameQuestionSchema = new mongoose.Schema<GameQuestionClass>({
+    id:String,
+    body: String
+}, { _id : false })
+
+
 
 const usersAccountSchema = new mongoose.Schema<UserAccountDBClass>({
     id:String,
@@ -103,14 +126,33 @@ const commentsSchema = new mongoose.Schema<CommentDBClass>({
 });
 
 
+const quizSchema = new mongoose.Schema<QuizGameDBClass>({
+        id: String,
+        firstPlayer: playerSchema,
+        secondPlayer: playerSchema,
+        questions: [gameQuestionSchema],
+        status: String,
+        pairCreatedDate: Date,
+        startGameDate: Date,
+        finishGameDate: Date
+    }
+)
+
+
+
+
+
+
+
 export const BloggersModelClass = mongoose.model('bloggers', bloggersSchema);
 export const PostsModelClass = mongoose.model('posts', postsSchema);
 export const UsersAccountModelClass = mongoose.model('users', usersAccountSchema);
 export const CommentsModelClass = mongoose.model('comments', commentsSchema);
+export const QuizModelClass = mongoose.model('quiz', quizSchema);
 
 
 
-export async function runDb ( ) {
+export async function runDb () {
   try {
     await mongoose.connect(settings.mongo_URI);
     console.log ( "Connected successfully to mongo server" ) ;

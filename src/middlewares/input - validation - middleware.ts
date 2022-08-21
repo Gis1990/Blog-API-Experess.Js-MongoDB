@@ -370,7 +370,7 @@ export const bloggersIdValidation = async (req: Request, res: Response, next: Ne
 
 export const usersIdValidation = async (req: Request, res: Response, next: NextFunction) => {
     await param("userId", "Id does not exist").custom(async userId => {
-        const user =await UsersAccountModelClass.findOne({"accountData.id": userId})
+        const user =await UsersAccountModelClass.findOne({id: userId})
         return (!!user)?Promise.resolve():Promise.reject()}).run(req)
     errorHandlerForIdValidation(req,res,next)
 }

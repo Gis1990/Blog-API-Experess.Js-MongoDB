@@ -4,8 +4,11 @@ import {ExtendedLikesInfoClass, PostDBClass, PostDBClassPagination, UsersLikesIn
 import {BloggersRepository} from "../repositories/bloggers-repository";
 
 
+
+
 export class PostsService  {
-    constructor(protected postsRepository: PostsRepository,protected bloggersRepository: BloggersRepository) {}
+    constructor( protected postsRepository: PostsRepository,
+                 protected bloggersRepository: BloggersRepository) {}
     async getAllPosts(obj:{PageNumber?:number,PageSize?:number}): Promise<PostDBClassPagination> {
         const {PageNumber=1,PageSize=10}=obj
         return this.postsRepository.getAllPosts(Number(PageNumber),Number(PageSize))

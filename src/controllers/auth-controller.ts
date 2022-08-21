@@ -1,11 +1,10 @@
 import {Request, Response} from "express";
 import {AuthService} from "../domain/auth-service";
-import {EmailController} from "./email-controller";
-import {UsersService} from "../domain/users-service";
-import {jwtService} from "../application/jwt-service";
+
+
 
 export class AuthController{
-    constructor(protected  authService: AuthService,protected emailController:EmailController,protected usersService:UsersService) {}
+    constructor(protected  authService: AuthService) {}
     async registrationConfirmation(req: Request, res: Response) {
             const result = await this.authService.confirmEmail(req.body.code)
             if (result) {
@@ -16,7 +15,6 @@ export class AuthController{
         }
     async registration(req: Request, res: Response) {
         const newUser=await this.authService.createUserWithConfirmationEmail(req.body.login,req.body.email,req.body.password)
-        await this.emailController.sendEmail(req.body.email,newUser.emailConfirmation.confirmationCode)
         if (newUser) {
             res.sendStatus(204)
         }else{
@@ -24,23 +22,18 @@ export class AuthController{
         }
     }
     async registrationEmailResending(req: Request, res: Response) {
-        const user = await this.usersService.findByLoginOrEmail(req.body.email)
-        if (user){
-            await this.authService.updateConfirmationCode(user.id)
-        }
-        const updatedUser = await this.usersService.findByLoginOrEmail(req.body.email)
-        if (updatedUser){
-            await this.emailController.sendEmail(req.body.email,updatedUser.emailConfirmation.confirmationCode)
+        const everythingIsCorrect = await this.authService.registrationEmailResending(req.body.email)
+        if (everythingIsCorrect){
             res.sendStatus(204)
         }else{
             res.sendStatus(400)
         }
     }
     async login(req: Request, res: Response) {
-        const user = await this.authService.checkCredentials(req.body.login, req.body.password,req.ip)
-        if ((user)&&user.emailConfirmation.isConfirmed) {
-            const accessToken = await jwtService.createAccessJWT(user)
-            const refreshToken = await jwtService.createRefreshJWT(user)
+        const result = await this.authService.checkCredentials(req.body.login, req.body.password,req.ip)
+        if (result) {
+            const accessToken = result[0]
+            const refreshToken = result[1]
             res.cookie('refreshToken', refreshToken, {
                 httpOnly: true,
                 secure: true,
@@ -51,13 +44,12 @@ export class AuthController{
             res.sendStatus(401)
         }
     }
-    async refreshToken(req: Request, res: Response) {
-        const refreshToken = req.cookies.refreshToken
-        const user = await this.authService.checkRefreshTokenCredentials(refreshToken)
+    async refreshAllTokens(req: Request, res: Response) {
+        const user = await this.authService.checkRefreshTokenCredentials(req.cookies.refreshToken)
         if (user){
-            await this.authService.addRefreshTokenIntoBlackList(user.id,refreshToken)
-            const accessToken = await jwtService.createAccessJWT(user)
-            const newRefreshToken = await jwtService.createRefreshJWT(user)
+            const result = await this.authService.refreshAllTokens(user,req.cookies.refreshToken)
+            const accessToken = result[0]
+            const newRefreshToken = result[1]
             res.cookie('refreshToken', newRefreshToken, {
                 httpOnly: true,
                 secure: true,
@@ -69,11 +61,9 @@ export class AuthController{
         }
     }
     async logout(req: Request, res: Response) {
-        const refreshToken = req.cookies.refreshToken
-        const user = await this.authService.checkRefreshTokenCredentials(refreshToken)
+        const user = await this.authService.checkRefreshTokenCredentials(req.cookies.refreshToken)
         if (user){
-            await this.authService.addRefreshTokenIntoBlackList(user.id,refreshToken)
-            const newRefreshToken = await jwtService.createRefreshJWT(user)
+            const newRefreshToken = await this.authService.refreshOnlyRefreshToken(user,req.cookies.refreshToken)
             res.cookie('refreshToken', newRefreshToken, {
                 httpOnly: true,
                 secure: true,

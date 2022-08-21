@@ -1,41 +1,53 @@
 import {ObjectId} from "mongodb";
-import {UserAccountDBClass} from "../repositories/types";
+import {NewUserClassResponseModel, UserAccountDBClass} from "../repositories/types";
 
 import bcrypt from "bcrypt";
 import {v4 as uuidv4} from "uuid";
 import add from "date-fns/add";
-import {jwtService} from "../application/jwt-service";
 import {UserAccountEmailClass} from "../repositories/types";
 import {UsersRepository} from "../repositories/users-repository";
+import {EmailController} from "../controllers/email-controller";
+import {UsersService} from "./users-service";
+import {JwtService} from "../application/jwt-service";
+
 
 
 export class  AuthService  {
-    constructor(protected usersRepository: UsersRepository) {}
+    constructor(protected usersRepository: UsersRepository,
+                protected emailController:EmailController,
+                protected usersService:UsersService,
+                protected jwtService:JwtService) {}
     async createUserWithConfirmationEmail(login: string,email:string, password: string): Promise<UserAccountDBClass> {
         const passwordHash = await this._generateHash(password)
         const emailConfirmation: UserAccountEmailClass = new  UserAccountEmailClass([],uuidv4(),add (new Date(),{hours:1}),false)
         const newUser: UserAccountDBClass = new UserAccountDBClass(new ObjectId(),Number((new Date())).toString(), login, email, passwordHash, new Date().toISOString(), [],emailConfirmation,[])
-        return this.usersRepository.createUser(newUser)
+        const newUserWithConfirmationCode=this.usersRepository.createUser(newUser)
+        await this.emailController.sendEmail(email,newUser.emailConfirmation.confirmationCode)
+        await this.usersRepository.addEmailLog(email)
+        return newUserWithConfirmationCode
     }
-    async createUserWithoutConfirmationEmail(login: string,email:string, password: string): Promise<UserAccountDBClass> {
+    async createUserWithoutConfirmationEmail(login: string,email:string, password: string): Promise<NewUserClassResponseModel> {
         const passwordHash = await this._generateHash(password)
         const emailConfirmation: UserAccountEmailClass = new  UserAccountEmailClass([],uuidv4(),add (new Date(),{hours:1}),true)
         const newUser: UserAccountDBClass = new UserAccountDBClass(new ObjectId(),Number((new Date())).toString(), login, email, passwordHash, new Date().toISOString(), [],emailConfirmation,[])
-        return this.usersRepository.createUser(newUser)
+        const user=await this.usersRepository.createUser(newUser)
+        return (({ id, login }) => ({ id, login }))(user)
     }
-    async checkCredentials(login: string, password: string,ip:string) {
+    async checkCredentials(login: string, password: string,ip:string):Promise<string[]|null> {
         const user = await this.usersRepository.findByLoginOrEmail(login)
         if (!user) return null
         await this.usersRepository.addLoginAttempt(user.id,ip)
         const isHashesEqual = await this._isHashesEquals(password, user.passwordHash)
-        if (isHashesEqual) {
-            return user
+        if (isHashesEqual&&user.emailConfirmation.isConfirmed) {
+            const accessToken = await this.jwtService.createAccessJWT(user)
+            const refreshToken = await this.jwtService.createRefreshJWT(user)
+            return [accessToken,refreshToken]
         } else {
             return null
         }
     }
     async checkRefreshTokenCredentials(token: string) {
-        const userId = await jwtService.getUserIdByRefreshToken(token)
+        const userId = await this.jwtService.getUserIdByRefreshToken(token)
         const user = await this.usersRepository.findUserById(userId)
         const blackListedTokens=await this.usersRepository.findRefreshTokenInBlackList(userId,token)
         if (!blackListedTokens) {
@@ -59,11 +71,32 @@ export class  AuthService  {
         const result=await this.usersRepository.updateConfirmation(user.id)
         return result
     }
-    async updateConfirmationCode(id: string): Promise<boolean> {
-        return  this.usersRepository.updateConfirmationCode(id)
+    async registrationEmailResending (email: string): Promise<boolean> {
+        const user = await this.usersService.findByLoginOrEmail(email)
+        if (user){
+            await this.usersService.updateConfirmationCode(user.id)
+        }else{
+            return false
+        }
+        const updatedUser = await this.usersService.findByLoginOrEmail(email)
+        if (updatedUser){
+            await this.emailController.sendEmail(email,updatedUser.emailConfirmation.confirmationCode)
+            await this.usersRepository.addEmailLog(email)
+            return true
+        }else {
+            return false
+        }
     }
-    async addRefreshTokenIntoBlackList(id: string,token:string): Promise<boolean> {
-        return  this.usersRepository.addRefreshTokenIntoBlackList(id,token)
+    async refreshAllTokens (user:  UserAccountDBClass,oldRefreshToken:string): Promise<string[]> {
+        await this.usersService.addRefreshTokenIntoBlackList(user.id,oldRefreshToken)
+        const accessToken = await this.jwtService.createAccessJWT(user)
+        const newRefreshToken = await this.jwtService.createRefreshJWT(user)
+        return [accessToken,newRefreshToken]
+    }
+    async refreshOnlyRefreshToken (user:  UserAccountDBClass,oldRefreshToken:string): Promise<string> {
+        await this.usersService.addRefreshTokenIntoBlackList(user.id,oldRefreshToken)
+        const newRefreshToken = await this.jwtService.createRefreshJWT(user)
+        return newRefreshToken
     }
 }
 

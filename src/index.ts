@@ -8,13 +8,14 @@ import {usersRouter} from "./routes/users-router";
 import {authRouter} from "./routes/auth-router";
 import {testingRouter} from "./routes/testing-router";
 import cookieParser from "cookie-parser";
+import {quizRouter} from "./routes/pair-game-quiz-router";
 
 
 const corsOptions = {
     credentials: true,
 }
 
-const app = express()
+export const app = express()
 
 app.use(cors(corsOptions))
 
@@ -40,12 +41,14 @@ app.use('/users',usersRouter)
 
 app.use("/testing",testingRouter)
 
+app.use("/pair-game-quiz",quizRouter)
 
-const startApp=async ()=>{
+
+export const startApp=async ()=>{
     await runDb()
-    app.listen(port, () => {
+    app.listen(port,async () => {
     console.log(`My app listening on port ${port}`)
 })}
 
-startApp()
+// startApp()
 
