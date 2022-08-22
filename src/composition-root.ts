@@ -16,19 +16,24 @@ import {AuthController} from "./controllers/auth-controller";
 import {JwtService} from "./application/jwt-service";
 import {AuthAccessTokenController} from "./middlewares/authentication-middleware";
 import {QuizController} from "./controllers/pair-game-quiz-controller";
+import {QuizRepository} from "./repositories/pair-game-quiz-repository";
+import {QuizService} from "./domain/pair-game-quiz-service";
 
 
 export const usersRepository = new UsersRepository();
 const bloggersRepository = new BloggersRepository();
 const postsRepository = new PostsRepository();
-const commentsRepository = new CommentsRepository();
+const commentsRepository = new CommentsRepository()
+const quizRepository = new QuizRepository();
 const bloggersService = new BloggersService(bloggersRepository);
 const postsService = new PostsService(postsRepository,bloggersRepository);
 const commentsService = new CommentsService(commentsRepository);
 const jwtService = new JwtService()
+const quizService = new QuizService(quizRepository);
 export const usersService = new UsersService(usersRepository);
 const emailController = new EmailController();
 const authService= new AuthService(usersRepository,emailController,usersService,jwtService);
+
 
 
 
@@ -39,5 +44,5 @@ export const commentsController = new CommentsController(commentsService);
 export const usersController = new UsersController(usersService,authService);
 export const authController = new AuthController(authService);
 export const authAccessTokenController = new AuthAccessTokenController(usersService,jwtService);
-export const quizController = new QuizController();
+export const quizController = new QuizController(quizService);
 

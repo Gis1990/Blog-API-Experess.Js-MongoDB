@@ -6,6 +6,16 @@ import {UsersAccountModelClass} from "../repositories/db";
 
 
 
+export const createUserForTesting = (login:string,email:string,password:string) => {
+    return{
+        login: login,
+        email: email,
+        password: password
+    }
+}
+
+
+
 describe('endpoint /users ',  () => {
     const emptyAllUsersDbReturnData={
         pagesCount: 0,
@@ -13,13 +23,6 @@ describe('endpoint /users ',  () => {
         pageSize: 10,
         totalCount: 0,
         items: []
-    }
-    const createUserForTesting = (login:string,email:string,password:string) => {
-        return{
-            login: login,
-            email: email,
-            password: password
-        }
     }
     let mongoServer: MongoMemoryServer;
     beforeAll(async () => {
@@ -101,7 +104,7 @@ describe('endpoint /users ',  () => {
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
             .send(incorrectUser)
             .expect(400)
-        expect(response.body).toEqual({errorsMessages:[{field:"email","message":expect.any(String)},{field:"login","message":expect.any(String)}]})
+        expect(response.body.errorsMessages.length).toBe(2)
     })
     it('9.Should return status 400 (/post) ', async () => {
         const incorrectLogin = ""

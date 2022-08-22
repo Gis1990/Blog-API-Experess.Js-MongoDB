@@ -4,7 +4,12 @@ import {MongoMemoryServer} from "mongodb-memory-server";
 import mongoose from "mongoose";
 import {BloggersModelClass} from "../repositories/db";
 
-
+export const createBloggerForTesting = (name:string,youtubeUrl:string) => {
+    return{
+        name: name,
+        youtubeUrl: youtubeUrl
+    }
+}
 
 
 
@@ -26,13 +31,7 @@ describe('endpoint /bloggers ',  () => {
         totalCount: 0,
         items: []
     }
-    const createBloggerForTesting = (name:string,youtubeUrl:string) => {
-        return{
-            name: name,
-            youtubeUrl: youtubeUrl
-        }
-    }
-    const createPostForTesting = (title:string,shortDescription:string,content:string) => {
+    const createPostForTestingInBloggers = (title:string,shortDescription:string,content:string) => {
         return{
             title: title,
             shortDescription: shortDescription,
@@ -323,7 +322,7 @@ describe('endpoint /bloggers ',  () => {
         const title="testTitle"
         const shortDescription="testShortDescription"
         const content="testContent"
-        const newPost=createPostForTesting(title, shortDescription, content)
+        const newPost=createPostForTestingInBloggers(title, shortDescription, content)
         const blogger=await BloggersModelClass.findOne({"items.name": bloggerName2})
         const response=await request(app)
             .post(`/bloggers/${blogger!.id}/posts`)
@@ -352,7 +351,7 @@ describe('endpoint /bloggers ',  () => {
         const title=""
         const shortDescription="testShortDescription"
         const content="testContent"
-        const newPost=createPostForTesting(title, shortDescription, content)
+        const newPost=createPostForTestingInBloggers(title, shortDescription, content)
         const blogger=await BloggersModelClass.findOne({"items.name": bloggerName2})
         const response=await request(app)
             .post(`/bloggers/${blogger!.id}/posts`)
@@ -366,7 +365,7 @@ describe('endpoint /bloggers ',  () => {
         const title=""
         const shortDescription=""
         const content="testContent"
-        const newPost=createPostForTesting(title, shortDescription, content)
+        const newPost=createPostForTestingInBloggers(title, shortDescription, content)
         const blogger=await BloggersModelClass.findOne({"items.name": bloggerName2})
         const response=await request(app)
             .post(`/bloggers/${blogger!.id}/posts`)
@@ -380,7 +379,7 @@ describe('endpoint /bloggers ',  () => {
         const title="testTitle"
         const shortDescription=""
         const content="testContent"
-        const newPost=createPostForTesting(title, shortDescription, content)
+        const newPost=createPostForTestingInBloggers(title, shortDescription, content)
         const blogger=await BloggersModelClass.findOne({"items.name": bloggerName2})
         await request(app)
             .post(`/bloggers/${blogger!.id}/posts`)
