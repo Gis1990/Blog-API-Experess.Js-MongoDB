@@ -1,4 +1,4 @@
-import { QuizGameDBClass} from "../repositories/types";
+import { QuizGameDBClass} from "../types/types";
 import {QuizRepository} from "../repositories/pair-game-quiz-repository";
 
 

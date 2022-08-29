@@ -1,4 +1,4 @@
-import {QuizGameDBClass} from "./types";
+import {QuizGameDBClass} from "../types/types";
 import {QuizModelClass} from "./db";
 
 

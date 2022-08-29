@@ -9,7 +9,7 @@ import {
     SentEmailsClass,
     LoginAttemptsClass,
     NewestLikesClass, QuizGameDBClass, PlayerClass, GameQuestionClass
-} from "./types";
+} from "../types/types";
 require('dotenv').config()
 
 const bloggersSchema = new mongoose.Schema<BloggerDBClass>({

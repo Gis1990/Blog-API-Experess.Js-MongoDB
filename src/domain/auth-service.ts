@@ -1,12 +1,12 @@
 import {ObjectId} from "mongodb";
-import {NewUserClassResponseModel, UserAccountDBClass} from "../repositories/types";
+import {NewUserClassResponseModel, UserAccountDBClass} from "../types/types";
 
 import bcrypt from "bcrypt";
 import {v4 as uuidv4} from "uuid";
 import add from "date-fns/add";
-import {UserAccountEmailClass} from "../repositories/types";
+import {UserAccountEmailClass} from "../types/types";
 import {UsersRepository} from "../repositories/users-repository";
-import {EmailController} from "../controllers/email-controller";
+import {EmailAdapter} from "../application/email-adapter";
 import {UsersService} from "./users-service";
 import {JwtService} from "../application/jwt-service";
 
@@ -14,7 +14,7 @@ import {JwtService} from "../application/jwt-service";
 
 export class  AuthService  {
     constructor(protected usersRepository: UsersRepository,
-                protected emailController:EmailController,
+                protected emailController:EmailAdapter,
                 protected usersService:UsersService,
                 protected jwtService:JwtService) {}
     async createUserWithConfirmationEmail(login: string,email:string, password: string): Promise<UserAccountDBClass> {
@@ -42,16 +42,6 @@ export class  AuthService  {
             const accessToken = await this.jwtService.createAccessJWT(user)
             const refreshToken = await this.jwtService.createRefreshJWT(user)
             return [accessToken,refreshToken]
-        } else {
-            return null
-        }
-    }
-    async checkRefreshTokenCredentials(token: string) {
-        const userId = await this.jwtService.getUserIdByRefreshToken(token)
-        const user = await this.usersRepository.findUserById(userId)
-        const blackListedTokens=await this.usersRepository.findRefreshTokenInBlackList(userId,token)
-        if (!blackListedTokens) {
-            return user
         } else {
             return null
         }
@@ -87,16 +77,29 @@ export class  AuthService  {
             return false
         }
     }
-    async refreshAllTokens (user:  UserAccountDBClass,oldRefreshToken:string): Promise<string[]> {
-        await this.usersService.addRefreshTokenIntoBlackList(user.id,oldRefreshToken)
-        const accessToken = await this.jwtService.createAccessJWT(user)
-        const newRefreshToken = await this.jwtService.createRefreshJWT(user)
-        return [accessToken,newRefreshToken]
+    async refreshAllTokens (oldRefreshToken:string): Promise<string[]|null> {
+        const userId = await this.jwtService.getUserIdByRefreshToken(oldRefreshToken)
+        const user = await this.usersRepository.findUserById(userId)
+        const blackListedTokens=await this.usersRepository.findRefreshTokenInBlackList(userId,oldRefreshToken)
+        if ((!blackListedTokens)&&(user)) {
+            await this.usersService.addRefreshTokenIntoBlackList(user.id,oldRefreshToken)
+            const accessToken = await this.jwtService.createAccessJWT(user)
+            const newRefreshToken = await this.jwtService.createRefreshJWT(user)
+            return [accessToken,newRefreshToken]
+        } else {
+            return null
+        }
     }
-    async refreshOnlyRefreshToken (user:  UserAccountDBClass,oldRefreshToken:string): Promise<string> {
-        await this.usersService.addRefreshTokenIntoBlackList(user.id,oldRefreshToken)
-        const newRefreshToken = await this.jwtService.createRefreshJWT(user)
-        return newRefreshToken
+    async refreshOnlyRefreshToken (oldRefreshToken:string): Promise<string|null> {
+        const userId = await this.jwtService.getUserIdByRefreshToken(oldRefreshToken)
+        const user = await this.usersRepository.findUserById(userId)
+        const blackListedTokens=await this.usersRepository.findRefreshTokenInBlackList(userId,oldRefreshToken)
+        if ((!blackListedTokens)&&(user)) {
+            await this.usersService.addRefreshTokenIntoBlackList(user.id,oldRefreshToken)
+            return await this.jwtService.createRefreshJWT(user)
+        } else {
+            return null
+        }
     }
 }
 

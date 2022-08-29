@@ -1,7 +1,7 @@
-import { RefreshTokenClass, SentEmailsClass, UserAccountDBClass, UserDBClassPagination} from "./types";
+import { RefreshTokenClass, SentEmailsClass, UserAccountDBClass, UserDBClassPagination} from "../types/types";
 import {UsersAccountModelClass} from "./db";
 import {v4 as uuidv4} from "uuid";
-import {LoginAttemptsClass} from "./types";
+import {LoginAttemptsClass} from "../types/types";
 
 
 

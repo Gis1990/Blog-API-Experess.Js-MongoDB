@@ -1,4 +1,4 @@
-import {CommentDBClass, CommentDBClassPagination} from "./types";
+import {CommentDBClass, CommentDBClassPagination} from "../types/types";
 import {CommentsModelClass} from "./db";
 
 

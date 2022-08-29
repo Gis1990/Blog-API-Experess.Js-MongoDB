@@ -10,7 +10,7 @@ import {
     rateLimiterForEmailResending,
     rateLimiterForLogin,
     rateLimiterForRegistration, rateLimiterForRegistrationConfirmation
-} from "../controllers/rate-limit-controller";
+} from "../middlewares/rate-limit-middleware";
 
 
 

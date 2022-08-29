@@ -1,5 +1,5 @@
 import {UsersRepository} from "../repositories/users-repository";
-import {EmailController} from "../controllers/email-controller";
+import {EmailAdapter} from "../application/email-adapter";
 import {UsersService} from "./users-service";
 import {JwtService} from "../application/jwt-service";
 import {AuthService} from "./auth-service";
@@ -25,7 +25,7 @@ describe("integration tests for AuthService", () => {
     })
 
     const usersRepository = new UsersRepository()
-    const emailControllerMock: jest. Mocked<EmailController> = {
+    const emailControllerMock: jest. Mocked<EmailAdapter> = {
         sendEmail: jest.fn()
     }
     const usersService = new UsersService(usersRepository)

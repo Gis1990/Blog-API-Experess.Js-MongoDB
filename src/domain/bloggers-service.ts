@@ -1,6 +1,6 @@
 import {ObjectId} from 'mongodb'
 import {BloggersRepository} from "../repositories/bloggers-repository";
-import {BloggerClassResponseModel, BloggerDBClass, BloggerDBClassPagination} from "../repositories/types";
+import {NewBloggerClassResponseModel, BloggerDBClass, BloggerDBClassPagination} from "../types/types";
 
 
 
@@ -14,7 +14,7 @@ export class BloggersService {
     async getBloggerById(id: string): Promise<BloggerDBClass | null> {
         return this.bloggersRepository.getBloggerById(id)
     }
-    async createBlogger( name: string, youtubeUrl: string): Promise<BloggerClassResponseModel> {
+    async createBlogger( name: string, youtubeUrl: string): Promise<NewBloggerClassResponseModel> {
         let blogger: BloggerDBClass = new BloggerDBClass (new ObjectId(),Number((new Date())).toString() ,name, youtubeUrl)
         const newBlogger=await this.bloggersRepository.createBlogger(blogger)
         const {_id,...newBloggerRest}=newBlogger

@@ -1,5 +1,5 @@
 import {settings} from "../settings";
-import {UserAccountDBClass} from "../repositories/types";
+import {UserAccountDBClass} from "../types/types";
 import jwt from 'jsonwebtoken'
 
 

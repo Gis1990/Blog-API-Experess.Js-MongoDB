@@ -1,4 +1,4 @@
-import {BloggerDBClass, BloggerDBClassPagination} from "./types";
+import {BloggerDBClass, BloggerDBClassPagination} from "../types/types";
 import {BloggersModelClass} from "./db";
 
 

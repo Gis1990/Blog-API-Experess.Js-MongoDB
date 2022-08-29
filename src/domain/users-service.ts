@@ -1,4 +1,4 @@
-import {UserDBClassPagination,UserAccountDBClass} from "../repositories/types";
+import {UserDBClassPagination,UserAccountDBClass} from "../types/types";
 import {UsersRepository} from "../repositories/users-repository";
 
 

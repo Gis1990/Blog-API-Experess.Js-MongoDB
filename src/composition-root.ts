@@ -10,7 +10,7 @@ import {CommentsController} from "./controllers/comments-controller";
 import {UsersService} from "./domain/users-service";
 import {UsersRepository} from "./repositories/users-repository";
 import {UsersController} from "./controllers/users-controller";
-import {EmailController} from "./controllers/email-controller";
+import {EmailAdapter} from "./application/email-adapter";
 import {AuthService} from "./domain/auth-service";
 import {AuthController} from "./controllers/auth-controller";
 import {JwtService} from "./application/jwt-service";
@@ -31,7 +31,7 @@ const commentsService = new CommentsService(commentsRepository);
 const jwtService = new JwtService()
 const quizService = new QuizService(quizRepository);
 export const usersService = new UsersService(usersRepository);
-const emailController = new EmailController();
+const emailController = new EmailAdapter();
 const authService= new AuthService(usersRepository,emailController,usersService,jwtService);
 
 

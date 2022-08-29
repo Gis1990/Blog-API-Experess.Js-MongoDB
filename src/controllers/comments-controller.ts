@@ -4,51 +4,33 @@ import {CommentsService} from "../domain/comments-service";
 export class CommentsController{
     constructor(protected commentsService: CommentsService) {}
     async getComment(req: Request, res: Response) {
-        const comment = await this.commentsService.getCommentById(req.params.commentId)
-        if (req.user){
-            comment!.likesInfo.myStatus=await this.commentsService.returnUsersLikeStatus(req.params.commentId, req.user!.id)
-            res.status(200).json(comment)
-        }
-        else{
-            comment!.likesInfo.myStatus="None"
-            res.status(200).json(comment)
-        }
+        const comment = await this.commentsService.getCommentById(req.params.commentId,req.user?.id)
+        res.status(200).json(comment)
     }
     async getAllCommentsForSpecificPost(req: Request, res: Response) {
-        const comments = await this.commentsService.getAllCommentsForSpecificPost(req.query, req.params.postId)
-        if (req.user){
-            for (let i=0; i<comments.items.length; i++){
-                comments.items[i].likesInfo.myStatus=await this.commentsService.returnUsersLikeStatus(comments.items[i].id, req.user!.id)
-            }
-            res.status(200).json(comments)
-        }
-        else{
-            comments.items.forEach(elem=>elem.likesInfo.myStatus="None")
-            res.status(200).json(comments)
-        }
+        const comments = await this.commentsService.getAllCommentsForSpecificPost(req.query, req.params.postId,req.user?.id)
+        res.status(200).json(comments)
+
     }
     async createComment(req: Request, res: Response) {
         const newComment = await this.commentsService.createComment(req.body.content,req.params.postId, req.user!)
-        const {_id,postId,usersLikesInfo,...newCommentRest}=newComment
-        res.status(201).json(newCommentRest)
+        res.status(201).json(newComment)
     }
     async updateComment(req: Request, res: Response) {
-        const comment = await this.commentsService.getCommentById(req.params.commentId)
-        if (req.user?.id!==comment?.userId) {
+        const isUpdated = await this.commentsService.updateCommentById(req.params.commentId, req.body.content,req.user?.id)
+        if (isUpdated) {
+            res.sendStatus(204)
+        }else{
             res.sendStatus(403)
-            return
         }
-        await this.commentsService.updateCommentById(req.params.commentId, req.body.content)
-        res.sendStatus(204)
     }
     async deleteComment(req: Request, res: Response) {
-        const comment = await this.commentsService.getCommentById(req.params.commentId)
-        if (req.user?.id!==comment?.userId) {
+        const isDeleted = await this.commentsService.deleteCommentById(req.params.commentId,req.user?.id)
+        if (isDeleted) {
+            res.sendStatus(204)
+        }else{
             res.sendStatus(403)
-            return
         }
-        await this.commentsService.deleteCommentById(req.params.commentId)
-        res.sendStatus(204)
     }
     async likeOperation(req: Request, res: Response) {
         await this.commentsService.likeOperation(req.params.commentId,req.user!.id,req.body.likeStatus)

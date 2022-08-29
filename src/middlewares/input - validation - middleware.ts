@@ -1,6 +1,6 @@
 import {NextFunction, Request, Response} from "express";
 import {validationResult, Schema, param, ValidationChain, checkSchema} from "express-validator";
-import {ErrorType} from "../repositories/types";
+import {ErrorType} from "../types/types";
 import {BloggersModelClass, CommentsModelClass, PostsModelClass, UsersAccountModelClass} from "../repositories/db";
 import {usersService} from "../composition-root";
 import {usersRepository} from "../composition-root";

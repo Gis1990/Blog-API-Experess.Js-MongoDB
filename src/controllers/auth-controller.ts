@@ -45,9 +45,8 @@ export class AuthController{
         }
     }
     async refreshAllTokens(req: Request, res: Response) {
-        const user = await this.authService.checkRefreshTokenCredentials(req.cookies.refreshToken)
-        if (user){
-            const result = await this.authService.refreshAllTokens(user,req.cookies.refreshToken)
+        const result = await this.authService.refreshAllTokens(req.cookies.refreshToken)
+        if (result){
             const accessToken = result[0]
             const newRefreshToken = result[1]
             res.cookie('refreshToken', newRefreshToken, {
@@ -61,9 +60,8 @@ export class AuthController{
         }
     }
     async logout(req: Request, res: Response) {
-        const user = await this.authService.checkRefreshTokenCredentials(req.cookies.refreshToken)
-        if (user){
-            const newRefreshToken = await this.authService.refreshOnlyRefreshToken(user,req.cookies.refreshToken)
+        const newRefreshToken = await this.authService.refreshOnlyRefreshToken(req.cookies.refreshToken)
+        if (newRefreshToken){
             res.cookie('refreshToken', newRefreshToken, {
                 httpOnly: true,
                 secure: true,

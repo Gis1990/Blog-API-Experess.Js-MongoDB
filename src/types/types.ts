@@ -10,7 +10,7 @@ export class BloggerDBClass {
     }
 }
 
-export class BloggerClassResponseModel {
+export class NewBloggerClassResponseModel {
     constructor(
         public id: string,
         public name: string,
@@ -36,6 +36,23 @@ export class CommentDBClass {
     ) {
     }
 }
+
+
+export class NewCommentClassResponseModel {
+    constructor(
+        public id: string,
+        public content: string,
+        public userId: string,
+        public userLogin: string,
+        public addedAt: string,
+        public likesInfo: LikesInfoClass,
+    ) {
+    }
+}
+
+
+
+
 
 
 export class PostDBClass {
@@ -146,6 +163,23 @@ export class NewUserClassResponseModel {
     ) {
     }
 }
+
+
+export class NewPostClassResponseModel {
+    constructor(
+        public id: string,
+        public title: string,
+        public shortDescription: string,
+        public content: string,
+        public bloggerId: string,
+        public bloggerName: string,
+        public addedAt: Date,
+        public extendedLikesInfo: ExtendedLikesInfoClass,
+    ) {
+    }
+}
+
+
 
 
 export class LoginAttemptsClass {

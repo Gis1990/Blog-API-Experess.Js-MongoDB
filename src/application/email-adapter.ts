@@ -1,7 +1,7 @@
 import  nodemailer from 'nodemailer'
 import {settings} from '../settings'
 
-export class EmailController  {
+export class EmailAdapter {
   constructor() {}
   async sendEmail (email: string,confirmationCode: string) {
       const transport = nodemailer.createTransport({
