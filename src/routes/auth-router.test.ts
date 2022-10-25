@@ -39,7 +39,7 @@ describe('endpoint /auth ',  () => {
             .send(correctUser)
             .expect(201)
         expect(response.body.id).toEqual(expect.any(String))
-        expect(response.body).toEqual({id:response.body.id,login: "authUser1"})
+        expect(response.body).toEqual({id:response.body.id,login: "authUser1",email: "authUser1@email.test",createdAt:response.body.createdAt})
     })
     it('3.Should return status 200,JWT accessToken and JWT refreshToken in cookie (/post) ', async () => {
         const login= "authUser1"
