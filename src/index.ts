@@ -50,5 +50,5 @@ export const startApp=async ()=>{
     console.log(`My app listening on port ${port}`)
 })}
 
-// startApp()
+startApp()
 
