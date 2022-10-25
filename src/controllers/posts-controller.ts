@@ -12,23 +12,23 @@ export class PostsController {
         res.status(200).json(post)
     }
     async createPost(req: Request, res: Response) {
-        const newPost= await this.postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, req.params.bloggerId)
+        const newPost= await this.postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, req.params.blogId)
         res.status(201).json(newPost)
     }
     async createPostWithExtendedData(req: Request, res: Response) {
-        const newPost= await this.postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, req.body.bloggerId)
+        const newPost= await this.postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, req.body.blogId)
         res.status(201).json(newPost)
     }
     async updatePost(req: Request, res: Response) {
-        await this.postsService.updatePost(req.params.postId, req.body.title, req.body.shortDescription, req.body.content, req.body.bloggerId)
+        await this.postsService.updatePost(req.params.postId, req.body.title, req.body.shortDescription, req.body.content, req.body.blogId)
         res.sendStatus(204)
     }
     async deletePost(req: Request, res: Response) {
         await this.postsService.deletePost(req.params.postId)
         res.sendStatus(204)
     }
-    async getAllPostsForSpecificBlogger(req: Request, res: Response) {
-        const posts =await this.postsService.getAllPostsForSpecificBlogger(req.query,req.params.bloggerId,req.user?.id)
+    async getAllPostsForSpecificBlog(req: Request, res: Response) {
+        const posts =await this.postsService.getAllPostsForSpecificBlog(req.query,req.params.blogId,req.user?.id)
         res.status(200).json(posts)
 
     }

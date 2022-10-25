@@ -1,6 +1,6 @@
 import {ObjectId} from 'mongodb'
 
-export class BloggerDBClass {
+export class BlogDBClass {
     constructor(
         public _id: ObjectId,
         public id: string,
@@ -10,7 +10,7 @@ export class BloggerDBClass {
     }
 }
 
-export class NewBloggerClassResponseModel {
+export class NewBlogClassResponseModel {
     constructor(
         public id: string,
         public name: string,
@@ -62,8 +62,8 @@ export class PostDBClass {
         public title: string,
         public shortDescription: string,
         public content: string,
-        public bloggerId: string,
-        public bloggerName: string,
+        public blogId: string,
+        public blogName: string,
         public addedAt: Date,
         public extendedLikesInfo: ExtendedLikesInfoClass,
         public usersLikesInfo: UsersLikesInfoClass,
@@ -82,13 +82,13 @@ export type ErrorType={
 
 
 
-export class BloggerDBClassPagination {
+export class BlogDBClassPagination {
     constructor(
         public pagesCount: number,
         public page: number,
         public pageSize: number,
         public totalCount: number,
-        public items: BloggerDBClass[]
+        public items: BlogDBClass[]
     ) {
     }
 }
@@ -171,8 +171,8 @@ export class NewPostClassResponseModel {
         public title: string,
         public shortDescription: string,
         public content: string,
-        public bloggerId: string,
-        public bloggerName: string,
+        public blogId: string,
+        public blogName: string,
         public addedAt: Date,
         public extendedLikesInfo: ExtendedLikesInfoClass,
     ) {

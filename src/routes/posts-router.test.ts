@@ -2,17 +2,17 @@ import {MongoMemoryServer} from "mongodb-memory-server";
 import mongoose from "mongoose";
 import request from "supertest";
 import {app} from "../index";
-import {BloggersModelClass} from "../repositories/db";
+import {BlogsModelClass} from "../repositories/db";
 import {createUserForTesting} from "./users-router.test";
-import {createBloggerForTesting} from "./bloggers-router.test";
+import {createBlogForTesting} from "./blogs-router.test";
 
 
-export const createPostForTesting = (title:string,shortDescription:string, content:string, bloggerId:string) => {
+export const createPostForTesting = (title:string,shortDescription:string, content:string, blogId:string) => {
     return{
         title: title,
         shortDescription: shortDescription,
         content: content,
-        bloggerId: bloggerId
+        blogId: blogId
     }
 }
 
@@ -43,15 +43,15 @@ describe('endpoint /posts ',  () => {
         totalCount: 0,
         items: []
     }
-    const createOutputPostForTesting= (title:string,shortDescription:string, content:string, bloggerId:string,
-                                       bloggerName:string,likesCount:number,dislikesCount:number,newestLikes:[])=> {
+    const createOutputPostForTesting= (title:string,shortDescription:string, content:string, blogId:string,
+                                       blogName:string,likesCount:number,dislikesCount:number,newestLikes:[])=> {
         return {
             id: expect.any(String),
             title: title,
             shortDescription: shortDescription,
             content: content,
-            bloggerId: bloggerId,
-            bloggerName: bloggerName,
+            blogId: blogId,
+            blogName: blogName,
             addedAt: expect.any(String),
             extendedLikesInfo: {
                 likesCount: likesCount,
@@ -93,16 +93,16 @@ describe('endpoint /posts ',  () => {
         expect(response.body).toEqual({id:response.body.id,login: "postsUser1"})
     })
     it('4.Should return status 201 and correct new post (/post) ', async () => {
-        const bloggerName="blNameForPosts"
-        const correctBlogger = createBloggerForTesting(bloggerName, "https://www.youtube.com/posts")
+        const blogName="blNameForPosts"
+        const correctblog = createBlogForTesting(blogName, "https://www.youtube.com/posts")
         await request(app)
-            .post('/bloggers')
+            .post('/blogs')
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
-            .send(correctBlogger)
+            .send(correctblog)
             .expect(201)
-        const blogger=await BloggersModelClass.findOne({name: bloggerName})
-        const correctNewPost = createPostForTesting("postTitle1", "postShortDescription1", "postContent1", blogger!.id)
-        const result=createOutputPostForTesting("postTitle1", "postShortDescription1", "postContent1", blogger!.id,blogger!.name,0,0,[])
+        const blog=await BlogsModelClass.findOne({name: blogName})
+        const correctNewPost = createPostForTesting("postTitle1", "postShortDescription1", "postContent1", blog!.id)
+        const result=createOutputPostForTesting("postTitle1", "postShortDescription1", "postContent1", blog!.id,blog!.name,0,0,[])
         const response=await request(app)
             .post('/posts')
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
@@ -112,8 +112,8 @@ describe('endpoint /posts ',  () => {
         expect(response.body.extendedLikesInfo.myStatus).toBe("None")
     })
     it('5.Should return status 401 (/post) ', async () => {
-        const blogger=await BloggersModelClass.findOne({name: "blNameForPosts"})
-        const correctNewPost = createPostForTesting("postTitle1", "postShortDescription1", "postContent1", blogger!.id)
+        const blog=await BlogsModelClass.findOne({name: "blNameForPosts"})
+        const correctNewPost = createPostForTesting("postTitle1", "postShortDescription1", "postContent1", blog!.id)
         await request(app)
             .post('/posts')
             .send(correctNewPost)
@@ -121,8 +121,8 @@ describe('endpoint /posts ',  () => {
     })
     it('6.Should return status 400 (/post) ', async () => {
         const incorrectTitle1=""
-        const blogger=await BloggersModelClass.findOne({name: "blNameForPosts"})
-        const incorrectNewPost1 = createPostForTesting(incorrectTitle1, "postShortDescription1", "postContent1", blogger!.id)
+        const blog=await BlogsModelClass.findOne({name: "blNameForPosts"})
+        const incorrectNewPost1 = createPostForTesting(incorrectTitle1, "postShortDescription1", "postContent1", blog!.id)
         const response1=await request(app)
             .post('/posts')
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
@@ -130,7 +130,7 @@ describe('endpoint /posts ',  () => {
             .expect(400)
         expect(response1.body).toEqual({errorsMessages:[{field:"title","message":expect.any(String)}]})
         const incorrectTitle2="a".repeat(31)
-        const incorrectNewPost2 = createPostForTesting(incorrectTitle2, "postShortDescription1", "postContent1", blogger!.id)
+        const incorrectNewPost2 = createPostForTesting(incorrectTitle2, "postShortDescription1", "postContent1", blog!.id)
         const response2=await request(app)
             .post('/posts')
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
@@ -140,8 +140,8 @@ describe('endpoint /posts ',  () => {
     })
     it('7.Should return status 400  (/post) ', async () => {
         const incorrectPostShortDescription1=""
-        const blogger=await BloggersModelClass.findOne({name: "blNameForPosts"})
-        const incorrectNewPost1 = createPostForTesting("postTitle1", incorrectPostShortDescription1, "postContent1", blogger!.id)
+        const blog=await BlogsModelClass.findOne({name: "blNameForPosts"})
+        const incorrectNewPost1 = createPostForTesting("postTitle1", incorrectPostShortDescription1, "postContent1", blog!.id)
         const response1=await request(app)
             .post('/posts')
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
@@ -149,7 +149,7 @@ describe('endpoint /posts ',  () => {
             .expect(400)
         expect(response1.body).toEqual({errorsMessages:[{field:"shortDescription","message":expect.any(String)}]})
         const incorrectPostShortDescription2="a".repeat(101)
-        const incorrectNewPost2 = createPostForTesting("postTitle1", incorrectPostShortDescription2, "postContent1", blogger!.id)
+        const incorrectNewPost2 = createPostForTesting("postTitle1", incorrectPostShortDescription2, "postContent1", blog!.id)
         const response2=await request(app)
             .post('/posts')
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
@@ -159,8 +159,8 @@ describe('endpoint /posts ',  () => {
     })
     it('8.Should return status 400  (/post) ', async () => {
         const incorrectPostContent1=""
-        const blogger=await BloggersModelClass.findOne({name: "blNameForPosts"})
-        const incorrectNewPost1 = createPostForTesting("postTitle1", "postShortDescription1", incorrectPostContent1, blogger!.id)
+        const blog=await BlogsModelClass.findOne({name: "blNameForPosts"})
+        const incorrectNewPost1 = createPostForTesting("postTitle1", "postShortDescription1", incorrectPostContent1, blog!.id)
         const response1=await request(app)
             .post('/posts')
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
@@ -168,28 +168,28 @@ describe('endpoint /posts ',  () => {
             .expect(400)
         expect(response1.body).toEqual({errorsMessages:[{field:"content","message":expect.any(String)}]})
         const incorrectPostContent2="a".repeat(1001)
-        const incorrectNewPost2 = createPostForTesting("postTitle1", "postShortDescription1", incorrectPostContent2, blogger!.id)
+        const incorrectNewPost2 = createPostForTesting("postTitle1", "postShortDescription1", incorrectPostContent2, blog!.id)
         await request(app)
             .post('/posts')
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
             .send(incorrectNewPost2)
             .expect(400)
         expect(response1.body).toEqual({errorsMessages:[{field:"content","message":expect.any(String)}]})
-        const incorrectBloggerId=""
-        const incorrectNewPost3 = createPostForTesting("postTitle1", "postShortDescription1", "postContent1", incorrectBloggerId)
+        const incorrectblogId=""
+        const incorrectNewPost3 = createPostForTesting("postTitle1", "postShortDescription1", "postContent1", incorrectblogId)
         const response3=await request(app)
             .post('/posts')
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
             .send(incorrectNewPost3)
             .expect(400)
-        expect(response3.body).toEqual({errorsMessages:[{field:"bloggerId","message":expect.any(String)}]})
+        expect(response3.body).toEqual({errorsMessages:[{field:"blogId","message":expect.any(String)}]})
     })
     it('9.Should return status 400  (/post) ', async () => {
         const incorrectTitle=""
         const incorrectPostShortDescription=""
         const incorrectPostContent=""
-        const blogger=await BloggersModelClass.findOne({name: "blNameForPosts"})
-        const incorrectNewPost1 = createPostForTesting(incorrectTitle, incorrectPostShortDescription, incorrectPostContent, blogger!.id)
+        const blog=await BlogsModelClass.findOne({name: "blNameForPosts"})
+        const incorrectNewPost1 = createPostForTesting(incorrectTitle, incorrectPostShortDescription, incorrectPostContent, blog!.id)
         const response=await request(app)
             .post('/posts')
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
@@ -215,16 +215,16 @@ describe('endpoint /posts ',  () => {
             .send({"login": userLogin,"password":userPassword})
             .expect(200)
         const accessToken=response2.body.accessToken
-        const bloggerName="blNameForCom"
-        const correctBlogger = createBloggerForTesting(bloggerName, "https://www.youtube.com/posts")
+        const blogName="blNameForCom"
+        const correctblog = createBlogForTesting(blogName, "https://www.youtube.com/posts")
         const response3=await request(app)
-            .post('/bloggers')
+            .post('/blogs')
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
-            .send(correctBlogger)
+            .send(correctblog)
             .expect(201)
-        const bloggerId=response3.body.id
+        const blogId=response3.body.id
         const correctContent="correctContentCorrectContent"
-        const correctNewPostForComments = createPostForTesting("postTitleC", "postShortDescriptionC", "postContentC", bloggerId)
+        const correctNewPostForComments = createPostForTesting("postTitleC", "postShortDescriptionC", "postContentC", blogId)
         const response4=await request(app)
             .post('/posts')
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
@@ -276,10 +276,10 @@ describe('endpoint /posts ',  () => {
         })
     })
     it('11.Should return status 201 and correct new post (/get) ', async () => {
-        const bloggerName="blNameForPosts"
-        const blogger=await BloggersModelClass.findOne({name: bloggerName})
-        const correctNewPost2 = createPostForTesting("postTitle1", "postShortDescription1", "postContent1", blogger!.id)
-        const result=createOutputPostForTesting("postTitle1", "postShortDescription1", "postContent1", blogger!.id,blogger!.name,0,0,[])
+        const blogName="blNameForPosts"
+        const blog=await BlogsModelClass.findOne({name: blogName})
+        const correctNewPost2 = createPostForTesting("postTitle1", "postShortDescription1", "postContent1", blog!.id)
+        const result=createOutputPostForTesting("postTitle1", "postShortDescription1", "postContent1", blog!.id,blog!.name,0,0,[])
         const response1=await request(app)
             .post('/posts')
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
@@ -295,10 +295,10 @@ describe('endpoint /posts ',  () => {
         expect(response2.body).toEqual(result)
     })
     it('12.Should return status 204  (/put) ', async () => {
-        const bloggerName="blNameForPosts"
-        const blogger=await BloggersModelClass.findOne({name: bloggerName})
-        const correctNewPost3 = createPostForTesting("postTitle1", "postShortDescription1", "postContent1", blogger!.id)
-        const correctDataForUpdating=createPostForTesting("updatedPostTitle1", "updatedPostShortDescription1", "updatedPostContent1", blogger!.id)
+        const blogName="blNameForPosts"
+        const blog=await BlogsModelClass.findOne({name: blogName})
+        const correctNewPost3 = createPostForTesting("postTitle1", "postShortDescription1", "postContent1", blog!.id)
+        const correctDataForUpdating=createPostForTesting("updatedPostTitle1", "updatedPostShortDescription1", "updatedPostContent1", blog!.id)
         const response1=await request(app)
             .post('/posts')
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
@@ -319,7 +319,7 @@ describe('endpoint /posts ',  () => {
             .send(correctDataForUpdating)
             .expect(204)
         const incorrectTitleForUpdating=""
-        const incorrectDataForUpdating1=createPostForTesting(incorrectTitleForUpdating, "updatedPostShortDescription1", "updatedPostContent1", blogger!.id)
+        const incorrectDataForUpdating1=createPostForTesting(incorrectTitleForUpdating, "updatedPostShortDescription1", "updatedPostContent1", blog!.id)
         const response2=await request(app)
             .put(`/posts/${postId}`)
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
@@ -327,7 +327,7 @@ describe('endpoint /posts ',  () => {
             .expect(400)
         expect(response2.body).toEqual({errorsMessages:[{field:"title","message":expect.any(String)}]})
         const incorrectPostShortDescription="a".repeat(101)
-        const incorrectDataForUpdating2=createPostForTesting("updatedPostTitle1", incorrectPostShortDescription, "updatedPostContent1", blogger!.id)
+        const incorrectDataForUpdating2=createPostForTesting("updatedPostTitle1", incorrectPostShortDescription, "updatedPostContent1", blog!.id)
         const response3=await request(app)
             .put(`/posts/${postId}`)
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
@@ -335,22 +335,22 @@ describe('endpoint /posts ',  () => {
             .expect(400)
         expect(response3.body).toEqual({errorsMessages:[{field:"shortDescription","message":expect.any(String)}]})
         const incorrectPostContent="a".repeat(1001)
-        const incorrectDataForUpdating3=createPostForTesting("updatedPostTitle1", "updatedPostShortDescription1", incorrectPostContent, blogger!.id)
+        const incorrectDataForUpdating3=createPostForTesting("updatedPostTitle1", "updatedPostShortDescription1", incorrectPostContent, blog!.id)
         const response4=await request(app)
             .put(`/posts/${postId}`)
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
             .send(incorrectDataForUpdating3)
             .expect(400)
         expect(response4.body).toEqual({errorsMessages:[{field:"content","message":expect.any(String)}]})
-        const incorrectBloggerId="5"
-        const incorrectDataForUpdating4=createPostForTesting("updatedPostTitle1", "updatedPostShortDescription1", "updatedPostContent1", incorrectBloggerId)
+        const incorrectblogId="5"
+        const incorrectDataForUpdating4=createPostForTesting("updatedPostTitle1", "updatedPostShortDescription1", "updatedPostContent1", incorrectblogId)
         const response5=await request(app)
             .put(`/posts/${postId}`)
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
             .send(incorrectDataForUpdating4)
             .expect(400)
-        expect(response5.body).toEqual({errorsMessages:[{field:"bloggerId","message":expect.any(String)}]})
-        const incorrectDataForUpdating5=createPostForTesting("updatedPostTitle1", incorrectPostShortDescription, incorrectPostContent, incorrectBloggerId)
+        expect(response5.body).toEqual({errorsMessages:[{field:"blogId","message":expect.any(String)}]})
+        const incorrectDataForUpdating5=createPostForTesting("updatedPostTitle1", incorrectPostShortDescription, incorrectPostContent, incorrectblogId)
         const response6=await request(app)
             .put(`/posts/${postId}`)
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
@@ -359,9 +359,9 @@ describe('endpoint /posts ',  () => {
         expect(response6.body.errorsMessages.length).toBe(3)
     })
     it('13.Should return status 204 and delete posts (/delete) ', async () => {
-        const bloggerName="blNameForPosts"
-        const blogger=await BloggersModelClass.findOne({name: bloggerName})
-        const correctNewPost = createPostForTesting("postTitleDel", "postTitleDel", "postTitleDel", blogger!.id)
+        const blogName="blNameForPosts"
+        const blog=await BlogsModelClass.findOne({name: blogName})
+        const correctNewPost = createPostForTesting("postTitleDel", "postTitleDel", "postTitleDel", blog!.id)
         const response1=await request(app)
             .post('/posts')
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
@@ -386,7 +386,7 @@ describe('endpoint /posts ',  () => {
 
     })
     it('14.Should return status 204 and change like status (/put) ', async () => {
-        const bloggerName="blNameForPosts"
+        const blogName="blNameForPosts"
         const userLogin="user1C"
         const userPassword="user1CPassword"
         const response1=await request(app)
@@ -394,8 +394,8 @@ describe('endpoint /posts ',  () => {
             .send({"login": userLogin,"password":userPassword})
             .expect(200)
         const accessToken=response1.body.accessToken
-        const blogger=await BloggersModelClass.findOne({name: bloggerName})
-        const correctNewPost = createPostForTesting("postTitleLike", "postTitleLike", "postTitleLike", blogger!.id)
+        const blog=await BlogsModelClass.findOne({name: blogName})
+        const correctNewPost = createPostForTesting("postTitleLike", "postTitleLike", "postTitleLike", blog!.id)
         const response2=await request(app)
             .post('/posts')
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')

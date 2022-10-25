@@ -1,7 +1,7 @@
 import express, {Request, Response} from "express"
 import cors from 'cors'
 import {postsRouter} from "./routes/posts-router";
-import {bloggersRouter} from "./routes/bloggers-router";
+import {blogsRouter} from "./routes/blogs-router";
 import {runDb} from "./repositories/db";
 import {commentsRouter} from "./routes/comments-router";
 import {usersRouter} from "./routes/users-router";
@@ -31,7 +31,7 @@ app.get("/", (req:Request,res:Response)=>{
 
 app.use('/auth',authRouter)
 
-app.use('/bloggers',bloggersRouter)
+app.use('/blogs',blogsRouter)
 
 app.use('/posts',postsRouter)
 
@@ -50,5 +50,5 @@ export const startApp=async ()=>{
     console.log(`My app listening on port ${port}`)
 })}
 
-startApp()
+// startApp()
 

@@ -1,7 +1,7 @@
 import {settings} from "../settings";
 import mongoose from 'mongoose';
 import {
-    BloggerDBClass,
+    BlogDBClass,
     CommentDBClass,
     PostDBClass,
     UserAccountDBClass,
@@ -12,7 +12,7 @@ import {
 } from "../types/types";
 require('dotenv').config()
 
-const bloggersSchema = new mongoose.Schema<BloggerDBClass>({
+const blogsSchema = new mongoose.Schema<BlogDBClass>({
     id:String,
     name: String,
     youtubeUrl: String
@@ -32,8 +32,8 @@ const postsSchema = new mongoose.Schema<PostDBClass>({
     title: String,
     shortDescription: String,
     content: String,
-    bloggerId: String,
-    bloggerName: String,
+    blogId: String,
+    blogName: String,
     addedAt: Date,
     extendedLikesInfo: {
         likesCount: Number,
@@ -144,7 +144,7 @@ const quizSchema = new mongoose.Schema<QuizGameDBClass>({
 
 
 
-export const BloggersModelClass = mongoose.model('bloggers', bloggersSchema);
+export const BlogsModelClass = mongoose.model('blogs', blogsSchema);
 export const PostsModelClass = mongoose.model('posts', postsSchema);
 export const UsersAccountModelClass = mongoose.model('users', usersAccountSchema);
 export const CommentsModelClass = mongoose.model('comments', commentsSchema);

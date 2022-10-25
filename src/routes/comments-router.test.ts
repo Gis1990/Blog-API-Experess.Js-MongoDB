@@ -2,7 +2,7 @@ import {MongoMemoryServer} from "mongodb-memory-server";
 import mongoose from "mongoose";
 import request from "supertest";
 import {app} from "../index";
-import {createBloggerForTesting} from "./bloggers-router.test";
+import {createBlogForTesting} from "./blogs-router.test";
 import {createOutputCommentForTesting, createPostForTesting} from "./posts-router.test";
 
 describe('endpoint /comments ',  () => {
@@ -39,17 +39,17 @@ describe('endpoint /comments ',  () => {
             .send({"login": userLogin1,"password":userPassword1})
             .expect(200)
         const accessToken1=response2.body.accessToken
-        const bloggerName="blNameForCom2"
-        const correctBlogger = createBloggerForTesting(bloggerName, "https://www.youtube.com/posts")
+        const blogName="blNameForCom2"
+        const correctBlog = createBlogForTesting(blogName, "https://www.youtube.com/posts")
         const response3=await request(app)
-            .post('/bloggers')
+            .post('/blogs')
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
-            .send(correctBlogger)
+            .send(correctBlog)
             .expect(201)
-        const bloggerId=response3.body.id
+        const blogId=response3.body.id
         const correctContent="correctContentCorrectContent"
         const incorrectContent=""
-        const correctNewPostForComments = createPostForTesting("postTitleC2", "postShortDescriptionC2", "postContentC2", bloggerId)
+        const correctNewPostForComments = createPostForTesting("postTitleC2", "postShortDescriptionC2", "postContentC2", blogId)
         const response4=await request(app)
             .post('/posts')
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')

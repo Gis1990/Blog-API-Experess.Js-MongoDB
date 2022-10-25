@@ -1,6 +1,6 @@
-import {BloggersRepository} from "./repositories/bloggers-repository";
-import {BloggersService} from "./domain/bloggers-service";
-import {BloggersController} from "./controllers/bloggers-controller";
+import {BlogsRepository} from "./repositories/blogs-repository";
+import {BlogsService} from "./domain/blogs-service";
+import {BlogsController} from "./controllers/blogs-controller";
 import {PostsRepository} from "./repositories/posts-repository";
 import {PostsService} from "./domain/posts-service";
 import {PostsController} from "./controllers/posts-controller";
@@ -21,12 +21,12 @@ import {QuizService} from "./domain/pair-game-quiz-service";
 
 
 export const usersRepository = new UsersRepository();
-const bloggersRepository = new BloggersRepository();
+const blogsRepository = new BlogsRepository();
 const postsRepository = new PostsRepository();
 const commentsRepository = new CommentsRepository()
 const quizRepository = new QuizRepository();
-const bloggersService = new BloggersService(bloggersRepository);
-const postsService = new PostsService(postsRepository,bloggersRepository);
+const blogsService = new BlogsService(blogsRepository);
+const postsService = new PostsService(postsRepository,blogsRepository);
 const commentsService = new CommentsService(commentsRepository);
 const jwtService = new JwtService()
 const quizService = new QuizService(quizRepository);
@@ -38,7 +38,7 @@ const authService= new AuthService(usersRepository,emailController,usersService,
 
 
 
-export const bloggersController = new BloggersController(bloggersService);
+export const blogsController = new BlogsController(blogsService);
 export const postsController = new PostsController(postsService);
 export const commentsController = new CommentsController(commentsService);
 export const usersController = new UsersController(usersService,authService);

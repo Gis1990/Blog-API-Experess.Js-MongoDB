@@ -1,9 +1,9 @@
 import {MongoMemoryServer} from "mongodb-memory-server";
 import mongoose from "mongoose";
-import {BloggersRepository} from "../repositories/bloggers-repository";
-import {BloggersService} from "./bloggers-service";
+import {BlogsRepository} from "../repositories/blogs-repository";
+import {BlogsService} from "./blogs-service";
 
-describe("integration tests for Bloggers API Express.js framework Service", () => {
+describe("integration tests for blogs API Express.js framework Service", () => {
 
     let mongoServer: MongoMemoryServer;
     beforeAll(async () => {
@@ -16,18 +16,18 @@ describe("integration tests for Bloggers API Express.js framework Service", () =
         await mongoServer.stop();
     })
 
-    const bloggersRepository = new BloggersRepository();
-    const bloggersService = new BloggersService(bloggersRepository);
+    const blogsRepository = new BlogsRepository();
+    const blogsService = new BlogsService(blogsRepository);
 
 
-    describe("createBlogger", () => {
+    describe("createblog", () => {
         afterAll(async () => {
             await mongoose.connection.db.dropDatabase()
         })
-        it("should return correct created bloggers ", async () => {
+        it("should return correct created blogs ", async () => {
             let youtubeUrl = "https://www.youtube.com/"
             let name = "anton"
-            const result = await bloggersService.createBlogger(name, youtubeUrl)
+            const result = await blogsService.createBlog(name, youtubeUrl)
             expect(result.youtubeUrl).toBe(youtubeUrl)
             expect(result.name).toBe(name)
             expect(result.id).toEqual(expect.any(String))

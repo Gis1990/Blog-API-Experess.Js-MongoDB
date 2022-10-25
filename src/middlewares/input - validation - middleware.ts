@@ -1,7 +1,7 @@
 import {NextFunction, Request, Response} from "express";
 import {validationResult, Schema, param, ValidationChain, checkSchema} from "express-validator";
 import {ErrorType} from "../types/types";
-import {BloggersModelClass, CommentsModelClass, PostsModelClass, UsersAccountModelClass} from "../repositories/db";
+import {BlogsModelClass, CommentsModelClass, PostsModelClass, UsersAccountModelClass} from "../repositories/db";
 import {usersService} from "../composition-root";
 import {usersRepository} from "../composition-root";
 
@@ -10,7 +10,7 @@ const pattern=/^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/
 const patternForEmail=/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/
 
 
-export const bloggersValidationSchema:Schema = {
+export const blogsValidationSchema:Schema = {
     name: {
         in: ["query","body"],
         exists: {
@@ -135,24 +135,24 @@ export const validationSchemaForPostsWithExtendedData:Schema = {
             errorMessage: "The field content has invalid length",
         }
     },
-    bloggerId: {
+    blogId: {
         in: ["query","body","params"],
         exists: {
-            errorMessage: "The field bloggerId is required."
+            errorMessage: "The field blogId is required."
         },
         trim:true,
         notEmpty: {
-            errorMessage: "The field bloggerId is required."
+            errorMessage: "The field blogId is required."
         },
         isString: {
-            errorMessage: "The field bloggerId must be a string.",
+            errorMessage: "The field blogId must be a string.",
         },
         custom: {
             options: async(id) => {
-                const blogger = await BloggersModelClass.findOne({id: id})
-                return (!!blogger)?Promise.resolve():Promise.reject()
+                const blog = await BlogsModelClass.findOne({id: id})
+                return (!!blog)?Promise.resolve():Promise.reject()
             },
-            errorMessage: "The field bloggerId does not exist"
+            errorMessage: "The field blogId does not exist"
         }
     }
 }
@@ -361,10 +361,10 @@ export const postsIdValidation = async (req: Request, res: Response, next: NextF
 }
 
 
-export const bloggersIdValidation = async (req: Request, res: Response, next: NextFunction) => {
-         await param("bloggerId", "Id does not exist").custom(async bloggerId => {
-            const blogger =await BloggersModelClass.findOne({id: bloggerId})
-            return (!!blogger)?Promise.resolve():Promise.reject()}).run(req)
+export const blogsIdValidation = async (req: Request, res: Response, next: NextFunction) => {
+         await param("blogId", "Id does not exist").custom(async blogId => {
+            const blog =await BlogsModelClass.findOne({id: blogId})
+            return (!!blog)?Promise.resolve():Promise.reject()}).run(req)
         errorHandlerForIdValidation(req,res,next)
 }
 
@@ -404,7 +404,7 @@ const validate = (validations: ValidationChain[]) => {
 
 
 
-export const bloggersInputValidation=validate(checkSchema(bloggersValidationSchema))
+export const blogsInputValidation=validate(checkSchema(blogsValidationSchema))
 export const postsWithExtendedDataInputValidation=validate(checkSchema(validationSchemaForPostsWithExtendedData))
 export const usersInputValidation=validate(checkSchema(validationSchemaForUsers))
 export const commentsInputValidation=validate(checkSchema(validationSchemaForComments))
