@@ -5,7 +5,7 @@ import {PostsModelClass} from "./db";
 export class PostsRepository {
     async getAllPosts(PageNumber: number, PageSize: number): Promise<PostDBClassPagination> {
         const skips = PageSize * (PageNumber - 1);
-        const cursor = await PostsModelClass.find({}, { _id: 0, usersLikesInfo: 0 }).skip(skips).limit(PageSize).lean();
+        const cursor = await PostsModelClass.find({}, { _id: 0, usersLikesInfo: 0 }).sort({ "createdAt": -1 }).skip(skips).limit(PageSize).lean();
         const totalCount = await PostsModelClass.count({});
         return new PostDBClassPagination(Math.ceil(totalCount / PageSize), PageNumber, PageSize, totalCount, cursor);
     }
