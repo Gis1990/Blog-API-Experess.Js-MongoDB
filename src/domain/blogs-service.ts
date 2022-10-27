@@ -15,7 +15,7 @@ export class BlogsService {
         return this.blogsRepository.getBlogById(id)
     }
     async createBlog(name: string, youtubeUrl: string): Promise<NewBlogClassResponseModel> {
-        let blog: BlogDBClass = new BlogDBClass (new ObjectId(),Number((new Date())).toString() ,name, youtubeUrl)
+        let blog: BlogDBClass = new BlogDBClass (new ObjectId(),Number((new Date())).toString() ,name, youtubeUrl,new Date())
         const newBlog=await this.blogsRepository.createBlog(blog)
         const {_id,...newBlogRest}=newBlog
         return  newBlogRest

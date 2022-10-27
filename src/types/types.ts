@@ -5,7 +5,8 @@ export class BlogDBClass {
         public _id: ObjectId,
         public id: string,
         public name: string,
-        public youtubeUrl: string
+        public youtubeUrl: string,
+        public createdAt: Date,
     ) {
     }
 }
@@ -14,7 +15,8 @@ export class NewBlogClassResponseModel {
     constructor(
         public id: string,
         public name: string,
-        public youtubeUrl: string
+        public youtubeUrl: string,
+        public createdAt: Date
     ) {
     }
 }
@@ -66,8 +68,6 @@ export class PostDBClass {
         public blogId: string,
         public blogName: string,
         public createdAt: Date,
-        public extendedLikesInfo: ExtendedLikesInfoClass,
-        public usersLikesInfo: UsersLikesInfoClass,
     ) {
     }
 }

@@ -35,16 +35,6 @@ const postsSchema = new mongoose.Schema<PostDBClass>({
     blogId: String,
     blogName: String,
     createdAt: Date,
-    extendedLikesInfo: {
-        likesCount: Number,
-        dislikesCount: Number,
-        myStatus: String,
-        newestLikes:[newestLikesSchema]
-    },
-    usersLikesInfo: {
-        usersWhoPutLike: [String],
-        usersWhoPutDislike: [String]
-    }
     },{versionKey: false}
 );
 
