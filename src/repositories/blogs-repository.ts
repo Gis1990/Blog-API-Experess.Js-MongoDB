@@ -11,7 +11,7 @@ export class BlogsRepository {
             cursor = await BlogsModelClass.find({name: {$regex: SearchNameTerm}}, {_id: 0}).skip(skips).limit(PageSize).lean()
             totalCount = await BlogsModelClass.count({name: {$regex: SearchNameTerm}})
         } else {
-            cursor = await BlogsModelClass.find({}, {_id: 0}).skip(skips).limit(PageSize).sort().lean()
+            cursor = await BlogsModelClass.find({}, {_id: 0}).skip(skips).limit(PageSize).sort({ "name": -1 }).lean()
             totalCount = await BlogsModelClass.count({})
         }
         return new BlogDBClassPagination(Math.ceil(totalCount/PageSize),PageNumber,PageSize,totalCount,cursor)

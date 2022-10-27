@@ -18,7 +18,7 @@ export class PostsRepository {
         const cursor = await PostsModelClass.find({ blogId: blogId }, { _id: 0, usersLikesInfo: 0 })
             .skip(skips)
             .limit(PageSize)
-            .sort({ "blogName": 1 })
+            .sort({ "blogName": -1 })
             .lean();
         const totalCount = await PostsModelClass.count({ blogId: blogId });
         return new PostDBClassPagination(Math.ceil(totalCount / PageSize), PageNumber, PageSize, totalCount, cursor);
