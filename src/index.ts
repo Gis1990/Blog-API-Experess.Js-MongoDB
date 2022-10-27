@@ -9,6 +9,7 @@ import {authRouter} from "./routes/auth-router";
 import {testingRouter} from "./routes/testing-router";
 import cookieParser from "cookie-parser";
 import {quizRouter} from "./routes/pair-game-quiz-router";
+import {securityRouter} from "./routes/security-router";
 
 
 const corsOptions = {
@@ -38,6 +39,8 @@ app.use('/posts',postsRouter)
 app.use('/comments',commentsRouter)
 
 app.use('/users',usersRouter)
+
+app.use("/security",securityRouter)
 
 app.use("/testing",testingRouter)
 

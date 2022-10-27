@@ -338,7 +338,7 @@ describe('endpoint /blogs ',  () => {
             "content": content,
             "blogId": `${blog!.id}`,
             "blogName": blogName2,
-            "addedAt": response.body.addedAt,
+            "createdAt": response.body.createdAt,
             "extendedLikesInfo": {
                 "likesCount": 0,
                 "dislikesCount": 0,
@@ -414,7 +414,7 @@ describe('endpoint /blogs ',  () => {
                     "content": content,
                     "blogId": `${blog!.id}`,
                     "blogName": blogName2,
-                    "addedAt": response.body.items[0].addedAt,
+                    "createdAt": response.body.items[0].createdAt,
                     "extendedLikesInfo": {
                         "likesCount": 0,
                         "dislikesCount": 0,

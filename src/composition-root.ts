@@ -18,6 +18,7 @@ import {AuthAccessTokenController} from "./middlewares/authentication-middleware
 import {QuizController} from "./controllers/pair-game-quiz-controller";
 import {QuizRepository} from "./repositories/pair-game-quiz-repository";
 import {QuizService} from "./domain/pair-game-quiz-service";
+import {SecurityController} from "./controllers/security-controller";
 
 
 export const usersRepository = new UsersRepository();
@@ -43,6 +44,7 @@ export const postsController = new PostsController(postsService);
 export const commentsController = new CommentsController(commentsService);
 export const usersController = new UsersController(usersService,authService);
 export const authController = new AuthController(authService);
+export const securityController = new SecurityController(authService);
 export const authAccessTokenController = new AuthAccessTokenController(usersService,jwtService);
 export const quizController = new QuizController(quizService);
 

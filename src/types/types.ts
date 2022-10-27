@@ -30,7 +30,7 @@ export class CommentDBClass {
         public userId: string,
         public userLogin: string,
         public postId: string,
-        public addedAt: string,
+        public createdAt: string,
         public likesInfo: LikesInfoClass,
         public usersLikesInfo: UsersLikesInfoClass
     ) {
@@ -44,11 +44,12 @@ export class NewCommentClassResponseModel {
         public content: string,
         public userId: string,
         public userLogin: string,
-        public addedAt: string,
+        public createdAt: string,
         public likesInfo: LikesInfoClass,
     ) {
     }
 }
+
 
 
 
@@ -64,7 +65,7 @@ export class PostDBClass {
         public content: string,
         public blogId: string,
         public blogName: string,
-        public addedAt: Date,
+        public createdAt: Date,
         public extendedLikesInfo: ExtendedLikesInfoClass,
         public usersLikesInfo: UsersLikesInfoClass,
     ) {
@@ -175,8 +176,7 @@ export class NewPostClassResponseModel {
         public content: string,
         public blogId: string,
         public blogName: string,
-        public addedAt: Date,
-        public extendedLikesInfo: ExtendedLikesInfoClass,
+        public createdAt: Date,
     ) {
     }
 }
@@ -227,7 +227,7 @@ export class UsersLikesInfoClass {
 
 export class NewestLikesClass {
     constructor(
-        public addedAt: Date,
+        public createdAt: Date,
         public userId: string,
         public login: string
     ) {
@@ -271,7 +271,7 @@ export class QuizGameDBClass {
 
 export class PlayerClass {
     constructor(
-        public answers: [{ questionId: string, answerStatus: string, addedAt: Date }],
+        public answers: [{ questionId: string, answerStatus: string, createdAt: Date }],
         public user: { id: string, login: string },
         public score: number
     ) {

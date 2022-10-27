@@ -42,7 +42,7 @@ export class CommentsService  {
         const usersLikesInfo: UsersLikesInfoClass= new UsersLikesInfoClass([],[])
         const comment:CommentDBClass = new CommentDBClass (new ObjectId(),Number((new Date())).toString() ,content,user.id,user.login,postId,new Date().toISOString(),likes,usersLikesInfo)
         const newComment= await this.commentsRepository.createComment(comment)
-        return  (({ id, content, userId, userLogin, addedAt, likesInfo }) => ({id, content, userId, userLogin, addedAt, likesInfo}))(newComment)
+        return  (({ id, content, userId, userLogin, createdAt, likesInfo }) => ({id, content, userId, userLogin, createdAt, likesInfo}))(newComment)
     }
     async deleteCommentById(id: string,userId: string | undefined): Promise<boolean> {
         const comment = await this.commentsRepository.getCommentById(id)

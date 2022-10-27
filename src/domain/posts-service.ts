@@ -20,7 +20,7 @@ export class PostsService {
             for (let i = 0; i < allPosts.items.length; i++) {
                 allPosts.items[i].extendedLikesInfo.newestLikes = allPosts.items[i].extendedLikesInfo.newestLikes
                     .slice(-3)
-                    .sort((a, b) => b.addedAt.getTime() - a.addedAt.getTime());
+                    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
                 allPosts.items[i].extendedLikesInfo.myStatus = await this.postsRepository.returnUsersLikeStatus(
                     allPosts.items[i].id,
                     userId,
@@ -32,7 +32,7 @@ export class PostsService {
                 (elem) =>
                     (elem.extendedLikesInfo.newestLikes = elem.extendedLikesInfo.newestLikes
                         .slice(-3)
-                        .sort((a, b) => b.addedAt.getTime() - a.addedAt.getTime())),
+                        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())),
             );
         }
         return allPosts;
@@ -52,7 +52,7 @@ export class PostsService {
             for (let i = 0; i < posts.items.length; i++) {
                 posts.items[i].extendedLikesInfo.newestLikes = posts.items[i].extendedLikesInfo.newestLikes
                     .slice(-3)
-                    .sort((a, b) => b.addedAt.getTime() - a.addedAt.getTime());
+                    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
                 posts.items[i].extendedLikesInfo.myStatus = await this.postsRepository.returnUsersLikeStatus(
                     posts.items[i].id,
                     userId,
@@ -63,7 +63,7 @@ export class PostsService {
                 (elem) =>
                     (elem.extendedLikesInfo.newestLikes = elem.extendedLikesInfo.newestLikes
                         .slice(-3)
-                        .sort((a, b) => b.addedAt.getTime() - a.addedAt.getTime())),
+                        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())),
             );
             posts.items.forEach((elem) => (elem.extendedLikesInfo.myStatus = "None"));
         }
@@ -76,7 +76,7 @@ export class PostsService {
         }
         post.extendedLikesInfo.newestLikes = post?.extendedLikesInfo.newestLikes
             .slice(-3)
-            .sort((a, b) => b.addedAt.getTime() - a.addedAt.getTime());
+            .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
         if (userId) {
             post.extendedLikesInfo.myStatus = await this.postsRepository.returnUsersLikeStatus(id, userId);
         } else {
@@ -108,15 +108,15 @@ export class PostsService {
             usersLikesInfo,
         );
         const newPost = await this.postsRepository.createPost(post);
-        return (({ id, title, shortDescription, content, blogId, blogName, addedAt, extendedLikesInfo }) => ({
+        console.log(newPost);
+        return (({ id, title, shortDescription, content, blogId, blogName, createdAt }) => ({
             id,
             title,
             shortDescription,
             content,
             blogId,
             blogName,
-            addedAt,
-            extendedLikesInfo,
+            createdAt,
         }))(newPost);
     }
     async updatePost(
