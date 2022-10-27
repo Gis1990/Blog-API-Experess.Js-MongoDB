@@ -7,9 +7,9 @@ import {NewBlogClassResponseModel, BlogDBClass, BlogDBClassPagination} from "../
 
 export class BlogsService {
     constructor(protected blogsRepository: BlogsRepository) {}
-    async getAllBlogs(obj:{SearchNameTerm?:string|null,PageNumber?:number,PageSize?:number}): Promise<BlogDBClassPagination> {
-        const {SearchNameTerm=null,PageNumber=1,PageSize=10}=obj
-        return  this.blogsRepository.getAllBlogs(SearchNameTerm,Number(PageNumber),Number(PageSize))
+    async getAllBlogs(obj:{SearchNameTerm?:string|null,pageNumber?:number,pageSize?:number}): Promise<BlogDBClassPagination> {
+        const {SearchNameTerm=null,pageNumber=1,pageSize=10}=obj
+        return  this.blogsRepository.getAllBlogs(SearchNameTerm,Number(pageNumber),Number(pageSize))
     }
     async getBlogById(id: string): Promise<BlogDBClass | null> {
         return this.blogsRepository.getBlogById(id)

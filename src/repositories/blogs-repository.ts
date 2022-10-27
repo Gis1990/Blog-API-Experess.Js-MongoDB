@@ -3,18 +3,18 @@ import {BlogsModelClass} from "./db";
 
 
 export class BlogsRepository {
-    async getAllBlogs(SearchNameTerm:string|null, PageNumber:number, PageSize:number):Promise<BlogDBClassPagination> {
-        const skips = PageSize * (PageNumber - 1)
+    async getAllBlogs(SearchNameTerm:string|null,pageNumber:number,pageSize:number):Promise<BlogDBClassPagination> {
+        const skips = pageSize * (pageNumber - 1)
         let cursor
         let totalCount
         if (SearchNameTerm) {
-            cursor = await BlogsModelClass.find({name: {$regex: SearchNameTerm}}, {_id: 0}).sort({ "createdAt": -1 }).skip(skips).limit(PageSize).lean()
+            cursor = await BlogsModelClass.find({name: {$regex: SearchNameTerm}}, {_id: 0}).sort({ "createdAt": -1 }).skip(skips).limit(pageSize).lean()
             totalCount = await BlogsModelClass.count({name: {$regex: SearchNameTerm}})
         } else {
-            cursor = await BlogsModelClass.find({}, {_id: 0}).sort({ "createdAt": -1 }).skip(skips).limit(PageSize).lean()
+            cursor = await BlogsModelClass.find({}, {_id: 0}).sort({ "createdAt": -1 }).skip(skips).limit(pageSize).lean()
             totalCount = await BlogsModelClass.count({})
         }
-        return new BlogDBClassPagination(Math.ceil(totalCount/PageSize),PageNumber,PageSize,totalCount,cursor)
+        return new BlogDBClassPagination(Math.ceil(totalCount/pageSize),pageNumber,pageSize,totalCount,cursor)
 
     }
     async getBlogById(id: string):Promise<BlogDBClass|null>{
