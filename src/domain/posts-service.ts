@@ -66,14 +66,14 @@ export class PostsService {
     //                     .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())),
     //         );
     //         posts.items.forEach((elem) => (elem.extendedLikesInfo.myStatus = "None"));
-    //     }
-    //     return posts;
-    // }
-    // async getPostById(id: string, userId: string | undefined): Promise<PostDBClass | null> {
-    //     const post = await this.postsRepository.getPostById(id);
-    //     if (!post) {
-    //         return null;
-    //     }
+
+        return posts;
+    }
+    async getPostById(id: string, userId: string | undefined): Promise<PostDBClass | null> {
+        const post = await this.postsRepository.getPostById(id);
+        if (!post) {
+            return null;
+        }
     //     post.extendedLikesInfo.newestLikes = post?.extendedLikesInfo.newestLikes
     //         .slice(-3)
     //         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
@@ -82,7 +82,7 @@ export class PostsService {
     //     } else {
     //         post.extendedLikesInfo.myStatus = "None";
     //     }
-        return posts;
+        return post;
     }
     async createPost(
         title: string,
@@ -129,8 +129,8 @@ export class PostsService {
     async deletePost(id: string): Promise<boolean> {
         return this.postsRepository.deletePostById(id);
     }
-    async likeOperation(id: string, userId: string, login: string, likeStatus: string): Promise<boolean> {
-        return this.postsRepository.likeOperation(id, userId, login, likeStatus);
-    }
+    // async likeOperation(id: string, userId: string, login: string, likeStatus: string): Promise<boolean> {
+    //     return this.postsRepository.likeOperation(id, userId, login, likeStatus);
+    // }
 }
 
