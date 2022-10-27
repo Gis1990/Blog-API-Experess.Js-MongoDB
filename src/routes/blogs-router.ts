@@ -24,7 +24,7 @@ blogsRouter.get('/:blogId',
 
 
 blogsRouter.get('/:blogId/posts',
-    authAccessTokenController.authMiddlewareForUnauthorizedUser.bind(authAccessTokenController),
+    authenticationMiddleware,
     blogsIdValidation,
     postsController.getAllPostsForSpecificBlog.bind(postsController))
 
