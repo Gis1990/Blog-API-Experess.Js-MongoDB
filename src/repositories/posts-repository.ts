@@ -16,9 +16,9 @@ export class PostsRepository {
     ): Promise<PostDBClassPagination> {
         const skips = PageSize * (PageNumber - 1);
         const cursor = await PostsModelClass.find({ blogId: blogId }, { _id: 0, usersLikesInfo: 0 })
+            .sort({ "createdAt": -1 })
             .skip(skips)
             .limit(PageSize)
-            .sort({ "createdAt": -1 })
             .lean();
         const totalCount = await PostsModelClass.count({ blogId: blogId });
         return new PostDBClassPagination(Math.ceil(totalCount / PageSize), PageNumber, PageSize, totalCount, cursor);
