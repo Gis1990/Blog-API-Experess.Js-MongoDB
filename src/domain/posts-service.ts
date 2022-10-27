@@ -13,9 +13,9 @@ import {BlogsRepository} from "../repositories/blogs-repository";
 
 export class PostsService {
     constructor(protected postsRepository: PostsRepository, protected blogsRepository: BlogsRepository) {}
-    async getAllPosts(obj:{pageNumber?:number,pageSize?:number},userId: string | undefined): Promise<PostDBClassPagination> {
-        const {pageNumber=1,pageSize=10}=obj
-        const allPosts = await this.postsRepository.getAllPosts(Number(pageNumber), Number(pageSize));
+    async getAllPosts(obj:{pageNumber?:number,pageSize?:number,sortDirection?:string},userId: string | undefined): Promise<PostDBClassPagination> {
+        const {pageNumber=1,pageSize=10,sortDirection="desc"}=obj
+        const allPosts = await this.postsRepository.getAllPosts(Number(pageNumber), Number(pageSize),sortDirection);
         // if (userId) {
         //     for (let i = 0; i < allPosts.items.length; i++) {
         //         allPosts.items[i].extendedLikesInfo.newestLikes = allPosts.items[i].extendedLikesInfo.newestLikes

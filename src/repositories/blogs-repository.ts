@@ -3,15 +3,18 @@ import {BlogsModelClass} from "./db";
 
 
 export class BlogsRepository {
-    async getAllBlogs(SearchNameTerm:string|null,pageNumber:number,pageSize:number):Promise<BlogDBClassPagination> {
+    async getAllBlogs(SearchNameTerm:string|null,pageNumber:number,pageSize:number,sortDirection:string):Promise<BlogDBClassPagination> {
+        let srtParameter
+        if (sortDirection==="desc"){srtParameter=-1
+        }else{srtParameter=1}
         const skips = pageSize * (pageNumber - 1)
         let cursor
         let totalCount
         if (SearchNameTerm) {
-            cursor = await BlogsModelClass.find({name: {$regex: SearchNameTerm}}, {_id: 0}).sort({ "createdAt": -1 }).skip(skips).limit(pageSize).lean()
+            cursor = await BlogsModelClass.find({name: {$regex: SearchNameTerm}}, {_id: 0}).sort(`createdAt:${srtParameter}`).skip(skips).limit(pageSize).lean()
             totalCount = await BlogsModelClass.count({name: {$regex: SearchNameTerm}})
         } else {
-            cursor = await BlogsModelClass.find({}, {_id: 0}).sort({ "createdAt": -1 }).skip(skips).limit(pageSize).lean()
+            cursor = await BlogsModelClass.find({}, {_id: 0}).sort(`createdAt:${srtParameter}`).skip(skips).limit(pageSize).lean()
             totalCount = await BlogsModelClass.count({})
         }
         return new BlogDBClassPagination(Math.ceil(totalCount/pageSize),pageNumber,pageSize,totalCount,cursor)

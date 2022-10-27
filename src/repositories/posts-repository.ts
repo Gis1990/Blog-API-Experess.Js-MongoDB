@@ -3,9 +3,12 @@ import {PostsModelClass} from "./db";
 
 
 export class PostsRepository {
-    async getAllPosts(PageNumber: number, PageSize: number): Promise<PostDBClassPagination> {
+    async getAllPosts(PageNumber: number, PageSize: number,sortDirection:string): Promise<PostDBClassPagination> {
+        let srtParameter
+        if (sortDirection==="desc"){srtParameter=-1
+        }else{srtParameter=1}
         const skips = PageSize * (PageNumber - 1);
-        const cursor = await PostsModelClass.find({}, { _id: 0, usersLikesInfo: 0 }).sort({ "createdAt": -1 }).skip(skips).limit(PageSize).lean();
+        const cursor = await PostsModelClass.find({}, { _id: 0, usersLikesInfo: 0 }).sort(`createdAt:${srtParameter}`).skip(skips).limit(PageSize).lean();
         const totalCount = await PostsModelClass.count({});
         return new PostDBClassPagination(Math.ceil(totalCount / PageSize), PageNumber, PageSize, totalCount, cursor);
     }
