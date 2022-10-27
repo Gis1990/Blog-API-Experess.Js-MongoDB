@@ -8,7 +8,7 @@ export class BlogsRepository {
         let cursor
         let totalCount
         if (SearchNameTerm) {
-            cursor = await BlogsModelClass.find({name: {$regex: SearchNameTerm}}, {_id: 0}).sort({ "createdAt": -1 }).skip(skips).sort({ "createdAt": -1 }).limit(PageSize).lean()
+            cursor = await BlogsModelClass.find({name: {$regex: SearchNameTerm}}, {_id: 0}).sort({ "createdAt": -1 }).skip(skips).limit(PageSize).lean()
             totalCount = await BlogsModelClass.count({name: {$regex: SearchNameTerm}})
         } else {
             cursor = await BlogsModelClass.find({}, {_id: 0}).sort({ "createdAt": -1 }).skip(skips).limit(PageSize).lean()
