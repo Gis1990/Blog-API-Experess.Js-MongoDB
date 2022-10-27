@@ -15,7 +15,8 @@ require('dotenv').config()
 const blogsSchema = new mongoose.Schema<BlogDBClass>({
     id:String,
     name: String,
-    youtubeUrl: String
+    youtubeUrl: String,
+    createdAt: Date,
 }, {
     versionKey: false
 });
