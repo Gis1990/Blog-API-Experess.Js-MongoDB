@@ -11,24 +11,20 @@ export class BlogsRepository {
         if (SearchNameTerm) {
             if (sortDirection==="desc"){
                 sortObj[sortBy]=-1
-                console.log(sortObj)
                 cursor = await BlogsModelClass.find({name: {$regex: SearchNameTerm}}, {_id: 0}).sort(sortObj).skip(skips).limit(pageSize).lean()
                 totalCount = await BlogsModelClass.count({name: {$regex: SearchNameTerm}})
             }else{
                 sortObj[sortBy]=1
-                console.log(sortObj)
-                cursor = await BlogsModelClass.find({}, {_id: 0}).sort(sortObj).skip(skips).limit(pageSize).lean()
+                cursor = await BlogsModelClass.find({name: {$regex: SearchNameTerm}}, {_id: 0}).sort(sortObj).skip(skips).limit(pageSize).lean()
                 totalCount = await BlogsModelClass.count({})
             }
         }else{
             if (sortDirection==="desc"){
                 sortObj[sortBy]=-1
-                console.log(sortObj)
                 cursor = await BlogsModelClass.find({},  {_id: 0}).sort(sortObj).skip(skips).limit(pageSize).lean()
                 totalCount = await BlogsModelClass.count({})
             }else{
                 sortObj[sortBy]=1
-                console.log(sortObj)
                 cursor = await BlogsModelClass.find({},  {_id: 0},).sort(sortObj).skip(skips).limit(pageSize).lean()
                 totalCount = await BlogsModelClass.count({})
         }
