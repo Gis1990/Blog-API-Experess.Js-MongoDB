@@ -13,10 +13,10 @@ export  class UsersRepository  {
          const totalCount=await UsersAccountModelClass.count({})
          if (sortDirection==="desc"){
              sortObj[sortBy]=-1
-             cursor=await UsersAccountModelClass.find({}, {_id:0,id:1,login:1}).sort(sortObj).skip(skips).limit(PageSize).lean()
+             cursor=await UsersAccountModelClass.find({}, {_id:0,id:1,login:1,email:1,createdAt:1}).sort(sortObj).skip(skips).limit(PageSize).lean()
          }else{
              sortObj[sortBy]=1
-             cursor=await UsersAccountModelClass.find({}, {_id:0,id:1,login:1}).sort(sortObj).skip(skips).limit(PageSize).lean()
+             cursor=await UsersAccountModelClass.find({}, {_id:0,id:1,login:1,email:1,createdAt:1}).sort(sortObj).skip(skips).limit(PageSize).lean()
          }
         return new UserDBClassPagination(Math.ceil(totalCount/PageSize),PageNumber,PageSize,totalCount,cursor)
     }
