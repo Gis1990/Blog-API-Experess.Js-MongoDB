@@ -7,20 +7,29 @@ export class BlogsRepository {
         const skips = pageSize * (pageNumber - 1)
         let cursor
         let totalCount
+        let sortObj:any={}
         if (SearchNameTerm) {
             if (sortDirection==="desc"){
-                cursor = await BlogsModelClass.find({name: {$regex: SearchNameTerm}}, {_id: 0}).sort(`-${sortBy}`).skip(skips).limit(pageSize).lean()
+                sortObj[sortBy]=-1
+                console.log(sortObj)
+                cursor = await BlogsModelClass.find({name: {$regex: SearchNameTerm}}, {_id: 0}).sort(sortObj).skip(skips).limit(pageSize).lean()
                 totalCount = await BlogsModelClass.count({name: {$regex: SearchNameTerm}})
             }else{
-                cursor = await BlogsModelClass.find({}, {_id: 0}).sort(`${sortBy}`).skip(skips).limit(pageSize).lean()
+                sortObj[sortBy]=1
+                console.log(sortObj)
+                cursor = await BlogsModelClass.find({}, {_id: 0}).sort(sortObj).skip(skips).limit(pageSize).lean()
                 totalCount = await BlogsModelClass.count({})
             }
         }else{
             if (sortDirection==="desc"){
-                cursor = await BlogsModelClass.find({},  {_id: 0}).sort(`-${sortBy}`).skip(skips).limit(pageSize).lean()
+                sortObj[sortBy]=-1
+                console.log(sortObj)
+                cursor = await BlogsModelClass.find({},  {_id: 0}).sort(sortObj).skip(skips).limit(pageSize).lean()
                 totalCount = await BlogsModelClass.count({})
             }else{
-                cursor = await BlogsModelClass.find({},  {_id: 0}).sort(`${sortBy}`).skip(skips).limit(pageSize).lean()
+                sortObj[sortBy]=1
+                console.log(sortObj)
+                cursor = await BlogsModelClass.find({},  {_id: 0},).sort(sortObj).skip(skips).limit(pageSize).lean()
                 totalCount = await BlogsModelClass.count({})
         }
     }

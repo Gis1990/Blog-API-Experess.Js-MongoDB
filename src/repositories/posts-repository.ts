@@ -7,10 +7,13 @@ export class PostsRepository {
         let cursor
         const skips = PageSize * (PageNumber - 1);
         const totalCount = await PostsModelClass.count({});
+        let sortObj:any={}
         if (sortDirection==="desc"){
-             cursor = await PostsModelClass.find({}, { _id: 0, usersLikesInfo: 0 }).sort(`-${sortBy}`).skip(skips).limit(PageSize).lean();
+             sortObj[sortBy]=-1
+             cursor = await PostsModelClass.find({}, { _id: 0, usersLikesInfo: 0 }).sort(sortObj).skip(skips).limit(PageSize).lean();
         }else{
-             cursor = await PostsModelClass.find({}, { _id: 0, usersLikesInfo: 0 }).sort(`${sortBy}`).skip(skips).limit(PageSize).lean();
+            sortObj[sortBy]=1
+             cursor = await PostsModelClass.find({}, { _id: 0, usersLikesInfo: 0 }).sort(sortObj).skip(skips).limit(PageSize).lean();
         }
         return new PostDBClassPagination(Math.ceil(totalCount / PageSize), PageNumber, PageSize, totalCount, cursor);
     }
@@ -23,16 +26,19 @@ export class PostsRepository {
     ): Promise<PostDBClassPagination> {
         let cursor
         const skips = PageSize * (PageNumber - 1);
+        let sortObj:any={}
         const totalCount = await PostsModelClass.count({ blogId: blogId });
         if (sortDirection==="desc"){
+             sortObj[sortBy]=-1
              cursor = await PostsModelClass.find({ blogId: blogId }, { _id: 0, usersLikesInfo: 0 })
-                .sort(`-${sortBy}`)
+                .sort(sortObj)
                 .skip(skips)
                 .limit(PageSize)
                 .lean();
         }else{
+            sortObj[sortBy]=1
             cursor = await PostsModelClass.find({ blogId: blogId }, { _id: 0, usersLikesInfo: 0 })
-                .sort(`-${sortBy}`)
+                .sort(sortObj)
                 .skip(skips)
                 .limit(PageSize)
                 .lean();
