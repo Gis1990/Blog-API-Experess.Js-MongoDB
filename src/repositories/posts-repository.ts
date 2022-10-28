@@ -3,14 +3,14 @@ import {PostsModelClass} from "./db";
 
 
 export class PostsRepository {
-    async getAllPosts(PageNumber: number, PageSize: number,sortDirection:string): Promise<PostDBClassPagination> {
+    async getAllPosts(PageNumber: number, PageSize: number,sortBy:string,sortDirection:string): Promise<PostDBClassPagination> {
         let cursor
         const skips = PageSize * (PageNumber - 1);
         const totalCount = await PostsModelClass.count({});
         if (sortDirection==="desc"){
-             cursor = await PostsModelClass.find({}, { _id: 0, usersLikesInfo: 0 }).sort({"createdAt":-1}).skip(skips).limit(PageSize).lean();
+             cursor = await PostsModelClass.find({}, { _id: 0, usersLikesInfo: 0 }).sort(`-${sortBy}`).skip(skips).limit(PageSize).lean();
         }else{
-             cursor = await PostsModelClass.find({}, { _id: 0, usersLikesInfo: 0 }).sort({"createdAt":1}).skip(skips).limit(PageSize).lean();
+             cursor = await PostsModelClass.find({}, { _id: 0, usersLikesInfo: 0 }).sort(`${sortBy}`).skip(skips).limit(PageSize).lean();
         }
         return new PostDBClassPagination(Math.ceil(totalCount / PageSize), PageNumber, PageSize, totalCount, cursor);
     }
@@ -18,6 +18,7 @@ export class PostsRepository {
         PageNumber: number,
         PageSize: number,
         blogId: string,
+        sortBy:string,
         sortDirection:string
     ): Promise<PostDBClassPagination> {
         let cursor
@@ -25,13 +26,13 @@ export class PostsRepository {
         const totalCount = await PostsModelClass.count({ blogId: blogId });
         if (sortDirection==="desc"){
              cursor = await PostsModelClass.find({ blogId: blogId }, { _id: 0, usersLikesInfo: 0 })
-                .sort({"createdAt":-1})
+                .sort(`-${sortBy}`)
                 .skip(skips)
                 .limit(PageSize)
                 .lean();
         }else{
             cursor = await PostsModelClass.find({ blogId: blogId }, { _id: 0, usersLikesInfo: 0 })
-                .sort({"createdAt":1})
+                .sort(`-${sortBy}`)
                 .skip(skips)
                 .limit(PageSize)
                 .lean();
