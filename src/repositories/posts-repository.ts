@@ -31,7 +31,7 @@ export class PostsRepository {
                 .lean();
         }else{
             cursor = await PostsModelClass.find({ blogId: blogId }, { _id: 0, usersLikesInfo: 0 })
-                .sort({"createdAt":-1})
+                .sort({"createdAt":1})
                 .skip(skips)
                 .limit(PageSize)
                 .lean();
