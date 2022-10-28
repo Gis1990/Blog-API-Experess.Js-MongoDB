@@ -16,10 +16,14 @@ export class PostsRepository {
         PageNumber: number,
         PageSize: number,
         blogId: string,
+        sortDirection:string
     ): Promise<PostDBClassPagination> {
+        let srtParameter
+        if (sortDirection==="desc"){srtParameter=-1
+        }else{srtParameter=1}
         const skips = PageSize * (PageNumber - 1);
         const cursor = await PostsModelClass.find({ blogId: blogId }, { _id: 0, usersLikesInfo: 0 })
-            .sort({ "createdAt": -1 })
+            .sort(`createdAt:${srtParameter}`)
             .skip(skips)
             .limit(PageSize)
             .lean();

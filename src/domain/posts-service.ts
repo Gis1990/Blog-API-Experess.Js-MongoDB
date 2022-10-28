@@ -38,15 +38,16 @@ export class PostsService {
         return allPosts;
     }
     async getAllPostsForSpecificBlog(
-        obj:{PageNumber?:number,PageSize?:number},
+        obj:{PageNumber?:number,PageSize?:number,sortDirection?:string},
         blogId: string,
         userId: string | undefined,
     ): Promise<PostDBClassPagination> {
-        const {PageNumber=1,PageSize=10}=obj
+        const {PageNumber=1,PageSize=10,sortDirection="desc"}=obj
         const posts = await this.postsRepository.getAllPostsForSpecificBlog(
             Number(PageNumber),
             Number(PageSize),
             blogId,
+            sortDirection
         );
     //     if (userId) {
     //         for (let i = 0; i < posts.items.length; i++) {
