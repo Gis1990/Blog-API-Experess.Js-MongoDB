@@ -1,15 +1,23 @@
 import { RefreshTokenClass, SentEmailsClass, UserAccountDBClass, UserDBClassPagination} from "../types/types";
-import {UsersAccountModelClass} from "./db";
+import {PostsModelClass, UsersAccountModelClass} from "./db";
 import {v4 as uuidv4} from "uuid";
 import {LoginAttemptsClass} from "../types/types";
 
 
 
 export  class UsersRepository  {
-     async getAllUsers (PageNumber: number, PageSize: number ): Promise<UserDBClassPagination> {
+     async getAllUsers (PageNumber: number, PageSize: number,sortBy:string,sortDirection:string ): Promise<UserDBClassPagination> {
         const skips = PageSize * (PageNumber - 1)
-        const cursor=await UsersAccountModelClass.find({}, {_id:0,id:1,login:1}).skip(skips).limit(PageSize).lean()
-        const totalCount=await UsersAccountModelClass.count({})
+         let cursor
+        let sortObj:any={}
+         const totalCount=await UsersAccountModelClass.count({})
+         if (sortDirection==="desc"){
+             sortObj[sortBy]=-1
+             cursor=await UsersAccountModelClass.find({}, {_id:0,id:1,login:1}).sort(sortObj).skip(skips).limit(PageSize).lean()
+         }else{
+             sortObj[sortBy]=1
+             cursor=await UsersAccountModelClass.find({}, {_id:0,id:1,login:1}).sort(sortObj).skip(skips).limit(PageSize).lean()
+         }
         return new UserDBClassPagination(Math.ceil(totalCount/PageSize),PageNumber,PageSize,totalCount,cursor)
     }
     async findUserById(id: string): Promise<UserAccountDBClass | null> {

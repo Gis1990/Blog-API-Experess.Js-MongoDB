@@ -7,9 +7,9 @@ import {UsersRepository} from "../repositories/users-repository";
 
 export class  UsersService  {
     constructor(protected usersRepository: UsersRepository) {}
-    async getAllUsers (obj: { PageNumber?: number, PageSize?: number }): Promise<UserDBClassPagination>  {
-        const {PageNumber=1,PageSize=10}=obj
-        return this.usersRepository.getAllUsers(Number(PageNumber),Number(PageSize))
+    async getAllUsers (obj: { pageNumber?: number, pageSize?: number,sortBy?:string,sortDirection?:string }): Promise<UserDBClassPagination>  {
+        const {pageNumber=1,pageSize=10,sortBy="createdAt",sortDirection="desc"}=obj
+        return this.usersRepository.getAllUsers(Number(pageNumber),Number(pageSize),sortBy,sortDirection)
     }
     async findUserById(id: string): Promise<UserAccountDBClass | null> {
         return this.usersRepository.findUserById(id)
