@@ -16,7 +16,7 @@ export class BlogsRepository {
             }else{
                 sortObj[sortBy]=1
                 cursor = await BlogsModelClass.find({name: {$regex: SearchNameTerm}}, {_id: 0}).sort(sortObj).skip(skips).limit(pageSize).lean()
-                totalCount = await BlogsModelClass.count({})
+                totalCount = await BlogsModelClass.count({name: {$regex: SearchNameTerm}})
             }
         }else{
             if (sortDirection==="desc"){
