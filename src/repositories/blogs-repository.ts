@@ -11,12 +11,12 @@ export class BlogsRepository {
         if (SearchNameTerm) {
             if (sortDirection==="desc"){
                 sortObj[sortBy]=-1
-                cursor = await BlogsModelClass.find({name: {$regex: SearchNameTerm}}, {_id: 0}).sort(sortObj).skip(skips).limit(pageSize).lean()
-                totalCount = await BlogsModelClass.count({name: {$regex: SearchNameTerm}})
+                cursor = await BlogsModelClass.find({name: {$regex: SearchNameTerm, $options: 'i'}}, {_id: 0}).sort(sortObj).skip(skips).limit(pageSize).lean()
+                totalCount = await BlogsModelClass.count({name: {$regex: SearchNameTerm, $options: 'i'}})
             }else{
                 sortObj[sortBy]=1
-                cursor = await BlogsModelClass.find({name: {$regex: SearchNameTerm}}, {_id: 0}).sort(sortObj).skip(skips).limit(pageSize).lean()
-                totalCount = await BlogsModelClass.count({name: {$regex: SearchNameTerm}})
+                cursor = await BlogsModelClass.find({name: {$regex: SearchNameTerm, $options: 'i'}}, {_id: 0}).sort(sortObj).skip(skips).limit(pageSize).lean()
+                totalCount = await BlogsModelClass.count({name: {$regex: SearchNameTerm, $options: 'i'}})
             }
         }else{
             if (sortDirection==="desc"){
