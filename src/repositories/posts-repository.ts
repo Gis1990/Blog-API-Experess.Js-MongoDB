@@ -3,29 +3,29 @@ import {PostsModelClass} from "./db";
 
 
 export class PostsRepository {
-    async getAllPosts(PageNumber: number, PageSize: number,sortBy:string,sortDirection:string): Promise<PostDBClassPagination> {
+    async getAllPosts(pageNumber: number, pageSize: number,sortBy:string,sortDirection:string): Promise<PostDBClassPagination> {
         let cursor
-        const skips = PageSize * (PageNumber - 1);
+        const skips = pageSize * (pageNumber - 1);
         const totalCount = await PostsModelClass.count({});
         let sortObj:any={}
         if (sortDirection==="desc"){
              sortObj[sortBy]=-1
-             cursor = await PostsModelClass.find({}, { _id: 0, usersLikesInfo: 0 }).sort(sortObj).skip(skips).limit(PageSize).lean();
+             cursor = await PostsModelClass.find({}, { _id: 0, usersLikesInfo: 0 }).sort(sortObj).skip(skips).limit(pageSize).lean();
         }else{
             sortObj[sortBy]=1
-             cursor = await PostsModelClass.find({}, { _id: 0, usersLikesInfo: 0 }).sort(sortObj).skip(skips).limit(PageSize).lean();
+             cursor = await PostsModelClass.find({}, { _id: 0, usersLikesInfo: 0 }).sort(sortObj).skip(skips).limit(pageSize).lean();
         }
-        return new PostDBClassPagination(Math.ceil(totalCount / PageSize), PageNumber, PageSize, totalCount, cursor);
+        return new PostDBClassPagination(Math.ceil(totalCount / pageSize), pageNumber, pageSize, totalCount, cursor);
     }
     async getAllPostsForSpecificBlog(
-        PageNumber: number,
-        PageSize: number,
+        pageNumber: number,
+        pageSize: number,
         blogId: string,
         sortBy:string,
         sortDirection:string
     ): Promise<PostDBClassPagination> {
         let cursor
-        const skips = PageSize * (PageNumber - 1);
+        const skips = pageSize * (pageNumber - 1);
         let sortObj:any={}
         const totalCount = await PostsModelClass.count({ blogId: blogId });
         if (sortDirection==="desc"){
@@ -33,18 +33,18 @@ export class PostsRepository {
              cursor = await PostsModelClass.find({ blogId: blogId }, { _id: 0, usersLikesInfo: 0 })
                 .sort(sortObj)
                 .skip(skips)
-                .limit(PageSize)
+                .limit(pageSize)
                 .lean();
         }else{
             sortObj[sortBy]=1
             cursor = await PostsModelClass.find({ blogId: blogId }, { _id: 0, usersLikesInfo: 0 })
                 .sort(sortObj)
                 .skip(skips)
-                .limit(PageSize)
+                .limit(pageSize)
                 .lean();
         }
 
-        return new PostDBClassPagination(Math.ceil(totalCount / PageSize), PageNumber, PageSize, totalCount, cursor);
+        return new PostDBClassPagination(Math.ceil(totalCount / pageSize), pageNumber, pageSize, totalCount, cursor);
     }
     async getPostById(id: string): Promise<PostDBClass | null> {
         return PostsModelClass.findOne({ id: id }, { _id: 0, usersLikesInfo: 0 });

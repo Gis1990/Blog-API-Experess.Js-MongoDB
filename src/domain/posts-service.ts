@@ -42,7 +42,7 @@ export class PostsService {
         blogId: string,
         userId: string | undefined,
     ): Promise<PostDBClassPagination> {
-        const {pageNumber=1,pageSize=10,sortBy="CreatedAt",sortDirection="desc"}=obj
+        const {pageNumber=1,pageSize=10,sortBy="createdAt",sortDirection="desc"}=obj
         const posts = await this.postsRepository.getAllPostsForSpecificBlog(
             Number(pageNumber),
             Number(pageSize),
