@@ -9,15 +9,48 @@ export  class UsersRepository  {
      async getAllUsers (searchLoginTerm:string|null,searchEmailTerm:string|null,pageNumber: number, pageSize: number,sortBy:string,sortDirection:string ): Promise<UserDBClassPagination> {
         const skips = pageSize * (pageNumber - 1)
          let cursor
+         let totalCount
         let sortObj:any={}
-         const totalCount=await UsersAccountModelClass.count({login: {$regex: searchLoginTerm, $options: 'i'},email: {$regex: searchEmailTerm, $options: 'i'}})
-         if (sortDirection==="desc"){
-             sortObj[sortBy]=-1
-             cursor=await UsersAccountModelClass.find({login: {$regex: searchLoginTerm, $options: 'i'},email: {$regex: searchEmailTerm, $options: 'i'}}, {_id:0,id:1,login:1,email:1,createdAt:1}).sort(sortObj).skip(skips).limit(pageSize).lean()
+         if (!searchLoginTerm||!searchEmailTerm) {
+             if (sortDirection==="desc"){
+                 sortObj[sortBy]=-1
+                 cursor=await UsersAccountModelClass.find({}, {_id:0,id:1,login:1,email:1,createdAt:1}).sort(sortObj).skip(skips).limit(pageSize).lean()
+                 totalCount=await UsersAccountModelClass.count({})
+             }else{
+                 sortObj[sortBy]=1
+                 cursor=await UsersAccountModelClass.find({}, {_id:0,id:1,login:1,email:1,createdAt:1}).sort(sortObj).skip(skips).limit(pageSize).lean()
+                 totalCount=await UsersAccountModelClass.count({})
+             }
          }else{
-             sortObj[sortBy]=1
-             cursor=await UsersAccountModelClass.find({login: {$regex: searchLoginTerm, $options: 'i'},email: {$regex: searchEmailTerm, $options: 'i'}}, {_id:0,id:1,login:1,email:1,createdAt:1}).sort(sortObj).skip(skips).limit(pageSize).lean()
-         }
+             if (sortDirection==="desc"){
+                 sortObj[sortBy]=-1
+                 cursor = await UsersAccountModelClass.find({
+                     "$or": [
+                         {login: {$regex: searchLoginTerm, $options: 'i'}},
+                         {email: {$regex: searchEmailTerm, $options: 'i'}}
+                     ]
+                 }, {_id: 0, id: 1, login: 1, email: 1, createdAt: 1}).sort(sortObj).skip(skips).limit(pageSize).lean()
+                 totalCount = await UsersAccountModelClass.count({
+                     "$or": [
+                         {login: {$regex: searchLoginTerm, $options: 'i'}},
+                         {email: {$regex: searchEmailTerm, $options: 'i'}}
+                     ]
+                 })
+             }else{
+                 sortObj[sortBy]=1
+                 cursor = await UsersAccountModelClass.find({
+                     "$or": [
+                         {login: {$regex: searchLoginTerm, $options: 'i'}},
+                         {email: {$regex: searchEmailTerm, $options: 'i'}}
+                     ]
+                 }, {_id: 0, id: 1, login: 1, email: 1, createdAt: 1}).sort(sortObj).skip(skips).limit(pageSize).lean()
+                 totalCount = await UsersAccountModelClass.count({
+                     "$or": [
+                         {login: {$regex: searchLoginTerm, $options: 'i'}},
+                         {email: {$regex: searchEmailTerm, $options: 'i'}}
+                     ]
+                 })
+             }}
         return new UserDBClassPagination(Math.ceil(totalCount/pageSize),pageNumber,pageSize,totalCount,cursor)
     }
     async findUserById(id: string): Promise<UserAccountDBClass | null> {
