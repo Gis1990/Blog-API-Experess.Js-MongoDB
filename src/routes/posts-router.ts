@@ -40,9 +40,9 @@ postsRouter.get('/:postId',
 
 
 postsRouter.post('/:postId/comments',
+    commentsInputValidation,
     authAccessTokenController.authAccessToken.bind(authAccessTokenController),
     postsIdValidation,
-    commentsInputValidation,
     commentsController.createComment.bind(commentsController))
 
 
