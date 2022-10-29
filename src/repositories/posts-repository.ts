@@ -4,17 +4,15 @@ import {PostsModelClass} from "./db";
 
 export class PostsRepository {
     async getAllPosts(pageNumber: number, pageSize: number,sortBy:string,sortDirection:string): Promise<PostDBClassPagination> {
-        let cursor
         const skips = pageSize * (pageNumber - 1);
         const totalCount = await PostsModelClass.count({});
         let sortObj:any={}
         if (sortDirection==="desc"){
              sortObj[sortBy]=-1
-             cursor = await PostsModelClass.find({}, { _id: 0, usersLikesInfo: 0 }).sort(sortObj).skip(skips).limit(pageSize).lean();
         }else{
             sortObj[sortBy]=1
-             cursor = await PostsModelClass.find({}, { _id: 0, usersLikesInfo: 0 }).sort(sortObj).skip(skips).limit(pageSize).lean();
         }
+        const cursor = await PostsModelClass.find({}, { _id: 0, usersLikesInfo: 0 }).sort(sortObj).skip(skips).limit(pageSize).lean();
         return new PostDBClassPagination(Math.ceil(totalCount / pageSize), pageNumber, pageSize, totalCount, cursor);
     }
     async getAllPostsForSpecificBlog(

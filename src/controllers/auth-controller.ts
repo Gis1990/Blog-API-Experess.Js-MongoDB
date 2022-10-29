@@ -39,7 +39,7 @@ export class AuthController{
                 secure: true,
                 maxAge: 20  * 1000 // 20 seconds
             });
-            res.status(204).json({accessToken})
+            res.status(200).json({accessToken})
         } else {
             res.sendStatus(401)
         }

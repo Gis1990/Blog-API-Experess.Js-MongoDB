@@ -33,8 +33,8 @@ export class CommentDBClass {
         public userLogin: string,
         public postId: string,
         public createdAt: string,
-        public likesInfo: LikesInfoClass,
-        public usersLikesInfo: UsersLikesInfoClass
+        // public likesInfo: LikesInfoClass,
+        // public usersLikesInfo: UsersLikesInfoClass
     ) {
     }
 }
@@ -47,7 +47,7 @@ export class NewCommentClassResponseModel {
         public userId: string,
         public userLogin: string,
         public createdAt: string,
-        public likesInfo: LikesInfoClass,
+        // public likesInfo: LikesInfoClass,
     ) {
     }
 }

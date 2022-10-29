@@ -32,10 +32,10 @@ export class CommentsController{
             res.sendStatus(403)
         }
     }
-    async likeOperation(req: Request, res: Response) {
-        await this.commentsService.likeOperation(req.params.commentId,req.user!.id,req.body.likeStatus)
-        res.sendStatus(204)
-    }
+    // async likeOperation(req: Request, res: Response) {
+    //     await this.commentsService.likeOperation(req.params.commentId,req.user!.id,req.body.likeStatus)
+    //     res.sendStatus(204)
+    // }
 }
 
 

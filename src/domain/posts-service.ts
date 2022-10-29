@@ -108,7 +108,6 @@ export class PostsService {
             new Date(),
         );
         const newPost = await this.postsRepository.createPost(post);
-        console.log(newPost);
         return (({ id, title, shortDescription, content, blogId, blogName, createdAt}) => ({
             id,
             title,
