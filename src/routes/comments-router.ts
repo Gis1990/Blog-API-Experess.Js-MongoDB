@@ -24,8 +24,8 @@ commentsRouter.delete('/:commentId',
 
 commentsRouter.put('/:commentId',
     commentsIdValidation,
-    commentsInputValidation,
     authAccessTokenController.authAccessToken.bind(authAccessTokenController),
+    commentsInputValidation,
     commentsController.updateComment.bind(commentsController))
 
 
