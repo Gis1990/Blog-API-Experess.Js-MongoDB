@@ -14,7 +14,7 @@ export class AuthController{
             }
         }
     async registration(req: Request, res: Response) {
-        const newUser=await this.authService.createUserWithConfirmationEmail(req.body.login,req.body.email,req.body.password)
+        const newUser=await this.authService.createUserWithConfirmationEmail(req.body.login,req.body.email,req.body.password,req.ip,req.headers['user-agent'])
         if (newUser) {
             res.sendStatus(204)
         }else{

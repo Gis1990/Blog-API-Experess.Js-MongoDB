@@ -1,5 +1,5 @@
 import {ObjectId} from "mongodb";
-import {NewUserClassResponseModel, UserAccountDBClass} from "../types/types";
+import {NewUserClassResponseModel, UserAccountDBClass, userDevicesDataClass} from "../types/types";
 
 import bcrypt from "bcrypt";
 import {v4 as uuidv4} from "uuid";
@@ -17,19 +17,27 @@ export class  AuthService  {
                 protected emailController:EmailAdapter,
                 protected usersService:UsersService,
                 protected jwtService:JwtService) {}
-    async createUserWithConfirmationEmail(login: string,email:string, password: string): Promise<UserAccountDBClass> {
+    async createUserWithConfirmationEmail(login: string,email:string, password: string,ip:string,title:string|undefined): Promise<UserAccountDBClass> {
+        if(!title){
+            title="Unknown device"
+        }
         const passwordHash = await this._generateHash(password)
         const emailConfirmation: UserAccountEmailClass = new  UserAccountEmailClass([],uuidv4(),add (new Date(),{hours:1}),false)
-        const newUser: UserAccountDBClass = new UserAccountDBClass(new ObjectId(),Number((new Date())).toString(), login, email, passwordHash, new Date().toISOString(), [],emailConfirmation,[])
+        const userDevicesData: userDevicesDataClass = new  userDevicesDataClass(ip,new Date().toString(),Number((new Date())).toString(),title)
+        const newUser: UserAccountDBClass = new UserAccountDBClass(new ObjectId(),Number((new Date())).toString(), login, email, passwordHash, new Date().toISOString(), [],emailConfirmation,[userDevicesData])
         const newUserWithConfirmationCode=this.usersRepository.createUser(newUser)
         await this.emailController.sendEmail(email,newUser.emailConfirmation.confirmationCode)
         await this.usersRepository.addEmailLog(email)
         return newUserWithConfirmationCode
     }
-    async createUserWithoutConfirmationEmail(login: string,email:string, password: string): Promise<NewUserClassResponseModel> {
+    async createUserWithoutConfirmationEmail(login: string,email:string, password: string,ip:string,title:string|undefined): Promise<NewUserClassResponseModel> {
+        if(!title){
+            title="Unknown device"
+        }
         const passwordHash = await this._generateHash(password)
         const emailConfirmation: UserAccountEmailClass = new  UserAccountEmailClass([],uuidv4(),add (new Date(),{hours:1}),true)
-        const newUser: UserAccountDBClass = new UserAccountDBClass(new ObjectId(),Number((new Date())).toString(), login, email, passwordHash, new Date().toISOString(), [],emailConfirmation,[])
+        const userDevicesData: userDevicesDataClass = new  userDevicesDataClass(ip,new Date().toString(),Number((new Date())).toString(),title)
+        const newUser: UserAccountDBClass = new UserAccountDBClass(new ObjectId(),Number((new Date())).toString(), login, email, passwordHash, new Date().toISOString(), [],emailConfirmation,[userDevicesData])
         const user=await this.usersRepository.createUser(newUser)
         return (({ id, login,email,createdAt }) => ({ id, login,email,createdAt }))(user)
     }

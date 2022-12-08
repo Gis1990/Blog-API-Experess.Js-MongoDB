@@ -8,7 +8,7 @@ import {
     RefreshTokenClass,
     SentEmailsClass,
     LoginAttemptsClass,
-    NewestLikesClass, QuizGameDBClass, PlayerClass, GameQuestionClass
+    NewestLikesClass, QuizGameDBClass, PlayerClass, GameQuestionClass, userDevicesDataClass
 } from "../types/types";
 require('dotenv').config()
 
@@ -48,9 +48,6 @@ const sentEmailsSchema = new mongoose.Schema<SentEmailsClass>({
     sentDate: String
 }, { _id : false })
 
-const blacklistedRefreshTokensSchema = new mongoose.Schema<RefreshTokenClass>({
-    token: String
-}, { _id : false })
 
 
 const playerSchema = new mongoose.Schema<PlayerClass>({
@@ -75,7 +72,12 @@ const gameQuestionSchema = new mongoose.Schema<GameQuestionClass>({
     body: String
 }, { _id : false })
 
-
+const userDevicesDataSchema = new mongoose.Schema<userDevicesDataClass>({
+    ip: String,
+    lastActiveDate: String,
+    deviceId: String,
+    title: String
+}, { _id : false })
 
 const usersAccountSchema = new mongoose.Schema<UserAccountDBClass>({
     id:String,
@@ -90,10 +92,11 @@ const usersAccountSchema = new mongoose.Schema<UserAccountDBClass>({
         expirationDate: Date,
         sentEmails: [sentEmailsSchema]
     },
-    blacklistedRefreshTokens: [blacklistedRefreshTokensSchema]
+    userDevicesData: [userDevicesDataSchema]
 },{
     versionKey: false
 })
+
 
 
 const commentsSchema = new mongoose.Schema<CommentDBClass>({

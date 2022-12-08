@@ -141,7 +141,16 @@ export class UserAccountDBClass {
         public createdAt: string,
         public loginAttempts: LoginAttemptsClass[],
         public emailConfirmation: UserAccountEmailClass,
-        public blacklistedRefreshTokens: RefreshTokenClass[]
+        public userDevicesData: userDevicesDataClass[]
+    ) {
+    }
+}
+export class userDevicesDataClass {
+    constructor(
+        public ip: string,
+        public lastActiveDate: string,
+        public deviceId: string,
+        public title: string
     ) {
     }
 }

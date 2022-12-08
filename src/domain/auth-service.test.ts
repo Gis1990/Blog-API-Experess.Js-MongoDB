@@ -33,26 +33,26 @@ describe("integration tests for AuthService", () => {
     const authService= new AuthService(usersRepository,emailControllerMock,usersService,jwtService)
 
 
-    describe("createUserWithConfirmationEmail", () => {
-        afterAll(async () => {
-            await mongoose.connection.db.dropDatabase()
-        })
-        it("this.emailAdapter.send Email should be called", async () => {
-            let email = "anton.pavlovskiy1991@gmail.com"
-            let login = "anton1"
-            const result = await authService.createUserWithConfirmationEmail(login, email, "12345678")
-            expect(emailControllerMock.sendEmail).toBeCalled()
-        })
-        it("should return correct created user ", async () => {
-            let email="anton.pavlovskiy1990@gmail.com"
-            let login="anton"
-            const result=await authService.createUserWithConfirmationEmail(login,email,"12345678")
-            expect(result.email).toBe(email)
-            expect(result.login).toBe(login)
-            expect(result.emailConfirmation.isConfirmed).toBe(false)
-            expect(result.loginAttempts.length).toBe(0)
-        })
-    })
+    // describe("createUserWithConfirmationEmail", () => {
+    //     afterAll(async () => {
+    //         await mongoose.connection.db.dropDatabase()
+    //     })
+    //     it("this.emailAdapter.send Email should be called", async () => {
+    //         let email = "anton.pavlovskiy1991@gmail.com"
+    //         let login = "anton1"
+    //         const result = await authService.createUserWithConfirmationEmail(login, email, "12345678")
+    //         expect(emailControllerMock.sendEmail).toBeCalled()
+    //     })
+    //     it("should return correct created user ", async () => {
+    //         let email="anton.pavlovskiy1990@gmail.com"
+    //         let login="anton"
+    //         const result=await authService.createUserWithConfirmationEmail(login,email,"12345678")
+    //         expect(result.email).toBe(email)
+    //         expect(result.login).toBe(login)
+    //         expect(result.emailConfirmation.isConfirmed).toBe(false)
+    //         expect(result.loginAttempts.length).toBe(0)
+    //     })
+    // })
     describe("confirmEmail", () => {
         afterAll(async () => {
             await mongoose.connection.db.dropDatabase()
@@ -96,23 +96,23 @@ describe("integration tests for AuthService", () => {
             expect(userModel!.emailConfirmation.isConfirmed).toBeTruthy()
         })
     })
-    describe("createUserWithoutConfirmationEmail", () => {
-        afterAll(async () => {
-            await mongoose.connection.db.dropDatabase()
-        })
-        it("this.emailAdapter.send Email should be called", async () => {
-            let email = "anton.pavlovskiy1991@gmail.com"
-            let login = "anton1"
-            await authService.createUserWithoutConfirmationEmail(login, email, "12345678")
-            expect(emailControllerMock.sendEmail).toBeCalled()
-        })
-        it("should return correct created user ", async () => {
-            let email="anton.pavlovskiy1990@gmail.com"
-            let login="anton"
-            const result=await authService.createUserWithoutConfirmationEmail(login,email,"12345678")
-            expect(result.login).toBe(login)
-        })
-    })
+    // describe("createUserWithoutConfirmationEmail", () => {
+    //     afterAll(async () => {
+    //         await mongoose.connection.db.dropDatabase()
+    //     })
+    //     it("this.emailAdapter.send Email should be called", async () => {
+    //         let email = "anton.pavlovskiy1991@gmail.com"
+    //         let login = "anton1"
+    //         await authService.createUserWithoutConfirmationEmail(login, email, "12345678")
+    //         expect(emailControllerMock.sendEmail).toBeCalled()
+    //     })
+    //     it("should return correct created user ", async () => {
+    //         let email="anton.pavlovskiy1990@gmail.com"
+    //         let login="anton"
+    //         const result=await authService.createUserWithoutConfirmationEmail(login,email,"12345678")
+    //         expect(result.login).toBe(login)
+    //     })
+    // })
     describe("checkCredentials", () => {
         afterAll(async () => {
             await mongoose.connection.db.dropDatabase()
