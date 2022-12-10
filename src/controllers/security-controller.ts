@@ -26,15 +26,15 @@ export class SecurityController{
         let deviceTerminated
         if (correct) {
              deviceTerminated = await this.securityService.terminateSpecificDevice(req.cookies.refreshToken,req.params.deviceId)
+            if (deviceTerminated) {
+                res.sendStatus(204)
+                return
+            } else {
+                res.sendStatus(401)
+                return
+            }
         }else{
             res.sendStatus(403)
             return}
-        if (deviceTerminated) {
-            res.sendStatus(204)
-            return
-        } else {
-            res.sendStatus(401)
-            return
-        }
     }
 }
