@@ -2,7 +2,7 @@ import {RateLimiter} from "limiter";
 import {NextFunction,Request,Response} from "express";
 
 const limiterForRegistration = new RateLimiter({ tokensPerInterval: 5, interval: 10000,fireImmediately: true})
-const limiterLimiterForRegistrationConfirmation = new RateLimiter({ tokensPerInterval: 5, interval: 10000,fireImmediately: true})
+const limiterLimiterForRegistrationConfirmation = new RateLimiter({ tokensPerInterval: 2, interval: 5000,fireImmediately: true})
 const limiterLimiterForEmailResending = new RateLimiter({ tokensPerInterval: 5, interval: 10000,fireImmediately: true})
 const limiterLimiterForLogin = new RateLimiter({ tokensPerInterval: 5, interval: 10000,fireImmediately: true})
 
@@ -21,7 +21,7 @@ export const rateLimiterForRegistration = async (req: Request, res: Response, ne
 
 export const rateLimiterForRegistrationConfirmation = async (req: Request, res: Response, next: NextFunction) => {
     const remainingRequests = await limiterLimiterForRegistrationConfirmation.removeTokens(1);
-    if (remainingRequests < 3) {
+    if (remainingRequests < 0) {
         res.writeHead(429, {'Content-Type': 'text/plain;charset=UTF-8'});
         res.end('429 Too Many Requests - your IP is being rate limited');
     } else {

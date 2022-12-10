@@ -40,8 +40,6 @@ export class  SecurityService  {
     async checkDeviceId(refreshToken:string,deviceId:string): Promise<true|false> {
         const usersData = await this.jwtService.getUserDevicesDataFromRefreshToken(refreshToken)
         if (usersData) {
-            console.log(usersData.deviceId)
-            console.log(deviceId)
             return usersData.deviceId === deviceId
         } else {
             return false
