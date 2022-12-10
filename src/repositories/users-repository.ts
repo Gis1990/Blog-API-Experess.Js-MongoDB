@@ -85,15 +85,8 @@ export  class UsersRepository  {
         const result = await UsersAccountModelClass.updateOne({id: id}, {$push: {loginAttempts: loginAttempt}})
         return result.modifiedCount === 1
     }
-    async findUserDevicesSessions(id: string,ip:string) {
-        return UsersAccountModelClass.findOne({id: id}, {_id:0, userDevicesData: {$elemMatch: {ip: ip}}});
-    }
     async addUserDevicesData (id: string,userDevicesData: userDevicesDataClass) {
         const result = await UsersAccountModelClass.updateOne({id: id}, {$push: {userDevicesData: userDevicesData}})
-        return result.modifiedCount === 1
-    }
-    async updateSession (id: string,userDevicesData: userDevicesDataClass) {
-        const result = await UsersAccountModelClass.updateOne({id:id,"userDevicesData.deviceId":userDevicesData.deviceId},{$set:{"userDevicesData.$.lastActiveDate": userDevicesData.lastActiveDate,"userDevicesData.$.title": userDevicesData.title}})
         return result.modifiedCount === 1
     }
     async updateLastActiveDate (id: string,userDevicesData: userDevicesDataClass,newLastActiveDate:string) {

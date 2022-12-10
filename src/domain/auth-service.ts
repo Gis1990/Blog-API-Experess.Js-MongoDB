@@ -39,20 +39,11 @@ export class  AuthService  {
         await this.usersRepository.addLoginAttempt(user.id,ip)
         const isHashesEqual = await this._isHashesEquals(password, user.passwordHash)
         if (isHashesEqual&&user.emailConfirmation.isConfirmed) {
+            const userDevicesData: userDevicesDataClass = new  userDevicesDataClass(ip,new Date(),Number((new Date())).toString(),title)
+            await this.usersRepository.addUserDevicesData(user.id,userDevicesData)
             const accessToken = await this.jwtService.createAccessJWT(user)
-            const session=await this.usersRepository.findUserDevicesSessions(user.id,ip)
-            if ((session)&&(session.userDevicesData.length>0)){
-                session.userDevicesData[0].lastActiveDate=new Date()
-                session.userDevicesData[0].title=title
-                await this.usersRepository.updateSession(user.id,session.userDevicesData[0])
-                const refreshToken = await this.jwtService.createRefreshJWT(user,session.userDevicesData[0])
-                return [accessToken,refreshToken]
-            }else{
-                 const userDevicesData: userDevicesDataClass = new  userDevicesDataClass(ip,new Date(),Number((new Date())).toString(),title)
-                 await this.usersRepository.addUserDevicesData(user.id,userDevicesData)
-                 const refreshToken = await this.jwtService.createRefreshJWT(user,userDevicesData)
-                return [accessToken,refreshToken]
-            }
+            const refreshToken = await this.jwtService.createRefreshJWT(user,userDevicesData)
+            return [accessToken,refreshToken]
         } else {
             return null
         }
