@@ -150,7 +150,7 @@ export class UserAccountDBClass {
 export class userDevicesDataClass {
     constructor(
         public ip: string,
-        public lastActiveDate: string,
+        public lastActiveDate: Date,
         public deviceId: string,
         public title: string|undefined
     ) {

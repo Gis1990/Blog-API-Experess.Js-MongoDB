@@ -42,13 +42,13 @@ export class  AuthService  {
             const accessToken = await this.jwtService.createAccessJWT(user)
             const session=await this.usersRepository.findUserDevicesSessions(user.id,ip)
             if ((session)&&(session.userDevicesData.length>0)){
-                session.userDevicesData[0].lastActiveDate=new Date().toString()
+                session.userDevicesData[0].lastActiveDate=new Date()
                 session.userDevicesData[0].title=title
                 await this.usersRepository.updateSession(user.id,session.userDevicesData[0])
                 const refreshToken = await this.jwtService.createRefreshJWT(user,session.userDevicesData[0])
                 return [accessToken,refreshToken]
             }else{
-                 const userDevicesData: userDevicesDataClass = new  userDevicesDataClass(ip,new Date().toString(),Number((new Date())).toString(),title)
+                 const userDevicesData: userDevicesDataClass = new  userDevicesDataClass(ip,new Date(),Number((new Date())).toString(),title)
                  await this.usersRepository.addUserDevicesData(user.id,userDevicesData)
                  const refreshToken = await this.jwtService.createRefreshJWT(user,userDevicesData)
                 return [accessToken,refreshToken]
@@ -94,7 +94,7 @@ export class  AuthService  {
         const usersDataFromToken = await this.jwtService.getUserDevicesDataFromRefreshToken(oldRefreshToken)
         if ((user)&&(usersDataFromToken)) {
             const accessToken = await this.jwtService.createAccessJWT(user)
-            usersDataFromToken.lastActiveDate=new Date().toString()
+            usersDataFromToken.lastActiveDate=new Date()
             const newLastActiveDate=usersDataFromToken.lastActiveDate
             await this.usersRepository.updateLastActiveDate(userId,usersDataFromToken,newLastActiveDate)
             const newRefreshToken = await this.jwtService.createRefreshJWT(user,usersDataFromToken)

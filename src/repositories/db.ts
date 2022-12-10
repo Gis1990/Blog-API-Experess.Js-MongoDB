@@ -74,7 +74,7 @@ const gameQuestionSchema = new mongoose.Schema<GameQuestionClass>({
 
 const userDevicesDataSchema = new mongoose.Schema<userDevicesDataClass>({
     ip: String,
-    lastActiveDate: String,
+    lastActiveDate: Date,
     deviceId: String,
     title: String
 }, { _id : false })
