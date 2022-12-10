@@ -58,7 +58,7 @@ export  class UsersRepository  {
         return new UserDBClassPagination(Math.ceil(totalCount/pageSize),pageNumber,pageSize,totalCount,cursor)
     }
     async findUserById(id: string): Promise<UserAccountDBClass | null> {
-        let user = await UsersAccountModelClass.findOne({"id": id},{_id:0,emailConfirmation:0,loginAttempts:0,passwordHash:0,createdAt:0,blacklistedRefreshTokens:0,})
+        let user = await UsersAccountModelClass.findOne({id: id},{_id:0,emailConfirmation:0,loginAttempts:0,passwordHash:0,createdAt:0})
         if (user) {
             return user
         } else {
@@ -85,8 +85,15 @@ export  class UsersRepository  {
         const result = await UsersAccountModelClass.updateOne({id: id}, {$push: {loginAttempts: loginAttempt}})
         return result.modifiedCount === 1
     }
+    async findUserDevicesSessions(id: string,ip:string) {
+        return UsersAccountModelClass.findOne({id: id}, {_id:0, userDevicesData: {$elemMatch: {ip: ip}}});
+    }
     async addUserDevicesData (id: string,userDevicesData: userDevicesDataClass) {
         const result = await UsersAccountModelClass.updateOne({id: id}, {$push: {userDevicesData: userDevicesData}})
+        return result.modifiedCount === 1
+    }
+    async updateSession (id: string,userDevicesData: userDevicesDataClass) {
+        const result = await UsersAccountModelClass.updateOne({id:id,"userDevicesData.deviceId":userDevicesData.deviceId},{$set:{"userDevicesData.$.lastActiveDate": userDevicesData.lastActiveDate,"userDevicesData.$.title": userDevicesData.title}})
         return result.modifiedCount === 1
     }
     async updateLastActiveDate (id: string,userDevicesData: userDevicesDataClass,newLastActiveDate:string) {
