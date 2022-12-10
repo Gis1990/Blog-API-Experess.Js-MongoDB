@@ -14,7 +14,7 @@ export class AuthController{
             }
         }
     async registration(req: Request, res: Response) {
-        const newUser=await this.authService.createUserWithConfirmationEmail(req.body.login,req.body.email,req.body.password,req.ip,req.headers['user-agent'])
+        const newUser=await this.authService.createUserWithConfirmationEmail(req.body.login,req.body.email,req.body.password)
         if (newUser) {
             res.sendStatus(204)
         }else{
@@ -30,7 +30,7 @@ export class AuthController{
         }
     }
     async login(req: Request, res: Response) {
-        const result = await this.authService.checkCredentials(req.body.login, req.body.password,req.ip)
+        const result = await this.authService.checkCredentials(req.body.loginOrEmail, req.body.password,req.ip,req.headers['user-agent'])
         if (result) {
             const accessToken = result[0]
             const refreshToken = result[1]

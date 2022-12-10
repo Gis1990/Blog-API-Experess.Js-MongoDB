@@ -5,7 +5,6 @@ import {
     CommentDBClass,
     PostDBClass,
     UserAccountDBClass,
-    RefreshTokenClass,
     SentEmailsClass,
     LoginAttemptsClass,
     NewestLikesClass, QuizGameDBClass, PlayerClass, GameQuestionClass, userDevicesDataClass
@@ -15,7 +14,8 @@ require('dotenv').config()
 const blogsSchema = new mongoose.Schema<BlogDBClass>({
     id:String,
     name: String,
-    youtubeUrl: String,
+    description: String,
+    websiteUrl: String,
     createdAt: Date,
 }, {
     versionKey: false

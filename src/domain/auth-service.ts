@@ -17,38 +17,32 @@ export class  AuthService  {
                 protected emailController:EmailAdapter,
                 protected usersService:UsersService,
                 protected jwtService:JwtService) {}
-    async createUserWithConfirmationEmail(login: string,email:string, password: string,ip:string,title:string|undefined): Promise<UserAccountDBClass> {
-        if(!title){
-            title="Unknown device"
-        }
+    async createUserWithConfirmationEmail(login: string,email:string, password: string): Promise<UserAccountDBClass> {
         const passwordHash = await this._generateHash(password)
         const emailConfirmation: UserAccountEmailClass = new  UserAccountEmailClass([],uuidv4(),add (new Date(),{hours:1}),false)
-        const userDevicesData: userDevicesDataClass = new  userDevicesDataClass(ip,new Date().toString(),Number((new Date())).toString(),title)
-        const newUser: UserAccountDBClass = new UserAccountDBClass(new ObjectId(),Number((new Date())).toString(), login, email, passwordHash, new Date().toISOString(), [],emailConfirmation,[userDevicesData])
+        const newUser: UserAccountDBClass = new UserAccountDBClass(new ObjectId(),Number((new Date())).toString(), login, email, passwordHash, new Date().toISOString(), [],emailConfirmation,[])
         const newUserWithConfirmationCode=this.usersRepository.createUser(newUser)
         await this.emailController.sendEmail(email,newUser.emailConfirmation.confirmationCode)
         await this.usersRepository.addEmailLog(email)
         return newUserWithConfirmationCode
     }
-    async createUserWithoutConfirmationEmail(login: string,email:string, password: string,ip:string,title:string|undefined): Promise<NewUserClassResponseModel> {
-        if(!title){
-            title="Unknown device"
-        }
+    async createUserWithoutConfirmationEmail(login: string,email:string, password: string): Promise<NewUserClassResponseModel> {
         const passwordHash = await this._generateHash(password)
         const emailConfirmation: UserAccountEmailClass = new  UserAccountEmailClass([],uuidv4(),add (new Date(),{hours:1}),true)
-        const userDevicesData: userDevicesDataClass = new  userDevicesDataClass(ip,new Date().toString(),Number((new Date())).toString(),title)
-        const newUser: UserAccountDBClass = new UserAccountDBClass(new ObjectId(),Number((new Date())).toString(), login, email, passwordHash, new Date().toISOString(), [],emailConfirmation,[userDevicesData])
+        const newUser: UserAccountDBClass = new UserAccountDBClass(new ObjectId(),Number((new Date())).toString(), login, email, passwordHash, new Date().toISOString(), [],emailConfirmation,[])
         const user=await this.usersRepository.createUser(newUser)
         return (({ id, login,email,createdAt }) => ({ id, login,email,createdAt }))(user)
     }
-    async checkCredentials(login: string, password: string,ip:string):Promise<string[]|null> {
-        const user = await this.usersRepository.findByLoginOrEmail(login)
+    async checkCredentials(loginOrEmail: string, password: string,ip:string,title:string|undefined):Promise<string[]|null> {
+        const user = await this.usersRepository.findByLoginOrEmail(loginOrEmail)
         if (!user) return null
         await this.usersRepository.addLoginAttempt(user.id,ip)
         const isHashesEqual = await this._isHashesEquals(password, user.passwordHash)
         if (isHashesEqual&&user.emailConfirmation.isConfirmed) {
+            const userDevicesData: userDevicesDataClass = new  userDevicesDataClass(ip,new Date().toString(),Number((new Date())).toString(),title)
+            await this.usersRepository.addUserDevicesData(user.id,userDevicesData)
             const accessToken = await this.jwtService.createAccessJWT(user)
-            const refreshToken = await this.jwtService.createRefreshJWT(user)
+            const refreshToken = await this.jwtService.createRefreshJWT(user,userDevicesData)
             return [accessToken,refreshToken]
         } else {
             return null
@@ -88,11 +82,13 @@ export class  AuthService  {
     async refreshAllTokens (oldRefreshToken:string): Promise<string[]|null> {
         const userId = await this.jwtService.getUserIdByRefreshToken(oldRefreshToken)
         const user = await this.usersRepository.findUserById(userId)
-        const blackListedTokens=await this.usersRepository.findRefreshTokenInBlackList(userId,oldRefreshToken)
-        if ((!blackListedTokens)&&(user)) {
-            await this.usersService.addRefreshTokenIntoBlackList(user.id,oldRefreshToken)
+        const usersDataFromToken = await this.jwtService.getUserDevicesDataFromRefreshToken(oldRefreshToken)
+        if ((user)&&(usersDataFromToken)) {
             const accessToken = await this.jwtService.createAccessJWT(user)
-            const newRefreshToken = await this.jwtService.createRefreshJWT(user)
+            usersDataFromToken.lastActiveDate=new Date().toString()
+            const newLastActiveDate=usersDataFromToken.lastActiveDate
+            await this.usersRepository.updateLastActiveDate(userId,usersDataFromToken,newLastActiveDate)
+            const newRefreshToken = await this.jwtService.createRefreshJWT(user,usersDataFromToken)
             return [accessToken,newRefreshToken]
         } else {
             return null
@@ -101,10 +97,12 @@ export class  AuthService  {
     async refreshOnlyRefreshToken (oldRefreshToken:string): Promise<string|null> {
         const userId = await this.jwtService.getUserIdByRefreshToken(oldRefreshToken)
         const user = await this.usersRepository.findUserById(userId)
-        const blackListedTokens=await this.usersRepository.findRefreshTokenInBlackList(userId,oldRefreshToken)
-        if ((!blackListedTokens)&&(user)) {
-            await this.usersService.addRefreshTokenIntoBlackList(user.id,oldRefreshToken)
-            return await this.jwtService.createRefreshJWT(user)
+        const usersDataFromToken = await this.jwtService.getUserDevicesDataFromRefreshToken(oldRefreshToken)
+        if ((user)&&(usersDataFromToken)) {
+            usersDataFromToken.lastActiveDate=new Date().toString()
+            const newLastActiveDate=usersDataFromToken.lastActiveDate
+            await this.usersRepository.updateLastActiveDate(userId,usersDataFromToken,newLastActiveDate)
+            return await this.jwtService.createRefreshJWT(user,usersDataFromToken)
         } else {
             return null
         }

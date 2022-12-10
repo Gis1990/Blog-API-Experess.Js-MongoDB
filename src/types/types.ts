@@ -5,7 +5,8 @@ export class BlogDBClass {
         public _id: ObjectId,
         public id: string,
         public name: string,
-        public youtubeUrl: string,
+        public description: string,
+        public websiteUrl: string,
         public createdAt: Date,
     ) {
     }
@@ -15,7 +16,8 @@ export class NewBlogClassResponseModel {
     constructor(
         public id: string,
         public name: string,
-        public youtubeUrl: string,
+        public description: string,
+        public websiteUrl: string,
         public createdAt: Date
     ) {
     }
@@ -150,7 +152,7 @@ export class userDevicesDataClass {
         public ip: string,
         public lastActiveDate: string,
         public deviceId: string,
-        public title: string
+        public title: string|undefined
     ) {
     }
 }

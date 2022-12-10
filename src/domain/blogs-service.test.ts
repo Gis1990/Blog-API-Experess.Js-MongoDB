@@ -25,11 +25,13 @@ describe("integration tests for blogs API Express.js framework Service", () => {
             await mongoose.connection.db.dropDatabase()
         })
         it("should return correct created blogs ", async () => {
-            let youtubeUrl = "https://www.youtube.com/"
+            let websiteUrl = "https://www.youtube.com/"
             let name = "anton"
-            const result = await blogsService.createBlog(name, youtubeUrl)
-            expect(result.youtubeUrl).toBe(youtubeUrl)
+            let description = "my blog"
+            const result = await blogsService.createBlog(name,description, websiteUrl)
+            expect(result.websiteUrl).toBe(websiteUrl)
             expect(result.name).toBe(name)
+            expect(result.description).toBe(description)
             expect(result.id).toEqual(expect.any(String))
         })
     })

@@ -135,24 +135,24 @@ describe("integration tests for AuthService", () => {
                 blacklistedRefreshTokens: []
             }
         }
-        it("should return null not confirmed email ", async () => {
-            const newUser1=createUserForCredentials("antonCheckCredentials1","myemail@google.com",false)
-            await UsersAccountModelClass.insertMany([newUser1])
-            const result=await authService.checkCredentials("antonCheckCredentials1","string","ip")
-            expect(result).toBeNull()
-        })
-        it("with correct data should return array with tokens ", async () => {
-            const newUser2=createUserForCredentials("antonCheckCredentials2","myemail@google.com",true)
-            await UsersAccountModelClass.insertMany([newUser2])
-            const result=await authService.checkCredentials("antonCheckCredentials2","string","ip")
-            expect(result).toEqual(
-                expect.arrayContaining([expect.any(String),expect.any(String)])
-            );
-        })
-        it("should return null for not existed user ", async () => {
-            const result=await authService.checkCredentials("login", "password","ip")
-            expect(result).toBeNull()
-        })
+        // it("should return null not confirmed email ", async () => {
+        //     const newUser1=createUserForCredentials("antonCheckCredentials1","myemail@google.com",false)
+        //     await UsersAccountModelClass.insertMany([newUser1])
+        //     const result=await authService.checkCredentials("antonCheckCredentials1","string","ip")
+        //     expect(result).toBeNull()
+        // })
+        // it("with correct data should return array with tokens ", async () => {
+        //     const newUser2=createUserForCredentials("antonCheckCredentials2","myemail@google.com",true)
+        //     await UsersAccountModelClass.insertMany([newUser2])
+        //     const result=await authService.checkCredentials("antonCheckCredentials2","string","ip")
+        //     expect(result).toEqual(
+        //         expect.arrayContaining([expect.any(String),expect.any(String)])
+        //     );
+        // })
+        // it("should return null for not existed user ", async () => {
+        //     const result=await authService.checkCredentials("login", "password","ip")
+        //     expect(result).toBeNull()
+        // })
     })
 })
 

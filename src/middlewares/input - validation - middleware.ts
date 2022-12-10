@@ -25,22 +25,36 @@ export const blogsValidationSchema:Schema = {
             errorMessage: "The field Name has invalid length",
         }
     },
-    youtubeUrl: {
+    description: {
         in: ["query","body"],
         exists: {
-            errorMessage: "The field YoutubeUrl is required."
+            errorMessage: "The field description is required."
         },
         trim:true,
         notEmpty: {
-            errorMessage: "The field YoutubeUrl is required."
+            errorMessage: "The field description is required."
+        },
+        isLength: {
+            options: {max: 500},
+            errorMessage: "The field description has invalid length",
+        }
+    },
+    websiteUrl: {
+        in: ["query","body"],
+        exists: {
+            errorMessage: "The field websiteUrl is required."
+        },
+        trim:true,
+        notEmpty: {
+            errorMessage: "The field websiteUrl is required."
         },
         isLength: {
             options: {max: 100},
-            errorMessage: "The field YoutubeUrl has invalid length",
+            errorMessage: "The field websiteUrl has invalid length",
         },
         matches: {
             options: pattern,
-            errorMessage: 'The field YoutubeUrl has incorrect format'
+            errorMessage: 'The field websiteUrl has incorrect format'
         }
     },
 }
@@ -301,7 +315,7 @@ export const validationSchemaForComments:Schema = {
 
 
 export const validationSchemaForLogins:Schema = {
-    login: {
+    loginOrEmail: {
         in: ["query","body"],
         exists: {
             errorMessage: "The field login is required."
@@ -379,6 +393,13 @@ export const commentsIdValidation = async (req: Request, res: Response, next: Ne
     await param("commentId", "Id does not exist").custom(async commentId => {
         const user =await CommentsModelClass.findOne({id: commentId})
         return (!!user)?Promise.resolve():Promise.reject()}).run(req)
+    errorHandlerForIdValidation(req,res,next)
+}
+
+export const deviceIdValidation = async (req: Request, res: Response, next: NextFunction) => {
+    await param("deviceId","Id is not exist").custom(async deviceId=>{
+        const device = await UsersAccountModelClass.findOne({"userDevicesData.deviceId":deviceId})
+        return (!!device)?Promise.resolve():Promise.reject()}).run(req)
     errorHandlerForIdValidation(req,res,next)
 }
 

@@ -94,7 +94,7 @@ export class PostsService {
     ): Promise<NewPostClassResponseModel> {
         const blog = await this.blogsRepository.getBlogById(blogId);
         let blogName;
-        blog ? (blogName = blog.name) : (blogName = "");
+        blog ? (blogName = blog.description) : (blogName = "");
         const likesInfo: ExtendedLikesInfoClass = new ExtendedLikesInfoClass(0, 0, "None", []);
         const usersLikesInfo: UsersLikesInfoClass = new UsersLikesInfoClass([], []);
         const post: PostDBClass = new PostDBClass(

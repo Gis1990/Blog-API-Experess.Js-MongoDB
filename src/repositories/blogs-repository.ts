@@ -39,8 +39,8 @@ export class BlogsRepository {
         await BlogsModelClass.insertMany([blog]);
         return blog;
     }
-    async updateBlog(id: string, name: string, youtubeUrl: string):Promise<boolean> {
-        const result=await BlogsModelClass.updateOne({id:id},{$set:{name,youtubeUrl}})
+    async updateBlog(id: string, name: string,description: string, websiteUrl: string):Promise<boolean> {
+        const result=await BlogsModelClass.updateOne({id:id},{$set:{name,description,websiteUrl}})
         return result.matchedCount===1
     }
     async deleteBlogById(id: string): Promise<boolean> {

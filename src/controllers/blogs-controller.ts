@@ -13,11 +13,11 @@ export class BlogsController {
         res.json(blog)
     }
     async createBlog(req: Request, res: Response) {
-        const newBlog= await this.blogsService.createBlog(req.body.name,req.body.youtubeUrl)
+        const newBlog= await this.blogsService.createBlog(req.body.name,req.body.description,req.body.websiteUrl)
         res.status(201).json(newBlog)
     }
     async updateBlog(req: Request, res: Response) {
-        await this.blogsService.updateBlog(req.params.blogId, req.body.name, req.body.youtubeUrl)
+        await this.blogsService.updateBlog(req.params.blogId,req.body.name, req.body.description, req.body.websiteUrl)
         res.sendStatus(204)
     }
     async deleteBlog(req: Request, res: Response) {

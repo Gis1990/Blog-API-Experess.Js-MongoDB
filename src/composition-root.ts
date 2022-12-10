@@ -19,6 +19,7 @@ import {QuizController} from "./controllers/pair-game-quiz-controller";
 import {QuizRepository} from "./repositories/pair-game-quiz-repository";
 import {QuizService} from "./domain/pair-game-quiz-service";
 import {SecurityController} from "./controllers/security-controller";
+import {SecurityService} from "./domain/security-service";
 
 
 export const usersRepository = new UsersRepository();
@@ -34,6 +35,7 @@ const quizService = new QuizService(quizRepository);
 export const usersService = new UsersService(usersRepository);
 const emailController = new EmailAdapter();
 const authService= new AuthService(usersRepository,emailController,usersService,jwtService);
+const securityService= new SecurityService(usersRepository,jwtService);
 
 
 
@@ -44,7 +46,7 @@ export const postsController = new PostsController(postsService);
 export const commentsController = new CommentsController(commentsService);
 export const usersController = new UsersController(usersService,authService);
 export const authController = new AuthController(authService);
-export const securityController = new SecurityController(authService);
+export const securityController = new SecurityController(securityService);
 export const authAccessTokenController = new AuthAccessTokenController(usersService,jwtService);
 export const quizController = new QuizController(quizService);
 

@@ -1,8 +1,12 @@
-import { RefreshTokenClass, SentEmailsClass, UserAccountDBClass, UserDBClassPagination} from "../types/types";
-import {PostsModelClass, UsersAccountModelClass} from "./db";
+import {
+    LoginAttemptsClass,
+    SentEmailsClass,
+    UserAccountDBClass,
+    UserDBClassPagination,
+    userDevicesDataClass
+} from "../types/types";
+import {UsersAccountModelClass} from "./db";
 import {v4 as uuidv4} from "uuid";
-import {LoginAttemptsClass} from "../types/types";
-
 
 
 export  class UsersRepository  {
@@ -81,18 +85,27 @@ export  class UsersRepository  {
         const result = await UsersAccountModelClass.updateOne({id: id}, {$push: {loginAttempts: loginAttempt}})
         return result.modifiedCount === 1
     }
+    async addUserDevicesData (id: string,userDevicesData: userDevicesDataClass) {
+        const result = await UsersAccountModelClass.updateOne({id: id}, {$push: {userDevicesData: userDevicesData}})
+        return result.modifiedCount === 1
+    }
+    async updateLastActiveDate (id: string,userDevicesData: userDevicesDataClass,newLastActiveDate:string) {
+        const result = await UsersAccountModelClass.updateOne({"userDevicesData.deviceId":userDevicesData.deviceId},{$set:{"userDevicesData.$.lastActiveDate": newLastActiveDate}})
+        return result.modifiedCount === 1
+    }
+    async terminateAllDevices (id: string,userDevicesData: userDevicesDataClass) {
+        await UsersAccountModelClass.updateOne({id: id}, {$set: {userDevicesData: []}})
+        const result = await UsersAccountModelClass.updateOne({id: id}, {$push: {userDevicesData: userDevicesData}})
+        return result.modifiedCount === 1
+    }
+    async terminateSpecificDevice (id: string,deviceId:string) {
+        const result = await UsersAccountModelClass.updateOne({id: id}, { $pull: { userDevicesData:{deviceId: deviceId } }})
+        return result.modifiedCount === 1
+    }
     async addEmailLog (email: string) {
         const emailData: SentEmailsClass=new SentEmailsClass(Number((new Date())).toString())
         const result = await UsersAccountModelClass.updateOne({email: email}, {$push: {"emailConfirmation.sentEmails": emailData}})
         return result.modifiedCount === 1
-    }
-    async addRefreshTokenIntoBlackList(id: string,token:string) {
-        const tokenForBlackList: RefreshTokenClass=new RefreshTokenClass(token)
-        const result = await UsersAccountModelClass.updateOne({id: id},{$push: {"blacklistedRefreshTokens": tokenForBlackList}})
-        return result.modifiedCount === 1
-    }
-    async findRefreshTokenInBlackList(id: string,token:string) {
-        return  UsersAccountModelClass.findOne({id: id,blacklistedRefreshTokens: {$in :{token}}},{_id:1}).lean()
     }
     async createUser (newUser:UserAccountDBClass): Promise<UserAccountDBClass>  {
          await UsersAccountModelClass.insertMany([newUser]);

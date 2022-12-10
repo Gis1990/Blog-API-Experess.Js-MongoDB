@@ -18,7 +18,7 @@ export class UsersController{
         res.sendStatus(204)
     }
     async createUser(req:Request,res:Response){
-        const newUser=await this.authService.createUserWithoutConfirmationEmail(req.body.login,req.body.email,req.body.password,req.ip,req.headers['user-agent'])
+        const newUser=await this.authService.createUserWithoutConfirmationEmail(req.body.login,req.body.email,req.body.password)
         res.status(201).json(newUser)
     }
 }

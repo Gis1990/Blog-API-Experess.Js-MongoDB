@@ -23,9 +23,6 @@ export class  UsersService  {
     async updateConfirmationCode(id: string): Promise<boolean> {
         return  this.usersRepository.updateConfirmationCode(id)
     }
-    async addRefreshTokenIntoBlackList(id: string,token:string): Promise<boolean> {
-        return  this.usersRepository.addRefreshTokenIntoBlackList(id,token)
-    }
 }
 
 
