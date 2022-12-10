@@ -29,6 +29,7 @@ export const rateLimiterForRegistrationConfirmation = async (req: Request, res: 
     }
 }
 
+
 export const rateLimiterForEmailResending = async (req: Request, res: Response, next: NextFunction) => {
     const remainingRequests = await limiterLimiterForEmailResending.removeTokens(1);
     if (remainingRequests < 0) {
