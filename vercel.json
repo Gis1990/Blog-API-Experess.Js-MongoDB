@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "name": "blog-api",
+  "name": "Blogs-API",
   "builds": [
     { "src": "src/index.ts", "use": "@vercel/node" }
   ],
