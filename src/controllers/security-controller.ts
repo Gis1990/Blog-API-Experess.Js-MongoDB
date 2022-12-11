@@ -22,6 +22,11 @@ export class SecurityController{
         }
     }
     async terminateSpecificDevice(req: Request, res: Response) {
+        const exist = await this.securityService.authCredentialsCheck(req.cookies.refreshToken)
+        if  (!exist) {
+            res.sendStatus(401)
+            return
+        }
         const correct = await this.securityService.checkAccessRights(req.cookies.refreshToken,req.params.deviceId)
         if  (!correct) {
             res.sendStatus(403)

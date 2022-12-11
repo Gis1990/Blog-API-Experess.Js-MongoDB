@@ -41,13 +41,17 @@ export class  SecurityService  {
         const userId = await this.jwtService.getUserIdByRefreshToken(refreshToken)
         const userByDeviceId=await this.usersRepository.findUserByDeviceId(deviceId)
         if (userByDeviceId) {
-            console.log(userByDeviceId.id)
-            console.log(userId)
         return userId === userByDeviceId.id}
         else {
             return false
         }
     }
+    async authCredentialsCheck(refreshToken:string): Promise<boolean> {
+        const userId = await this.jwtService.getUserIdByRefreshToken(refreshToken)
+        const user = await this.usersRepository.findUserById(userId)
+        return !!user;
+    }
+
 }
 
 
