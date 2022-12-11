@@ -10,7 +10,7 @@ export class JwtService {
         return accessToken
     }
     async createRefreshJWT(user: UserAccountDBClass,userDevicesData: userDevicesDataClass) {
-        const refreshToken = jwt.sign({userId: user.id,ip:userDevicesData.ip,title:userDevicesData.title,lastActiveDate:userDevicesData.lastActiveDate,deviceId:userDevicesData.deviceId}, settings.jwtRefreshTokenSecret, {expiresIn: '20 sec'})
+        const refreshToken = jwt.sign({userId: user.id,ip:userDevicesData.ip,title:userDevicesData.title,lastActiveDate:userDevicesData.lastActiveDate,deviceId:userDevicesData.deviceId}, settings.jwtRefreshTokenSecret, {expiresIn: '1h'})
         return refreshToken
     }
     async getUserIdByAccessToken(token: string) {
