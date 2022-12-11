@@ -24,7 +24,7 @@ export class SecurityController{
     async terminateSpecificDevice(req: Request, res: Response) {
         const correct1 = await this.securityService.checkAccessRights(req.cookies.refreshToken,req.params.deviceId)
         const correct2 = await this.securityService.checkDeviceId(req.cookies.refreshToken,req.params.deviceId)
-        if (!correct1) {
+        if (!correct2) {
             res.sendStatus(403)
             return
         }
