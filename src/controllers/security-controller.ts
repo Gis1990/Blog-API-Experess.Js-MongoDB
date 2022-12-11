@@ -22,12 +22,12 @@ export class SecurityController{
         }
     }
     async terminateSpecificDevice(req: Request, res: Response) {
-        const deviceTerminated = await this.securityService.terminateSpecificDevice(req.cookies.refreshToken,req.params.deviceId)
-        const notCorrect = await this.securityService.checkDeviceId(req.cookies.refreshToken,req.params.deviceId)
-        if (!notCorrect) {
+        const correct = await this.securityService.checkAccessRights(req.cookies.refreshToken,req.params.deviceId)
+        if (!correct) {
             res.sendStatus(403)
             return
         }
+        const deviceTerminated = await this.securityService.terminateSpecificDevice(req.cookies.refreshToken,req.params.deviceId)
         if (deviceTerminated) {
             res.sendStatus(204)
         } else {

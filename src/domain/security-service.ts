@@ -31,18 +31,19 @@ export class  SecurityService  {
     async terminateSpecificDevice(refreshToken:string,deviceId:string): Promise<true|false> {
         const userId = await this.jwtService.getUserIdByRefreshToken(refreshToken)
         const user = await this.usersRepository.findUserById(userId)
-        if (user) {
+        const usersData = await this.jwtService.getUserDevicesDataFromRefreshToken(refreshToken)
+        if ((user)&&(usersData)&&(usersData.deviceId === deviceId)) {
             return await this.usersRepository.terminateSpecificDevice(userId,deviceId)
         } else {
             return false
         }
     }
-    async checkDeviceId(refreshToken:string,deviceId:string): Promise<true|false> {
-        const usersData = await this.jwtService.getUserDevicesDataFromRefreshToken(refreshToken)
-        if (usersData) {
-            console.log(usersData.deviceId)
-            console.log(deviceId)
-            return usersData.deviceId === deviceId
+    async checkAccessRights(refreshToken:string, deviceId:string): Promise<true|false> {
+        const userId = await this.jwtService.getUserIdByRefreshToken(refreshToken)
+        const user = await this.usersRepository.findUserById(userId)
+        const userByDeviceId=await this.usersRepository.findUserByDeviceId(deviceId)
+        if ((user)&&(userByDeviceId)) {
+            return userId === userByDeviceId.id
         } else {
             return false
         }

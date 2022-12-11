@@ -65,6 +65,15 @@ export  class UsersRepository  {
             return null
         }
     }
+    async findUserByDeviceId(deviceId: string): Promise<UserAccountDBClass | null> {
+        let user = await UsersAccountModelClass.findOne({ userDevicesData: {$elemMatch: {deviceId: deviceId}}})
+        console.log(user)
+        if (user) {
+            return user
+        } else {
+            return null
+        }
+    }
     async findByLoginOrEmail(loginOrEmail: string) {
         return UsersAccountModelClass.findOne(({$or: [{email: loginOrEmail}, {login: loginOrEmail}]}));
     }
