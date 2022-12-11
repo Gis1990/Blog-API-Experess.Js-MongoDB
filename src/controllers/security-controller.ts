@@ -28,6 +28,7 @@ export class SecurityController{
             res.sendStatus(403)
             return
         }
+
         const deviceTerminated = await this.securityService.terminateSpecificDevice(req.cookies.refreshToken,req.params.deviceId)
         console.log("deviceTerminated")
         if (deviceTerminated) {
