@@ -23,8 +23,8 @@ export class SecurityController{
     }
     async terminateSpecificDevice(req: Request, res: Response) {
         const deviceTerminated = await this.securityService.terminateSpecificDevice(req.cookies.refreshToken,req.params.deviceId)
-        const correct = await this.securityService.checkDeviceId(req.cookies.refreshToken,req.params.deviceId)
-        if (correct) {
+        const notCorrect = await this.securityService.checkDeviceId(req.cookies.refreshToken,req.params.deviceId)
+        if (!notCorrect) {
             res.sendStatus(403)
             return
         }

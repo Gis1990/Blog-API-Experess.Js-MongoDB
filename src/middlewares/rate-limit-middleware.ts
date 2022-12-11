@@ -20,8 +20,8 @@ export const rateLimiterForRegistration = async (req: Request, res: Response, ne
 
 
 export const rateLimiterForRegistrationConfirmation = async (req: Request, res: Response, next: NextFunction) => {
-    const remainingRequests = await limiterLimiterForRegistrationConfirmation.removeTokens(1);
-    if (remainingRequests < 4) {
+    const remainingRequests = await limiterLimiterForRegistrationConfirmation.removeTokens(3);
+    if (remainingRequests < 0) {
         res.writeHead(429, {'Content-Type': 'text/plain;charset=UTF-8'});
         res.end('429 Too Many Requests - your IP is being rate limited');
     } else {
