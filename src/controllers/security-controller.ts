@@ -25,10 +25,10 @@ export class SecurityController{
         const correct1 = await this.securityService.checkAccessRights(req.cookies.refreshToken,req.params.deviceId)
         const correct2 = await this.securityService.checkDeviceId(req.cookies.refreshToken,req.params.deviceId)
         if (!correct1) {
-            res.sendStatus(403)
+            res.sendStatus(401)
             return
         }
-        if ((!correct1)&&(!correct2)) {
+        if ((!correct1)||(!correct2)) {
             res.sendStatus(403)
             return
         }
