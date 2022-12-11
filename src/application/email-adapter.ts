@@ -16,7 +16,6 @@ export class EmailAdapter {
           to: email,
           subject:"email confirmation",
           text: `https://somesite.com/confirm-email?code=${confirmationCode}`,
-          html: `<a href="https://somesite.com/confirm-email?code=${confirmationCode}"</a>`
       });
       return true
   }

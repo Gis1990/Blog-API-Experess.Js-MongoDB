@@ -20,8 +20,8 @@ export const authRouter = Router({})
 
 
 authRouter.post('/registration-confirmation',
-    confirmationCodesValidation,
     rateLimiterForRegistrationConfirmation,
+    confirmationCodesValidation,
     authController.registrationConfirmation.bind(authController))
 
 
