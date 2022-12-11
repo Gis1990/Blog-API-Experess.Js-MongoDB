@@ -4,7 +4,7 @@ import {NextFunction,Request,Response} from "express";
 
 
 const limiterForRegistration = new RateLimiter({ tokensPerInterval: 5, interval: 10000,fireImmediately: true})
-const limiterLimiterForRegistrationConfirmation = new RateLimiter({ tokensPerInterval: 1, interval: 10000,fireImmediately: true})
+const limiterLimiterForRegistrationConfirmation = new RateLimiter({ tokensPerInterval: 5, interval: 10000,fireImmediately: true})
 const limiterLimiterForEmailResending = new RateLimiter({ tokensPerInterval: 5, interval: 10000,fireImmediately: true})
 const limiterLimiterForLogin = new RateLimiter({ tokensPerInterval: 5, interval: 10000,fireImmediately: true})
 
