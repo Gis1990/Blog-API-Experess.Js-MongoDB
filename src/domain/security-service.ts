@@ -28,7 +28,7 @@ export class  SecurityService  {
             return false
         }
     }
-    async terminateSpecificDevice(refreshToken:string,deviceId:string): Promise<true|false> {
+    async terminateSpecificDevice(refreshToken:string,deviceId:string): Promise<boolean> {
         const userId = await this.jwtService.getUserIdByRefreshToken(refreshToken)
         const user = await this.usersRepository.findUserById(userId)
         if (user) {
@@ -37,29 +37,17 @@ export class  SecurityService  {
             return false
         }
     }
-    async checkAccessRights(refreshToken:string, deviceId:string): Promise<true|false> {
+    async checkAccessRights(refreshToken:string, deviceId:string): Promise<boolean> {
         const userId = await this.jwtService.getUserIdByRefreshToken(refreshToken)
-        const user = await this.usersRepository.findUserById(userId)
         const userByDeviceId=await this.usersRepository.findUserByDeviceId(deviceId)
-        if ((user)&&(userByDeviceId)) {
-            return userId === userByDeviceId.id
-        } else {
+        if (userByDeviceId) {
+            console.log(userByDeviceId.id)
+            console.log(userId)
+        return userId === userByDeviceId.id}
+        else {
             return false
         }
-
     }
-    async checkDeviceId(refreshToken:string, deviceId:string): Promise<true|false> {
-        const userId = await this.jwtService.getUserIdByRefreshToken(refreshToken)
-        const user = await this.usersRepository.findUserById(userId)
-        const usersData = await this.jwtService.getUserDevicesDataFromRefreshToken(refreshToken)
-        if ((user)&&(usersData)) {
-            return usersData.deviceId === deviceId
-        } else {
-            return false
-        }
-
-    }
-
 }
 
 
