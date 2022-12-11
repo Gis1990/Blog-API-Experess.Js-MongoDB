@@ -31,8 +31,7 @@ export class  SecurityService  {
     async terminateSpecificDevice(refreshToken:string,deviceId:string): Promise<true|false> {
         const userId = await this.jwtService.getUserIdByRefreshToken(refreshToken)
         const user = await this.usersRepository.findUserById(userId)
-        const usersData = await this.jwtService.getUserDevicesDataFromRefreshToken(refreshToken)
-        if ((user)&&(usersData)&&(usersData.deviceId === deviceId)) {
+        if (user) {
             return await this.usersRepository.terminateSpecificDevice(userId,deviceId)
         } else {
             return false
@@ -44,6 +43,17 @@ export class  SecurityService  {
         const userByDeviceId=await this.usersRepository.findUserByDeviceId(deviceId)
         if ((user)&&(userByDeviceId)) {
             return userId === userByDeviceId.id
+        } else {
+            return false
+        }
+
+    }
+    async checkDeviceId(refreshToken:string, deviceId:string): Promise<true|false> {
+        const userId = await this.jwtService.getUserIdByRefreshToken(refreshToken)
+        const user = await this.usersRepository.findUserById(userId)
+        const usersData = await this.jwtService.getUserDevicesDataFromRefreshToken(refreshToken)
+        if ((user)&&(usersData)) {
+            return usersData.deviceId === deviceId
         } else {
             return false
         }
