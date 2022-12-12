@@ -6,7 +6,7 @@ import jwt from 'jsonwebtoken'
 
 export class JwtService {
     async createAccessJWT(user: UserAccountDBClass) {
-        const accessToken = jwt.sign({userId: user.id}, settings.jwtAccessTokenSecret, {expiresIn: '10 sec'})
+        const accessToken = jwt.sign({userId: user.id}, settings.jwtAccessTokenSecret, {expiresIn: '15 minutes'})
         return accessToken
     }
     async createRefreshJWT(user: UserAccountDBClass,userDevicesData: userDevicesDataClass) {
