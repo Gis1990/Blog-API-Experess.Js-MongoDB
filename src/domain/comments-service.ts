@@ -26,7 +26,7 @@ export class CommentsService  {
         return comment
     }
     async getAllCommentsForSpecificPost(obj:{pageNumber?:number,pageSize?:number,sortBy?:string,sortDirection?:string}, postId:string, userId: string | undefined): Promise<CommentDBClassPagination> {
-        const {pageNumber=1,pageSize=10,sortBy="createdAt",sortDirection="desc"}=obj
+        const {pageNumber=1,pageSize=10,sortBy="adededAt",sortDirection="desc"}=obj
         const comments = await this.commentsRepository.getAllCommentsForSpecificPost(Number(pageNumber), Number(pageSize),sortBy,sortDirection,postId)
         if (userId){
             for (let i=0; i<comments.items.length; i++){
@@ -42,7 +42,7 @@ export class CommentsService  {
         const usersLikesInfo: UsersLikesInfoClass= new UsersLikesInfoClass([],[])
         const comment:CommentDBClass = new CommentDBClass (new ObjectId(),Number((new Date())).toString() ,content,user.id,user.login,postId,new Date().toISOString(),likes,usersLikesInfo)
         const newComment= await this.commentsRepository.createComment(comment)
-        return  (({ id, content, userId, userLogin, createdAt, likesInfo }) => ({id, content, userId, userLogin, createdAt, likesInfo}))(newComment)
+        return  (({ id, content, userId, userLogin, adededAt, likesInfo }) => ({id, content, userId, userLogin, adededAt, likesInfo}))(newComment)
     }
     async deleteCommentById(id: string,userId: string | undefined): Promise<boolean> {
         const comment = await this.commentsRepository.getCommentById(id)

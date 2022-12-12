@@ -16,13 +16,13 @@ const blogsSchema = new mongoose.Schema<BlogDBClass>({
     name: String,
     description: String,
     websiteUrl: String,
-    createdAt: Date,
+    adededAt: Date,
 }, {
     versionKey: false
 });
 
 const newestLikesSchema = new mongoose.Schema<NewestLikesClass>({
-    createdAt: Date,
+    adededAt: Date,
     userId: String,
     login: String
 }, { _id : false })
@@ -35,7 +35,7 @@ const postsSchema = new mongoose.Schema<PostDBClass>({
     content: String,
     blogId: String,
     blogName: String,
-    createdAt: Date,
+    adededAt: Date,
         extendedLikesInfo: {
             likesCount: Number,
             dislikesCount: Number,
@@ -72,7 +72,7 @@ const usersAccountSchema = new mongoose.Schema<UserAccountDBClass>({
     login: String,
     email: String,
     passwordHash: String,
-    createdAt: String,
+    adededAt: String,
     emailRecoveryCode: {
         recoveryCode: String,
         expirationDate: Date,
@@ -97,7 +97,7 @@ const commentsSchema = new mongoose.Schema<CommentDBClass>({
     userId: String,
     userLogin: String,
     postId: String,
-    createdAt: String,
+    adededAt: String,
     likesInfo: {
         likesCount: Number,
         dislikesCount: Number,

@@ -65,7 +65,7 @@ describe("integration tests for AuthService", () => {
                 login: "antonConfirmEmail",
                 email: "myemail@google.com",
                 passwordHash: "",
-                createdAt: new Date(),
+                adededAt: new Date(),
                 loginAttempts: [],
                 emailConfirmation: {
                     isConfirmed: false,
@@ -125,7 +125,7 @@ describe("integration tests for AuthService", () => {
                 login: login,
                 email: email,
                 passwordHash: "$2b$10$pfyO12ZdXz25c961Uu4N0eXdqsvm7wpi2V.Dr7w9esJbqgmc0iITe",
-                createdAt: new Date(),
+                adededAt: new Date(),
                 loginAttempts: [],
                 emailConfirmation: {
                     isConfirmed: status,
