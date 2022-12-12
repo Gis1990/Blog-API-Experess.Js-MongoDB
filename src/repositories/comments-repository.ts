@@ -42,81 +42,81 @@ export class CommentsRepository {
         return result.matchedCount === 1
     }
 
-    // async likeOperation(id: string, userId: string, likeStatus: string): Promise<boolean> {
-    //     const comment = await CommentsModelClass.findOne({id: id})
-    //     if (!comment) {
-    //         return false
-    //     }
-    //     const findUsersLikes=comment.usersLikesInfo.usersWhoPutLike.filter(user => user === userId)
-    //     const findUsersDislikes=comment.usersLikesInfo.usersWhoPutDislike.filter(user => user === userId)
-    //     if ((findUsersLikes!.length===0)&&(likeStatus==="Like")&&(findUsersDislikes!.length===0)){
-    //         let likesCount=comment.likesInfo.likesCount
-    //         likesCount++
-    //         await CommentsModelClass.updateOne({id:id},{$push: {"usersLikesInfo.usersWhoPutLike":userId}})
-    //         const result = await CommentsModelClass.updateOne({id: id}, {$set: {"likesInfo.likesCount": likesCount, "likesInfo.myStatus": likeStatus}})
-    //         return result.matchedCount === 1
-    //     }
-    //     if ((findUsersDislikes!.length===0)&&(likeStatus==="Dislike")&&(findUsersLikes!.length===0)){
-    //         let dislikesCount=comment.likesInfo.dislikesCount
-    //         dislikesCount++
-    //         await CommentsModelClass.updateOne({id:id},{$push: {"usersLikesInfo.usersWhoPutDislike":userId}})
-    //         const result = await CommentsModelClass.updateOne({id: id}, {$set: {"likesInfo.dislikesCount": dislikesCount, "likesInfo.myStatus": likeStatus}})
-    //         return result.matchedCount === 1
-    //     }
-    //     if ((findUsersLikes!.length===1)&&(likeStatus==="Like")){
-    //         return true
-    //     }
-    //     if ((findUsersDislikes!.length===1)&&(likeStatus==="Dislike")){
-    //         return true
-    //     }
-    //     if ((findUsersLikes!.length===1)&&(likeStatus==="Dislike")){
-    //         let likesCount=comment.likesInfo.likesCount
-    //         likesCount--
-    //         let dislikesCount=comment.likesInfo.dislikesCount
-    //         dislikesCount++
-    //         await CommentsModelClass.updateOne({id:id},{$pull: {"usersLikesInfo.usersWhoPutLike":userId}})
-    //         await CommentsModelClass.updateOne({id:id},{$push: {"usersLikesInfo.usersWhoPutDislike":userId}})
-    //         const result = await CommentsModelClass.updateOne({id: id}, {$set: {"likesInfo.likesCount": likesCount,"likesInfo.dislikesCount": dislikesCount, "likesInfo.myStatus": likeStatus}})
-    //         return result.matchedCount === 1
-    //     }
-    //     if ((findUsersDislikes!.length===1)&&(likeStatus==="Like")){
-    //         let dislikesCount=comment.likesInfo.dislikesCount
-    //         dislikesCount--
-    //         let likesCount=comment.likesInfo.likesCount
-    //         likesCount++
-    //         await CommentsModelClass.updateOne({id:id},{$pull: {"usersLikesInfo.usersWhoPutDislike":userId}})
-    //         await CommentsModelClass.updateOne({id:id},{$push: {"usersLikesInfo.usersWhoPutLike":userId}})
-    //         const result = await CommentsModelClass.updateOne({id: id}, {$set: {"likesInfo.likesCount": likesCount,"likesInfo.dislikesCount": dislikesCount, "likesInfo.myStatus": likeStatus}})
-    //         return result.matchedCount === 1
-    //     }
-    //     if ((findUsersLikes!.length===1)&&(likeStatus==="None")){
-    //         let likesCount=comment.likesInfo.likesCount
-    //         likesCount--
-    //         await CommentsModelClass.updateOne({id:id},{$pull: {"usersLikesInfo.usersWhoPutLike":userId}})
-    //         const result = await CommentsModelClass.updateOne({id: id}, {$set: {"likesInfo.likesCount": likesCount, "likesInfo.myStatus": likeStatus}})
-    //         return result.matchedCount === 1
-    //     }
-    //     if ((findUsersDislikes!.length===1)&&(likeStatus==="None")){
-    //         let dislikesCount=comment.likesInfo.dislikesCount
-    //         dislikesCount--
-    //         await CommentsModelClass.updateOne({id:id},{$pull: {"usersLikesInfo.usersWhoPutDislike":userId}})
-    //         const result = await CommentsModelClass.updateOne({id: id}, {$set: {"likesInfo.dislikesCount": dislikesCount, "likesInfo.myStatus": likeStatus}})
-    //         return result.matchedCount === 1
-    //     }
-    //     return true
-    // }
-    // async returnUsersLikeStatus(id: string,userId:string): Promise<string> {
-    //     const comment = await CommentsModelClass.findOne({id: id})
-    //     const findUsersLikes=comment!.usersLikesInfo.usersWhoPutLike.filter(user => user === userId)
-    //     const findUsersDislikes=comment!.usersLikesInfo.usersWhoPutDislike.filter(user => user === userId)
-    //     if (findUsersLikes!.length===1){
-    //         return "Like"
-    //     }
-    //     if (findUsersDislikes!.length===1){
-    //         return "Dislike"
-    //     }
-    //     return "None"
-    // }
+    async likeOperation(id: string, userId: string, likeStatus: string): Promise<boolean> {
+        const comment = await CommentsModelClass.findOne({id: id})
+        if (!comment) {
+            return false
+        }
+        const findUsersLikes=comment.usersLikesInfo.usersWhoPutLike.filter(user => user === userId)
+        const findUsersDislikes=comment.usersLikesInfo.usersWhoPutDislike.filter(user => user === userId)
+        if ((findUsersLikes!.length===0)&&(likeStatus==="Like")&&(findUsersDislikes!.length===0)){
+            let likesCount=comment.likesInfo.likesCount
+            likesCount++
+            await CommentsModelClass.updateOne({id:id},{$push: {"usersLikesInfo.usersWhoPutLike":userId}})
+            const result = await CommentsModelClass.updateOne({id: id}, {$set: {"likesInfo.likesCount": likesCount, "likesInfo.myStatus": likeStatus}})
+            return result.matchedCount === 1
+        }
+        if ((findUsersDislikes!.length===0)&&(likeStatus==="Dislike")&&(findUsersLikes!.length===0)){
+            let dislikesCount=comment.likesInfo.dislikesCount
+            dislikesCount++
+            await CommentsModelClass.updateOne({id:id},{$push: {"usersLikesInfo.usersWhoPutDislike":userId}})
+            const result = await CommentsModelClass.updateOne({id: id}, {$set: {"likesInfo.dislikesCount": dislikesCount, "likesInfo.myStatus": likeStatus}})
+            return result.matchedCount === 1
+        }
+        if ((findUsersLikes!.length===1)&&(likeStatus==="Like")){
+            return true
+        }
+        if ((findUsersDislikes!.length===1)&&(likeStatus==="Dislike")){
+            return true
+        }
+        if ((findUsersLikes!.length===1)&&(likeStatus==="Dislike")){
+            let likesCount=comment.likesInfo.likesCount
+            likesCount--
+            let dislikesCount=comment.likesInfo.dislikesCount
+            dislikesCount++
+            await CommentsModelClass.updateOne({id:id},{$pull: {"usersLikesInfo.usersWhoPutLike":userId}})
+            await CommentsModelClass.updateOne({id:id},{$push: {"usersLikesInfo.usersWhoPutDislike":userId}})
+            const result = await CommentsModelClass.updateOne({id: id}, {$set: {"likesInfo.likesCount": likesCount,"likesInfo.dislikesCount": dislikesCount, "likesInfo.myStatus": likeStatus}})
+            return result.matchedCount === 1
+        }
+        if ((findUsersDislikes!.length===1)&&(likeStatus==="Like")){
+            let dislikesCount=comment.likesInfo.dislikesCount
+            dislikesCount--
+            let likesCount=comment.likesInfo.likesCount
+            likesCount++
+            await CommentsModelClass.updateOne({id:id},{$pull: {"usersLikesInfo.usersWhoPutDislike":userId}})
+            await CommentsModelClass.updateOne({id:id},{$push: {"usersLikesInfo.usersWhoPutLike":userId}})
+            const result = await CommentsModelClass.updateOne({id: id}, {$set: {"likesInfo.likesCount": likesCount,"likesInfo.dislikesCount": dislikesCount, "likesInfo.myStatus": likeStatus}})
+            return result.matchedCount === 1
+        }
+        if ((findUsersLikes!.length===1)&&(likeStatus==="None")){
+            let likesCount=comment.likesInfo.likesCount
+            likesCount--
+            await CommentsModelClass.updateOne({id:id},{$pull: {"usersLikesInfo.usersWhoPutLike":userId}})
+            const result = await CommentsModelClass.updateOne({id: id}, {$set: {"likesInfo.likesCount": likesCount, "likesInfo.myStatus": likeStatus}})
+            return result.matchedCount === 1
+        }
+        if ((findUsersDislikes!.length===1)&&(likeStatus==="None")){
+            let dislikesCount=comment.likesInfo.dislikesCount
+            dislikesCount--
+            await CommentsModelClass.updateOne({id:id},{$pull: {"usersLikesInfo.usersWhoPutDislike":userId}})
+            const result = await CommentsModelClass.updateOne({id: id}, {$set: {"likesInfo.dislikesCount": dislikesCount, "likesInfo.myStatus": likeStatus}})
+            return result.matchedCount === 1
+        }
+        return true
+    }
+    async returnUsersLikeStatus(id: string,userId:string): Promise<string> {
+        const comment = await CommentsModelClass.findOne({id: id})
+        const findUsersLikes=comment!.usersLikesInfo.usersWhoPutLike.filter(user => user === userId)
+        const findUsersDislikes=comment!.usersLikesInfo.usersWhoPutDislike.filter(user => user === userId)
+        if (findUsersLikes!.length===1){
+            return "Like"
+        }
+        if (findUsersDislikes!.length===1){
+            return "Dislike"
+        }
+        return "None"
+    }
 }
 
 

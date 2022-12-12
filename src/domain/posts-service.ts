@@ -16,25 +16,25 @@ export class PostsService {
     async getAllPosts(obj:{pageNumber?:number,pageSize?:number,sortBy?:string,sortDirection?:string},userId: string | undefined): Promise<PostDBClassPagination> {
         const {pageNumber=1,pageSize=10,sortBy="createdAt",sortDirection="desc"}=obj
         const allPosts = await this.postsRepository.getAllPosts(Number(pageNumber), Number(pageSize),sortBy,sortDirection);
-        // if (userId) {
-        //     for (let i = 0; i < allPosts.items.length; i++) {
-        //         allPosts.items[i].extendedLikesInfo.newestLikes = allPosts.items[i].extendedLikesInfo.newestLikes
-        //             .slice(-3)
-        //             .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-        //         allPosts.items[i].extendedLikesInfo.myStatus = await this.postsRepository.returnUsersLikeStatus(
-        //             allPosts.items[i].id,
-        //             userId,
-        //         );
-        //     }
-        // } else {
-        //     allPosts.items.forEach((elem) => (elem.extendedLikesInfo.myStatus = "None"));
-        //     allPosts.items.forEach(
-        //         (elem) =>
-        //             (elem.extendedLikesInfo.newestLikes = elem.extendedLikesInfo.newestLikes
-        //                 .slice(-3)
-        //                 .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())),
-        //     );
-        // }
+        if (userId) {
+            for (let i = 0; i < allPosts.items.length; i++) {
+                allPosts.items[i].extendedLikesInfo.newestLikes = allPosts.items[i].extendedLikesInfo.newestLikes
+                    .slice(-3)
+                    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+                allPosts.items[i].extendedLikesInfo.myStatus = await this.postsRepository.returnUsersLikeStatus(
+                    allPosts.items[i].id,
+                    userId,
+                );
+            }
+        } else {
+            allPosts.items.forEach((elem) => (elem.extendedLikesInfo.myStatus = "None"));
+            allPosts.items.forEach(
+                (elem) =>
+                    (elem.extendedLikesInfo.newestLikes = elem.extendedLikesInfo.newestLikes
+                        .slice(-3)
+                        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())),
+            );
+        }
         return allPosts;
     }
     async getAllPostsForSpecificBlog(
@@ -50,25 +50,24 @@ export class PostsService {
             sortBy,
             sortDirection
         );
-    //     if (userId) {
-    //         for (let i = 0; i < posts.items.length; i++) {
-    //             posts.items[i].extendedLikesInfo.newestLikes = posts.items[i].extendedLikesInfo.newestLikes
-    //                 .slice(-3)
-    //                 .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-    //             posts.items[i].extendedLikesInfo.myStatus = await this.postsRepository.returnUsersLikeStatus(
-    //                 posts.items[i].id,
-    //                 userId,
-    //             );
-    //         }
-    //     } else {
-    //         posts.items.forEach(
-    //             (elem) =>
-    //                 (elem.extendedLikesInfo.newestLikes = elem.extendedLikesInfo.newestLikes
-    //                     .slice(-3)
-    //                     .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())),
-    //         );
-    //         posts.items.forEach((elem) => (elem.extendedLikesInfo.myStatus = "None"));
-
+        if (userId) {
+            for (let i = 0; i < posts.items.length; i++) {
+                posts.items[i].extendedLikesInfo.newestLikes = posts.items[i].extendedLikesInfo.newestLikes
+                    .slice(-3)
+                    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+                posts.items[i].extendedLikesInfo.myStatus = await this.postsRepository.returnUsersLikeStatus(
+                    posts.items[i].id,
+                    userId,
+                );
+            }
+        } else {
+            posts.items.forEach(
+                (elem) =>
+                    (elem.extendedLikesInfo.newestLikes = elem.extendedLikesInfo.newestLikes
+                        .slice(-3)
+                        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())),
+            );
+            posts.items.forEach((elem) => (elem.extendedLikesInfo.myStatus = "None"));}
         return posts;
     }
     async getPostById(id: string, userId: string | undefined): Promise<PostDBClass | null> {
@@ -76,14 +75,14 @@ export class PostsService {
         if (!post) {
             return null;
         }
-    //     post.extendedLikesInfo.newestLikes = post?.extendedLikesInfo.newestLikes
-    //         .slice(-3)
-    //         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-    //     if (userId) {
-    //         post.extendedLikesInfo.myStatus = await this.postsRepository.returnUsersLikeStatus(id, userId);
-    //     } else {
-    //         post.extendedLikesInfo.myStatus = "None";
-    //     }
+        post.extendedLikesInfo.newestLikes = post?.extendedLikesInfo.newestLikes
+            .slice(-3)
+            .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+        if (userId) {
+            post.extendedLikesInfo.myStatus = await this.postsRepository.returnUsersLikeStatus(id, userId);
+        } else {
+            post.extendedLikesInfo.myStatus = "None";
+        }
         return post;
     }
     async createPost(
@@ -106,9 +105,11 @@ export class PostsService {
             blogId,
             blogName,
             new Date(),
+            likesInfo,
+            usersLikesInfo,
         );
         const newPost = await this.postsRepository.createPost(post);
-        return (({ id, title, shortDescription, content, blogId, blogName, createdAt}) => ({
+        return (({ id, title, shortDescription, content, blogId, blogName, createdAt, extendedLikesInfo }) => ({
             id,
             title,
             shortDescription,
@@ -116,6 +117,7 @@ export class PostsService {
             blogId,
             blogName,
             createdAt,
+            extendedLikesInfo,
         }))(newPost);
     }
     async updatePost(
@@ -130,8 +132,8 @@ export class PostsService {
     async deletePost(id: string): Promise<boolean> {
         return this.postsRepository.deletePostById(id);
     }
-    // async likeOperation(id: string, userId: string, login: string, likeStatus: string): Promise<boolean> {
-    //     return this.postsRepository.likeOperation(id, userId, login, likeStatus);
-    // }
+    async likeOperation(id: string, userId: string, login: string, likeStatus: string): Promise<boolean> {
+        return this.postsRepository.likeOperation(id, userId, login, likeStatus);
+    }
 }
 

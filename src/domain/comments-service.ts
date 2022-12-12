@@ -15,35 +15,34 @@ export class CommentsService  {
     constructor(protected commentsRepository: CommentsRepository) {}
     async getCommentById(id: string,userId: string | undefined): Promise<CommentDBClass | null> {
         const comment = await this.commentsRepository.getCommentById(id)
-        // if (!comment){
-        //     return null
-        // }
-        // if (userId){
-        //     comment!.likesInfo.myStatus=await this.commentsRepository.returnUsersLikeStatus(id,userId)
-        // }
-        // else{
-        //     comment!.likesInfo.myStatus="None"}
+        if (!comment){
+            return null
+        }
+        if (userId){
+            comment!.likesInfo.myStatus=await this.commentsRepository.returnUsersLikeStatus(id,userId)
+        }
+        else{
+            comment!.likesInfo.myStatus="None"}
         return comment
     }
     async getAllCommentsForSpecificPost(obj:{pageNumber?:number,pageSize?:number,sortBy?:string,sortDirection?:string}, postId:string, userId: string | undefined): Promise<CommentDBClassPagination> {
         const {pageNumber=1,pageSize=10,sortBy="createdAt",sortDirection="desc"}=obj
         const comments = await this.commentsRepository.getAllCommentsForSpecificPost(Number(pageNumber), Number(pageSize),sortBy,sortDirection,postId)
-        // if (userId){
-        //     for (let i=0; i<comments.items.length; i++){
-        //         comments.items[i].likesInfo.myStatus=await this.commentsRepository.returnUsersLikeStatus(comments.items[i].id, userId)
-        //     }
-        // }
-        // else{
-        //     comments.items.forEach(elem=>elem.likesInfo.myStatus="None")}
+        if (userId){
+            for (let i=0; i<comments.items.length; i++){
+                comments.items[i].likesInfo.myStatus=await this.commentsRepository.returnUsersLikeStatus(comments.items[i].id, userId)
+            }
+        }
+        else{
+            comments.items.forEach(elem=>elem.likesInfo.myStatus="None")}
         return comments
     }
     async createComment(content: string,postId:string, user:UserAccountDBClass): Promise<NewCommentClassResponseModel> {
         const likes: LikesInfoClass= new LikesInfoClass(0,0,"None")
         const usersLikesInfo: UsersLikesInfoClass= new UsersLikesInfoClass([],[])
-        const comment:CommentDBClass = new CommentDBClass (new ObjectId(),Number((new Date())).toString() ,content,user.id,user.login,postId,new Date().toISOString())
-        // const comment:CommentDBClass = new CommentDBClass (new ObjectId(),Number((new Date())).toString() ,content,user.id,user.login,postId,new Date().toISOString(),likes,usersLikesInfo)
+        const comment:CommentDBClass = new CommentDBClass (new ObjectId(),Number((new Date())).toString() ,content,user.id,user.login,postId,new Date().toISOString(),likes,usersLikesInfo)
         const newComment= await this.commentsRepository.createComment(comment)
-        return  (({ id, content, userId, userLogin, createdAt }) => ({id, content, userId, userLogin, createdAt}))(newComment)
+        return  (({ id, content, userId, userLogin, createdAt, likesInfo }) => ({id, content, userId, userLogin, createdAt, likesInfo}))(newComment)
     }
     async deleteCommentById(id: string,userId: string | undefined): Promise<boolean> {
         const comment = await this.commentsRepository.getCommentById(id)
@@ -65,9 +64,9 @@ export class CommentsService  {
         }
         return this.commentsRepository.updateCommentById(id, content)
     }
-    // async likeOperation(id: string,userId: string,likeStatus: string): Promise<boolean> {
-    //     return  this.commentsRepository.likeOperation(id,userId,likeStatus)
-    // }
+    async likeOperation(id: string,userId: string,likeStatus: string): Promise<boolean> {
+        return  this.commentsRepository.likeOperation(id,userId,likeStatus)
+    }
 }
 
 

@@ -8,7 +8,6 @@ import {usersRouter} from "./routes/users-router";
 import {authRouter} from "./routes/auth-router";
 import {testingRouter} from "./routes/testing-router";
 import cookieParser from "cookie-parser";
-import {quizRouter} from "./routes/pair-game-quiz-router";
 import {securityRouter} from "./routes/security-router";
 
 
@@ -44,7 +43,6 @@ app.use("/security",securityRouter)
 
 app.use("/testing",testingRouter)
 
-app.use("/pair-game-quiz",quizRouter)
 
 
 export const startApp=async ()=>{

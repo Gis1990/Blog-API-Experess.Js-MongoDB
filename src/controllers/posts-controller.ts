@@ -33,10 +33,10 @@ export class PostsController {
         res.status(200).json(posts)
 
     }
-    // async likeOperation(req: Request, res: Response) {
-    //     await this.postsService.likeOperation(req.params.postId,req.user!.id,req.user!.login,req.body.likeStatus)
-    //     res.sendStatus(204)
-    // }
+    async likeOperation(req: Request, res: Response) {
+        await this.postsService.likeOperation(req.params.postId,req.user!.id,req.user!.login,req.body.likeStatus)
+        res.sendStatus(204)
+    }
 }
 
 

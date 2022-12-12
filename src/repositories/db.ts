@@ -7,7 +7,7 @@ import {
     UserAccountDBClass,
     SentEmailsClass,
     LoginAttemptsClass,
-    NewestLikesClass, QuizGameDBClass, PlayerClass, GameQuestionClass, userDevicesDataClass
+    NewestLikesClass, userDevicesDataClass
 } from "../types/types";
 require('dotenv').config()
 
@@ -36,6 +36,16 @@ const postsSchema = new mongoose.Schema<PostDBClass>({
     blogId: String,
     blogName: String,
     createdAt: Date,
+        extendedLikesInfo: {
+            likesCount: Number,
+            dislikesCount: Number,
+            myStatus: String,
+            newestLikes:[newestLikesSchema]
+        },
+        usersLikesInfo: {
+            usersWhoPutLike: [String],
+            usersWhoPutDislike: [String]
+        }
     },{versionKey: false}
 );
 
@@ -49,28 +59,6 @@ const sentEmailsSchema = new mongoose.Schema<SentEmailsClass>({
 }, { _id : false })
 
 
-
-const playerSchema = new mongoose.Schema<PlayerClass>({
-    answers: [
-        {
-            questionId: String,
-            answerStatus: String,
-            createdAt: Date
-        }
-    ],
-    user: {
-        id: String,
-        login: String
-    },
-    score: Number
-}, { _id : false })
-
-
-
-const gameQuestionSchema = new mongoose.Schema<GameQuestionClass>({
-    id:String,
-    body: String
-}, { _id : false })
 
 const userDevicesDataSchema = new mongoose.Schema<userDevicesDataClass>({
     ip: String,
@@ -110,31 +98,21 @@ const commentsSchema = new mongoose.Schema<CommentDBClass>({
     userLogin: String,
     postId: String,
     createdAt: String,
-    // likesInfo: {
-    //     likesCount: Number,
-    //     dislikesCount: Number,
-    //     myStatus: String
-    // },
-    // usersLikesInfo: {
-    //     usersWhoPutLike: [String],
-    //     usersWhoPutDislike: [String]
-    // }
+    likesInfo: {
+        likesCount: Number,
+        dislikesCount: Number,
+        myStatus: String
+    },
+    usersLikesInfo: {
+        usersWhoPutLike: [String],
+        usersWhoPutDislike: [String]
+    }
 },{
     versionKey: false
 });
 
 
-const quizSchema = new mongoose.Schema<QuizGameDBClass>({
-        id: String,
-        firstPlayer: playerSchema,
-        secondPlayer: playerSchema,
-        questions: [gameQuestionSchema],
-        status: String,
-        pairCreatedDate: Date,
-        startGameDate: Date,
-        finishGameDate: Date
-    }
-)
+
 
 
 
@@ -146,7 +124,6 @@ export const BlogsModelClass = mongoose.model('blogs', blogsSchema);
 export const PostsModelClass = mongoose.model('posts', postsSchema);
 export const UsersAccountModelClass = mongoose.model('users', usersAccountSchema);
 export const CommentsModelClass = mongoose.model('comments', commentsSchema);
-export const QuizModelClass = mongoose.model('quiz', quizSchema);
 
 
 
