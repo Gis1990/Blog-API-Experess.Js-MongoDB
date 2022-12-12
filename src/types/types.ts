@@ -253,7 +253,7 @@ export class UsersLikesInfoClass {
 
 export class NewestLikesClass {
     constructor(
-        public createdAt: Date,
+        public addedAt: Date,
         public userId: string,
         public login: string
     ) {

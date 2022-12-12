@@ -22,7 +22,7 @@ const blogsSchema = new mongoose.Schema<BlogDBClass>({
 });
 
 const newestLikesSchema = new mongoose.Schema<NewestLikesClass>({
-    createdAt: Date,
+    addedAt: Date,
     userId: String,
     login: String
 }, { _id : false })
