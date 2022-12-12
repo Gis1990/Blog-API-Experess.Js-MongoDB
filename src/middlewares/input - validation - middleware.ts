@@ -393,6 +393,15 @@ export const validationSchemaForNewPassword:Schema = {
         notEmpty: {
             errorMessage: "The field recovery code is required."
         },
+        custom: {
+            options: async(recoveryCode) => {
+                const user =  await usersRepository.findUserByRecoveryCode(recoveryCode)
+                if (!user) {
+                    return Promise.reject()
+                }
+            },
+            errorMessage: "Incorrect recovery code"
+        },
     }
 }
 
