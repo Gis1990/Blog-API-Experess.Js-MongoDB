@@ -73,55 +73,55 @@ export  class UsersRepository  {
             return null
         }
     }
-    async findByLoginOrEmail(loginOrEmail: string) {
+    async findByLoginOrEmail(loginOrEmail: string): Promise<UserAccountDBClass | null> {
         return UsersAccountModelClass.findOne(({$or: [{email: loginOrEmail}, {login: loginOrEmail}]}));
     }
-    async findUserByConfirmationCode(emailConfirmationCode: string) {
+    async findUserByConfirmationCode(emailConfirmationCode: string): Promise<UserAccountDBClass | null> {
         return UsersAccountModelClass.findOne({"emailConfirmation.confirmationCode": emailConfirmationCode});
     }
-    async findUserByRecoveryCode(recoveryCode: string) {
+    async findUserByRecoveryCode(recoveryCode: string): Promise<UserAccountDBClass | null> {
         return UsersAccountModelClass.findOne({"emailRecoveryCode.recoveryCode": recoveryCode});
     }
-    async updateConfirmation (id: string) {
+    async updateConfirmation (id: string):Promise<boolean> {
         const result = await UsersAccountModelClass.updateOne({id: id}, {$set: {"emailConfirmation.isConfirmed": true}})
         return result.modifiedCount === 1
     }
-    async updateConfirmationCode (id: string) {
+    async updateConfirmationCode (id: string):Promise<boolean> {
         const newConfirmationCode=uuidv4()
         const result = await UsersAccountModelClass.updateOne({id: id}, {$set: {"emailConfirmation.confirmationCode": newConfirmationCode}})
         return result.modifiedCount === 1
     }
-    async addLoginAttempt (id: string, ip:string) {
+    async addLoginAttempt (id: string, ip:string):Promise<boolean> {
         const loginAttempt: LoginAttemptsClass=new LoginAttemptsClass(new Date(),ip)
         const result = await UsersAccountModelClass.updateOne({id: id}, {$push: {loginAttempts: loginAttempt}})
         return result.modifiedCount === 1
     }
-    async addPasswordRecoveryCode (id: string, passwordRecoveryData:UserRecoveryCodeClass) {
+    async addPasswordRecoveryCode (id: string, passwordRecoveryData:UserRecoveryCodeClass):Promise<boolean> {
         const result = await UsersAccountModelClass.updateOne({id: id}, {$set:{emailRecoveryCode: passwordRecoveryData}})
         return result.modifiedCount === 1
     }
-    async updatePasswordHash (id: string, passwordHash:string) {
+    async updatePasswordHash (id: string, passwordHash:string):Promise<boolean> {
         const result = await UsersAccountModelClass.updateOne({id: id}, {$set:{passwordHash: passwordHash}})
         return result.modifiedCount === 1
     }
-    async addUserDevicesData (id: string,userDevicesData: userDevicesDataClass) {
+    async addUserDevicesData (id: string,userDevicesData: userDevicesDataClass):Promise<boolean> {
         const result = await UsersAccountModelClass.updateOne({id: id}, {$push: {userDevicesData: userDevicesData}})
         return result.modifiedCount === 1
     }
-    async updateLastActiveDate (id: string,userDevicesData: userDevicesDataClass,newLastActiveDate:string) {
+    async updateLastActiveDate (id: string,userDevicesData: userDevicesDataClass,newLastActiveDate:string):Promise<boolean> {
         const result = await UsersAccountModelClass.updateOne({"userDevicesData.deviceId":userDevicesData.deviceId},{$set:{"userDevicesData.$.lastActiveDate": newLastActiveDate}})
         return result.modifiedCount === 1
     }
-    async terminateAllDevices (id: string,userDevicesData: userDevicesDataClass) {
+    async terminateAllDevices (id: string,userDevicesData: userDevicesDataClass):Promise<boolean> {
         await UsersAccountModelClass.updateOne({id: id}, {$set: {userDevicesData: []}})
         const result = await UsersAccountModelClass.updateOne({id: id}, {$push: {userDevicesData: userDevicesData}})
         return result.modifiedCount === 1
     }
-    async terminateSpecificDevice (id: string,deviceId:string) {
+    async terminateSpecificDevice (id: string,deviceId:string):Promise<boolean> {
         const result = await UsersAccountModelClass.updateOne({id: id}, { $pull: { userDevicesData:{deviceId: deviceId } }})
         return result.modifiedCount === 1
     }
-    async addEmailLog (email: string) {
+    async addEmailLog (email: string):Promise<boolean> {
         const emailData: SentEmailsClass=new SentEmailsClass(Number((new Date())).toString())
         const result = await UsersAccountModelClass.updateOne({email: email}, {$push: {"emailConfirmation.sentEmails": emailData}})
         return result.modifiedCount === 1
