@@ -141,12 +141,25 @@ export class UserAccountDBClass {
         public email: string,
         public passwordHash: string,
         public createdAt: string,
+        public emailRecoveryCode: UserRecoveryCodeClass,
         public loginAttempts: LoginAttemptsClass[],
         public emailConfirmation: UserAccountEmailClass,
         public userDevicesData: userDevicesDataClass[]
     ) {
     }
 }
+
+
+export class UserRecoveryCodeClass {
+    constructor(
+        public recoveryCode: string,
+        public expirationDate: Date,
+    ) {
+    }
+}
+
+
+
 export class userDevicesDataClass {
     constructor(
         public ip: string,

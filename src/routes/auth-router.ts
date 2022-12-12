@@ -4,11 +4,13 @@ import {
     confirmationCodesValidation,
     emailsInputValidation,
     loginsInputValidation,
+    newPasswordEndpointInputValidation,
+    passwordRecoveryEndpointInputValidation,
     usersInputValidation
 } from "../middlewares/input - validation - middleware";
 import {
     rateLimiterForEmailResending,
-    rateLimiterForLogin,
+    rateLimiterForLogin, rateLimiterForNewPassword, rateLimiterForPasswordRecovery,
     rateLimiterForRegistration, rateLimiterForRegistrationConfirmation
 } from "../middlewares/rate-limit-middleware";
 
@@ -17,6 +19,26 @@ import {
 export const authRouter = Router({})
 
 
+authRouter.post('/login',
+    loginsInputValidation,
+    rateLimiterForLogin,
+    authController.login.bind(authController))
+
+
+authRouter.post('/password-recovery',
+    rateLimiterForPasswordRecovery,
+    passwordRecoveryEndpointInputValidation,
+    authController.passwordRecovery.bind(authController))
+
+authRouter.post('/new-password',
+    rateLimiterForNewPassword,
+    newPasswordEndpointInputValidation,
+    authController.newPassword.bind(authController))
+
+
+
+
+authRouter.post('/refresh-token',authController.refreshAllTokens.bind(authController))
 
 
 authRouter.post('/registration-confirmation',
@@ -36,17 +58,6 @@ authRouter.post('/registration-email-resending',
     emailsInputValidation,
     rateLimiterForEmailResending,
     authController.registrationEmailResending.bind(authController))
-
-
-
-
-authRouter.post('/login',
-    loginsInputValidation,
-    rateLimiterForLogin,
-    authController.login.bind(authController))
-
-
-authRouter.post('/refresh-token',authController.refreshAllTokens.bind(authController))
 
 
 

@@ -264,6 +264,23 @@ export const validationSchemaForEmails:Schema = {
 }
 
 
+export const validationSchemaForEmailsInPasswordRecovery:Schema = {
+    email: {
+        in: ["query","body"],
+        exists: {
+            errorMessage: "The field email is required."
+        },
+        notEmpty: {
+            errorMessage: "The field email is required."
+        },
+        matches: {
+            options: patternForEmail,
+            errorMessage: 'The field email has incorrect format'
+        },
+    }
+}
+
+
 
 export const validationSchemaForConfirmationCodes:Schema = {
     code: {
@@ -354,6 +371,34 @@ export const validationSchemaForLikes:Schema = {
 }}
 
 
+export const validationSchemaForNewPassword:Schema = {
+    newPassword: {
+        in: ["body"],
+        exists: {
+            errorMessage: "The field new password is required."
+        },
+        notEmpty: {
+            errorMessage: "The field new password is required."
+        },
+        isLength: {
+            options: {min:6,max: 20},
+            errorMessage: "The field content has invalid length",
+        }
+    },
+    recoveryCode: {
+        in: ["body"],
+        exists: {
+            errorMessage: "The field recovery code is required."
+        },
+        notEmpty: {
+            errorMessage: "The field recovery code is required."
+        },
+    }
+}
+
+
+
+
 
 
 const errorHandlerForIdValidation = (rq: Request, rs: Response, nxt: NextFunction) => {
@@ -434,6 +479,8 @@ export const emailsInputValidation=validate(checkSchema(validationSchemaForEmail
 export const confirmationCodesValidation=validate(checkSchema(validationSchemaForConfirmationCodes))
 export const postsInputValidation=validate(checkSchema(validationSchemaForPosts))
 export const likesInputValidation=validate(checkSchema(validationSchemaForLikes))
+export const passwordRecoveryEndpointInputValidation=validate(checkSchema(validationSchemaForEmailsInPasswordRecovery))
+export const newPasswordEndpointInputValidation=validate(checkSchema(validationSchemaForNewPassword))
 
 
 

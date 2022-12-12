@@ -13,6 +13,22 @@ export class AuthController{
                 res.sendStatus(400)
             }
         }
+    async passwordRecovery(req: Request, res: Response) {
+        const result = await this.authService.passwordRecovery(req.body.email)
+        if (result) {
+            res.sendStatus(204)
+        } else {
+            res.sendStatus(400)
+        }
+    }
+    async newPassword(req: Request, res: Response) {
+        const result = await this.authService.acceptNewPassword(req.body.newPassword, req.body.recoveryCode)
+        if (result) {
+            res.sendStatus(204)
+        } else {
+            res.sendStatus(400)
+        }
+    }
     async registration(req: Request, res: Response) {
         const newUser=await this.authService.createUserWithConfirmationEmail(req.body.login,req.body.email,req.body.password)
         if (newUser) {

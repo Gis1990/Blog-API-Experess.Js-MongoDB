@@ -3,7 +3,7 @@ import {
     SentEmailsClass,
     UserAccountDBClass,
     UserDBClassPagination,
-    userDevicesDataClass
+    userDevicesDataClass, UserRecoveryCodeClass
 } from "../types/types";
 import {UsersAccountModelClass} from "./db";
 import {v4 as uuidv4} from "uuid";
@@ -58,7 +58,7 @@ export  class UsersRepository  {
         return new UserDBClassPagination(Math.ceil(totalCount/pageSize),pageNumber,pageSize,totalCount,cursor)
     }
     async findUserById(id: string): Promise<UserAccountDBClass | null> {
-        let user = await UsersAccountModelClass.findOne({id: id},{_id:0,emailConfirmation:0,loginAttempts:0,passwordHash:0,createdAt:0})
+        let user = await UsersAccountModelClass.findOne({id: id},{_id:0,emailConfirmation:0,loginAttempts:0,passwordHash:0,createdAt:0,emailRecoveryCode:0})
         if (user) {
             return user
         } else {
@@ -79,6 +79,9 @@ export  class UsersRepository  {
     async findUserByConfirmationCode(emailConfirmationCode: string) {
         return UsersAccountModelClass.findOne({"emailConfirmation.confirmationCode": emailConfirmationCode});
     }
+    async findUserByRecoveryCode(recoveryCode: string) {
+        return UsersAccountModelClass.findOne({"emailRecoveryCode.recoveryCode": recoveryCode});
+    }
     async updateConfirmation (id: string) {
         const result = await UsersAccountModelClass.updateOne({id: id}, {$set: {"emailConfirmation.isConfirmed": true}})
         return result.modifiedCount === 1
@@ -91,6 +94,14 @@ export  class UsersRepository  {
     async addLoginAttempt (id: string, ip:string) {
         const loginAttempt: LoginAttemptsClass=new LoginAttemptsClass(new Date(),ip)
         const result = await UsersAccountModelClass.updateOne({id: id}, {$push: {loginAttempts: loginAttempt}})
+        return result.modifiedCount === 1
+    }
+    async addPasswordRecoveryCode (id: string, passwordRecoveryData:UserRecoveryCodeClass) {
+        const result = await UsersAccountModelClass.updateOne({id: id}, {$set:{emailRecoveryCode: passwordRecoveryData}})
+        return result.modifiedCount === 1
+    }
+    async updatePasswordHash (id: string, passwordHash:string) {
+        const result = await UsersAccountModelClass.updateOne({id: id}, {$set:{passwordHash: passwordHash}})
         return result.modifiedCount === 1
     }
     async addUserDevicesData (id: string,userDevicesData: userDevicesDataClass) {

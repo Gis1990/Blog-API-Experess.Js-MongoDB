@@ -26,7 +26,8 @@ describe("integration tests for AuthService", () => {
 
     const usersRepository = new UsersRepository()
     const emailControllerMock: jest. Mocked<EmailAdapter> = {
-        sendEmail: jest.fn()
+        sendEmailWithRegistration: jest.fn(),
+        sendEmailWithPasswordRecovery: jest.fn()
     }
     const usersService = new UsersService(usersRepository)
     const jwtService = new JwtService()

@@ -85,6 +85,10 @@ const usersAccountSchema = new mongoose.Schema<UserAccountDBClass>({
     email: String,
     passwordHash: String,
     createdAt: String,
+    emailRecoveryCode: {
+        recoveryCode: String,
+        expirationDate: Date,
+    },
     loginAttempts: [loginAttemptsSchema],
     emailConfirmation: {
         isConfirmed: Boolean,

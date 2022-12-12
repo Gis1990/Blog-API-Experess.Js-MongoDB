@@ -3,7 +3,7 @@ import {settings} from '../settings'
 
 export class EmailAdapter {
   constructor() {}
-  async sendEmail (email: string,confirmationCode: string) {
+  async sendEmailWithRegistration (email: string, confirmationCode: string) {
       const transport = nodemailer.createTransport({
           service: 'gmail',
           auth: {
@@ -19,6 +19,22 @@ export class EmailAdapter {
       });
       return true
   }
+    async sendEmailWithPasswordRecovery (email: string, passwordRecoveryCode: string) {
+        const transport = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: "anton.pavlovskiy1990@gmail.com",
+                pass: settings.mailPass,
+            },
+        });
+        const info = await transport.sendMail({
+            from: 'Anton Pavlovskiy',
+            to: email,
+            subject:"Password recovery",
+            text: `https://somesite.com/password-recovery?recoveryCode=${passwordRecoveryCode}`,
+        });
+        return true
+    }
 }
 
 

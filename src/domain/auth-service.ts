@@ -1,5 +1,10 @@
 import {ObjectId} from "mongodb";
-import {NewUserClassResponseModel, UserAccountDBClass, userDevicesDataClass} from "../types/types";
+import {
+    NewUserClassResponseModel,
+    UserAccountDBClass,
+    userDevicesDataClass,
+    UserRecoveryCodeClass
+} from "../types/types";
 
 import bcrypt from "bcrypt";
 import {v4 as uuidv4} from "uuid";
@@ -19,17 +24,19 @@ export class  AuthService  {
                 protected jwtService:JwtService) {}
     async createUserWithConfirmationEmail(login: string,email:string, password: string): Promise<UserAccountDBClass> {
         const passwordHash = await this._generateHash(password)
+        const emailRecoveryCodeData:UserRecoveryCodeClass=new UserRecoveryCodeClass("",new Date())
         const emailConfirmation: UserAccountEmailClass = new  UserAccountEmailClass([],uuidv4(),add (new Date(),{hours:1}),false)
-        const newUser: UserAccountDBClass = new UserAccountDBClass(new ObjectId(),Number((new Date())).toString(), login, email, passwordHash, new Date().toISOString(), [],emailConfirmation,[])
+        const newUser: UserAccountDBClass = new UserAccountDBClass(new ObjectId(),Number((new Date())).toString(), login, email, passwordHash, new Date().toISOString(),emailRecoveryCodeData, [],emailConfirmation,[])
         const newUserWithConfirmationCode=this.usersRepository.createUser(newUser)
-        await this.emailController.sendEmail(email,newUser.emailConfirmation.confirmationCode)
+        await this.emailController.sendEmailWithRegistration(email,newUser.emailConfirmation.confirmationCode)
         await this.usersRepository.addEmailLog(email)
         return newUserWithConfirmationCode
     }
     async createUserWithoutConfirmationEmail(login: string,email:string, password: string): Promise<NewUserClassResponseModel> {
         const passwordHash = await this._generateHash(password)
         const emailConfirmation: UserAccountEmailClass = new  UserAccountEmailClass([],uuidv4(),add (new Date(),{hours:1}),true)
-        const newUser: UserAccountDBClass = new UserAccountDBClass(new ObjectId(),Number((new Date())).toString(), login, email, passwordHash, new Date().toISOString(), [],emailConfirmation,[])
+        const emailRecoveryCodeData:UserRecoveryCodeClass=new UserRecoveryCodeClass("",new Date())
+        const newUser: UserAccountDBClass = new UserAccountDBClass(new ObjectId(),Number((new Date())).toString(), login, email, passwordHash, new Date().toISOString(),emailRecoveryCodeData, [],emailConfirmation,[])
         const user=await this.usersRepository.createUser(newUser)
         return (({ id, login,email,createdAt }) => ({ id, login,email,createdAt }))(user)
     }
@@ -60,8 +67,25 @@ export class  AuthService  {
         if (user.emailConfirmation.isConfirmed) return false;
         if (user.emailConfirmation.confirmationCode !== code) return false;
         if (user.emailConfirmation.expirationDate <new Date()) return false;
-        const result=await this.usersRepository.updateConfirmation(user.id)
-        return result
+        return await this.usersRepository.updateConfirmation(user.id)
+    }
+    async passwordRecovery (email: string): Promise<true> {
+        const user = await this.usersService.findByLoginOrEmail(email)
+        if (user){
+            const passwordRecoveryData:UserRecoveryCodeClass=new UserRecoveryCodeClass(uuidv4(),add (new Date(),{hours:1}))
+            await this.emailController.sendEmailWithPasswordRecovery(email,passwordRecoveryData.recoveryCode)
+            await this.usersRepository.addPasswordRecoveryCode(user.id,passwordRecoveryData)
+            return true
+        }else{
+            return true
+        }
+    }
+    async acceptNewPassword(newPassword:string,recoveryCode: string):Promise<boolean> {
+        const user = await this.usersRepository.findUserByRecoveryCode(recoveryCode)
+        if (!user) return false
+        if (user.emailRecoveryCode.expirationDate <new Date()) return false;
+        const passwordHash = await this._generateHash(newPassword)
+        return await this.usersRepository.updatePasswordHash(user.id,passwordHash)
     }
     async registrationEmailResending (email: string): Promise<boolean> {
         const user = await this.usersService.findByLoginOrEmail(email)
@@ -72,7 +96,7 @@ export class  AuthService  {
         }
         const updatedUser = await this.usersService.findByLoginOrEmail(email)
         if (updatedUser){
-            await this.emailController.sendEmail(email,updatedUser.emailConfirmation.confirmationCode)
+            await this.emailController.sendEmailWithRegistration(email,updatedUser.emailConfirmation.confirmationCode)
             await this.usersRepository.addEmailLog(email)
             return true
         }else {
