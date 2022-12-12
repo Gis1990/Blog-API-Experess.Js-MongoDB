@@ -14,13 +14,13 @@ import {BlogsRepository} from "../repositories/blogs-repository";
 export class PostsService {
     constructor(protected postsRepository: PostsRepository, protected blogsRepository: BlogsRepository) {}
     async getAllPosts(obj:{pageNumber?:number,pageSize?:number,sortBy?:string,sortDirection?:string},userId: string | undefined): Promise<PostDBClassPagination> {
-        const {pageNumber=1,pageSize=10,sortBy="adededAt",sortDirection="desc"}=obj
+        const {pageNumber=1,pageSize=10,sortBy="createdAt",sortDirection="desc"}=obj
         const allPosts = await this.postsRepository.getAllPosts(Number(pageNumber), Number(pageSize),sortBy,sortDirection);
         if (userId) {
             for (let i = 0; i < allPosts.items.length; i++) {
                 allPosts.items[i].extendedLikesInfo.newestLikes = allPosts.items[i].extendedLikesInfo.newestLikes
                     .slice(-3)
-                    .sort((a, b) => b.adededAt.getTime() - a.adededAt.getTime());
+                    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
                 allPosts.items[i].extendedLikesInfo.myStatus = await this.postsRepository.returnUsersLikeStatus(
                     allPosts.items[i].id,
                     userId,
@@ -32,7 +32,7 @@ export class PostsService {
                 (elem) =>
                     (elem.extendedLikesInfo.newestLikes = elem.extendedLikesInfo.newestLikes
                         .slice(-3)
-                        .sort((a, b) => b.adededAt.getTime() - a.adededAt.getTime())),
+                        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())),
             );
         }
         return allPosts;
@@ -42,7 +42,7 @@ export class PostsService {
         blogId: string,
         userId: string | undefined,
     ): Promise<PostDBClassPagination> {
-        const {pageNumber=1,pageSize=10,sortBy="adededAt",sortDirection="desc"}=obj
+        const {pageNumber=1,pageSize=10,sortBy="createdAt",sortDirection="desc"}=obj
         const posts = await this.postsRepository.getAllPostsForSpecificBlog(
             Number(pageNumber),
             Number(pageSize),
@@ -54,7 +54,7 @@ export class PostsService {
             for (let i = 0; i < posts.items.length; i++) {
                 posts.items[i].extendedLikesInfo.newestLikes = posts.items[i].extendedLikesInfo.newestLikes
                     .slice(-3)
-                    .sort((a, b) => b.adededAt.getTime() - a.adededAt.getTime());
+                    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
                 posts.items[i].extendedLikesInfo.myStatus = await this.postsRepository.returnUsersLikeStatus(
                     posts.items[i].id,
                     userId,
@@ -65,7 +65,7 @@ export class PostsService {
                 (elem) =>
                     (elem.extendedLikesInfo.newestLikes = elem.extendedLikesInfo.newestLikes
                         .slice(-3)
-                        .sort((a, b) => b.adededAt.getTime() - a.adededAt.getTime())),
+                        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())),
             );
             posts.items.forEach((elem) => (elem.extendedLikesInfo.myStatus = "None"));}
         return posts;
@@ -77,7 +77,7 @@ export class PostsService {
         }
         post.extendedLikesInfo.newestLikes = post?.extendedLikesInfo.newestLikes
             .slice(-3)
-            .sort((a, b) => b.adededAt.getTime() - a.adededAt.getTime());
+            .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
         if (userId) {
             post.extendedLikesInfo.myStatus = await this.postsRepository.returnUsersLikeStatus(id, userId);
         } else {
@@ -109,14 +109,14 @@ export class PostsService {
             usersLikesInfo,
         );
         const newPost = await this.postsRepository.createPost(post);
-        return (({ id, title, shortDescription, content, blogId, blogName, adededAt, extendedLikesInfo }) => ({
+        return (({ id, title, shortDescription, content, blogId, blogName, createdAt, extendedLikesInfo }) => ({
             id,
             title,
             shortDescription,
             content,
             blogId,
             blogName,
-            adededAt,
+            createdAt,
             extendedLikesInfo,
         }))(newPost);
     }

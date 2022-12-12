@@ -38,7 +38,7 @@ export class  AuthService  {
         const emailRecoveryCodeData:UserRecoveryCodeClass=new UserRecoveryCodeClass("",new Date())
         const newUser: UserAccountDBClass = new UserAccountDBClass(new ObjectId(),Number((new Date())).toString(), login, email, passwordHash, new Date().toISOString(),emailRecoveryCodeData, [],emailConfirmation,[])
         const user=await this.usersRepository.createUser(newUser)
-        return (({ id, login,email,adededAt }) => ({ id, login,email,adededAt }))(user)
+        return (({ id, login,email,createdAt }) => ({ id, login,email,createdAt }))(user)
     }
     async checkCredentials(loginOrEmail: string, password: string,ip:string,title:string|undefined):Promise<string[]|null> {
         const user = await this.usersRepository.findByLoginOrEmail(loginOrEmail)

@@ -18,11 +18,11 @@ export  class UsersRepository  {
          if (!searchLoginTerm||!searchEmailTerm) {
              if (sortDirection==="desc"){
                  sortObj[sortBy]=-1
-                 cursor=await UsersAccountModelClass.find({}, {_id:0,id:1,login:1,email:1,adededAt:1}).sort(sortObj).skip(skips).limit(pageSize).lean()
+                 cursor=await UsersAccountModelClass.find({}, {_id:0,id:1,login:1,email:1,createdAt:1}).sort(sortObj).skip(skips).limit(pageSize).lean()
                  totalCount=await UsersAccountModelClass.count({})
              }else{
                  sortObj[sortBy]=1
-                 cursor=await UsersAccountModelClass.find({}, {_id:0,id:1,login:1,email:1,adededAt:1}).sort(sortObj).skip(skips).limit(pageSize).lean()
+                 cursor=await UsersAccountModelClass.find({}, {_id:0,id:1,login:1,email:1,createdAt:1}).sort(sortObj).skip(skips).limit(pageSize).lean()
                  totalCount=await UsersAccountModelClass.count({})
              }
          }else{
@@ -33,7 +33,7 @@ export  class UsersRepository  {
                          {login: {$regex: searchLoginTerm, $options: 'i'}},
                          {email: {$regex: searchEmailTerm, $options: 'i'}}
                      ]
-                 }, {_id: 0, id: 1, login: 1, email: 1, adededAt: 1}).sort(sortObj).skip(skips).limit(pageSize).lean()
+                 }, {_id: 0, id: 1, login: 1, email: 1, createdAt: 1}).sort(sortObj).skip(skips).limit(pageSize).lean()
                  totalCount = await UsersAccountModelClass.count({
                      "$or": [
                          {login: {$regex: searchLoginTerm, $options: 'i'}},
@@ -47,7 +47,7 @@ export  class UsersRepository  {
                          {login: {$regex: searchLoginTerm, $options: 'i'}},
                          {email: {$regex: searchEmailTerm, $options: 'i'}}
                      ]
-                 }, {_id: 0, id: 1, login: 1, email: 1, adededAt: 1}).sort(sortObj).skip(skips).limit(pageSize).lean()
+                 }, {_id: 0, id: 1, login: 1, email: 1, createdAt: 1}).sort(sortObj).skip(skips).limit(pageSize).lean()
                  totalCount = await UsersAccountModelClass.count({
                      "$or": [
                          {login: {$regex: searchLoginTerm, $options: 'i'}},
@@ -58,7 +58,7 @@ export  class UsersRepository  {
         return new UserDBClassPagination(Math.ceil(totalCount/pageSize),pageNumber,pageSize,totalCount,cursor)
     }
     async findUserById(id: string): Promise<UserAccountDBClass | null> {
-        let user = await UsersAccountModelClass.findOne({id: id},{_id:0,emailConfirmation:0,loginAttempts:0,passwordHash:0,adededAt:0,emailRecoveryCode:0})
+        let user = await UsersAccountModelClass.findOne({id: id},{_id:0,emailConfirmation:0,loginAttempts:0,passwordHash:0,createdAt:0,emailRecoveryCode:0})
         if (user) {
             return user
         } else {

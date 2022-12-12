@@ -22,7 +22,7 @@ export const createOutputCommentForTesting = (content:string,userId:string, user
         content: content,
         userId: userId,
         userLogin: userLogin,
-        adededAt: expect.any(String),
+        createdAt: expect.any(String),
         likesInfo: {
             likesCount: 0,
             dislikesCount: 0,
@@ -52,7 +52,7 @@ describe('endpoint /posts ',  () => {
             content: content,
             blogId: blogId,
             blogName: blogName,
-            adededAt: expect.any(String),
+            createdAt: expect.any(String),
             extendedLikesInfo: {
                 likesCount: likesCount,
                 dislikesCount: dislikesCount,

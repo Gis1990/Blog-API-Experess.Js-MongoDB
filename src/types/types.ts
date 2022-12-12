@@ -7,7 +7,7 @@ export class BlogDBClass {
         public name: string,
         public description: string,
         public websiteUrl: string,
-        public adededAt: Date,
+        public createdAt: Date,
     ) {
     }
 }
@@ -18,7 +18,7 @@ export class NewBlogClassResponseModel {
         public name: string,
         public description: string,
         public websiteUrl: string,
-        public adededAt: Date
+        public createdAt: Date
     ) {
     }
 }
@@ -34,7 +34,7 @@ export class CommentDBClass {
         public userId: string,
         public userLogin: string,
         public postId: string,
-        public adededAt: string,
+        public createdAt: string,
         public likesInfo: LikesInfoClass,
         public usersLikesInfo: UsersLikesInfoClass
     ) {
@@ -48,7 +48,7 @@ export class NewCommentClassResponseModel {
         public content: string,
         public userId: string,
         public userLogin: string,
-        public adededAt: string,
+        public createdAt: string,
         public likesInfo: LikesInfoClass,
     ) {
     }
@@ -69,7 +69,7 @@ export class PostDBClass {
         public content: string,
         public blogId: string,
         public blogName: string,
-        public adededAt: Date,
+        public createdAt: Date,
         public extendedLikesInfo: ExtendedLikesInfoClass,
         public usersLikesInfo: UsersLikesInfoClass,
     ) {
@@ -142,7 +142,7 @@ export class UserAccountDBClass {
         public login: string,
         public email: string,
         public passwordHash: string,
-        public adededAt: string,
+        public createdAt: string,
         public emailRecoveryCode: UserRecoveryCodeClass,
         public loginAttempts: LoginAttemptsClass[],
         public emailConfirmation: UserAccountEmailClass,
@@ -188,7 +188,7 @@ export class NewUserClassResponseModel {
         public id: string,
         public login: string,
         public email: string,
-        public adededAt: string,
+        public createdAt: string,
     ) {
     }
 }
@@ -202,7 +202,7 @@ export class NewPostClassResponseModel {
         public content: string,
         public blogId: string,
         public blogName: string,
-        public adededAt: Date,
+        public createdAt: Date,
     ) {
     }
 }
@@ -253,7 +253,7 @@ export class UsersLikesInfoClass {
 
 export class NewestLikesClass {
     constructor(
-        public adededAt: Date,
+        public createdAt: Date,
         public userId: string,
         public login: string
     ) {
