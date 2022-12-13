@@ -18,7 +18,7 @@ export class  SecurityService  {
             return null
         }
     }
-    async terminateAllDevices(refreshToken:string): Promise<true|false> {
+    async terminateAllDevices(refreshToken:string): Promise<boolean> {
         const userId = await this.jwtService.getUserIdByRefreshToken(refreshToken)
         const user = await this.usersRepository.findUserById(userId)
         const usersData = await this.jwtService.getUserDevicesDataFromRefreshToken(refreshToken)

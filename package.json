@@ -28,7 +28,8 @@
     "reflect-metadata": "^0.1.13",
     "supertest": "^6.2.4",
     "touch": "~3.1.0",
-    "uuidv4": "~6.2.13"
+    "uuidv4": "~6.2.13",
+    "yarn-upgrade-all": "^0.7.1"
   },
   "scripts": {
     "dev": "nodemon --inspect dist/index.js",
