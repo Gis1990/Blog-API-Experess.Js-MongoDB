@@ -4,9 +4,10 @@ import {MongoMemoryServer} from "mongodb-memory-server";
 import mongoose from "mongoose";
 import {BlogsModelClass} from "../repositories/db";
 
-export const createBlogForTesting = (name:string, websiteUrl:string) => {
+export const createBlogForTesting = (name:string,description:string, websiteUrl:string) => {
     return{
         name: name,
+        description: description,
         websiteUrl: websiteUrl
     }
 }
@@ -31,11 +32,12 @@ describe('endpoint /blogs ',  () => {
         totalCount: 0,
         items: []
     }
-    const createPostForTestingInBlogs = (title:string,shortDescription:string,content:string) => {
+    const createPostForTestingInBlogs = (title:string,shortDescription:string,content:string,blogId:string) => {
         return{
             title: title,
             shortDescription: shortDescription,
-            content: content
+            content: content,
+            blogId:blogId
         }
 
     }
@@ -70,7 +72,7 @@ describe('endpoint /blogs ',  () => {
         expect(response.body).toEqual(emptyAllBlogsDbReturnData)
     })
     it('3.Should return status 401 (/post) ', async () => {
-        const correctBlog = createBlogForTesting("testName", "https://www.youtube.com/test")
+        const correctBlog = createBlogForTesting("testName", "correct description","https://www.youtube.com/test")
         await request(app)
             .post('/blogs')
             .send(correctBlog)
@@ -79,8 +81,9 @@ describe('endpoint /blogs ',  () => {
     })
     it('4.Should return status 400 and array with error in websiteUrl (/post)', async () => {
         const blogName="testName"
-        const incorrectBlogwebsiteUrl="http://www.youtube.com/test"
-        const notCorrectBlog = createBlogForTesting(blogName, incorrectBlogwebsiteUrl)
+        const correctDescription="correct description"
+        const incorrectBlogWebsiteUrl="http://www.youtube.com/test"
+        const notCorrectBlog = createBlogForTesting(blogName,correctDescription,incorrectBlogWebsiteUrl)
         const response=await request(app)
             .post('/blogs')
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
@@ -90,8 +93,9 @@ describe('endpoint /blogs ',  () => {
     })
     it('5.Should return status 400 and array with errors in name and websiteUrl (/post)', async () => {
         const incorrectBlogName="testName111111111111111111111111"
-        const incorrectBlogwebsiteUrl="http://www.youtube.com/test"
-        const notCorrectBlog = createBlogForTesting(incorrectBlogName, incorrectBlogwebsiteUrl)
+        const correctDescription1="correct description"
+        const incorrectBlogWebsiteUrl="http://www.youtube.com/test"
+        const notCorrectBlog = createBlogForTesting(incorrectBlogName,correctDescription1, incorrectBlogWebsiteUrl)
         const response=await request(app)
             .post('/blogs')
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
@@ -101,8 +105,9 @@ describe('endpoint /blogs ',  () => {
     })
     it('6.Should return status 400 and array with error in name (/post)', async () => {
         const incorrectBlogName="testName111111111111111111111111"
-        const correctBlogwebsiteUrl="https://www.youtube.com/test"
-        const notCorrectBlog = createBlogForTesting(incorrectBlogName, correctBlogwebsiteUrl)
+        const correctDescription="correct description"
+        const correctBlogWebsiteUrl="https://www.youtube.com/test"
+        const notCorrectBlog = createBlogForTesting(incorrectBlogName,correctDescription, correctBlogWebsiteUrl)
         const response=await request(app)
             .post('/blogs')
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
@@ -112,8 +117,9 @@ describe('endpoint /blogs ',  () => {
     })
     it('7.Should return status 400 and array with error in name (/post)', async () => {
         const incorrectBlogName=""
-        const correctBlogwebsiteUrl="https://www.youtube.com/test"
-        const notCorrectBlog = createBlogForTesting(incorrectBlogName, correctBlogwebsiteUrl)
+        const correctDescription2="correct description"
+        const correctBlogWebsiteUrl="https://www.youtube.com/test"
+        const notCorrectBlog = createBlogForTesting(incorrectBlogName,correctDescription2, correctBlogWebsiteUrl)
         const response=await request(app)
             .post('/blogs')
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
@@ -123,8 +129,9 @@ describe('endpoint /blogs ',  () => {
     })
     it('8.Should return status 400 and array with errors in name and websiteUrl (/post)', async () => {
         const incorrectBlogName=""
-        const incorrectBlogwebsiteUrl=""
-        const notCorrectBlog = createBlogForTesting(incorrectBlogName, incorrectBlogwebsiteUrl)
+        const incorrectBlogWebsiteUrl=""
+        const correctDescription3="correct description"
+        const notCorrectBlog = createBlogForTesting(incorrectBlogName,correctDescription3, incorrectBlogWebsiteUrl)
         const response=await request(app)
             .post('/blogs')
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
@@ -134,8 +141,9 @@ describe('endpoint /blogs ',  () => {
     })
     it('9.Should return status 201 and newly created blog (/post)', async () => {
         const blogName1="testName1"
-        const blogwebsiteUrl1="https://www.youtube.com/test1"
-        const correctBlog1 = createBlogForTesting(blogName1, blogwebsiteUrl1)
+        const blogWebsiteUrl1="https://www.youtube.com/test1"
+        const correctDescription4="correct description"
+        const correctBlog1 = createBlogForTesting(blogName1,correctDescription4, blogWebsiteUrl1)
         const response=await request(app)
             .post('/blogs')
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
@@ -143,28 +151,36 @@ describe('endpoint /blogs ',  () => {
             .expect(201)
         expect(response.body).toEqual({
             id: response.body.id,
+            description: correctDescription4,
             name: blogName1,
-            websiteUrl: blogwebsiteUrl1
+            websiteUrl: blogWebsiteUrl1,
+            createdAt: response.body.createdAt,
         })
         expect(response.body.id).toEqual(expect.any(String))
+        expect(response.body.createdAt).toEqual(expect.any(String))
 
     })
     it('10.Should return status 200 and correct blog (/get)', async () => {
         const blogName1="testName1"
-        const blogwebsiteUrl1="https://www.youtube.com/test1"
+        const correctDescription5="correct description"
+        const blogWebsiteUrl1="https://www.youtube.com/test1"
         const response=await request(app)
             .get('/blogs')
             .expect(200)
         expect(response.body.items[0].id).toEqual(expect.any(String))
+        expect(response.body.items[0].createdAt).toEqual(expect.any(String))
         expect(response.body).toEqual(createDbReturnDataForAllBlogs(1,1,10,1,
             { id: response.body.items[0].id,
             name: blogName1,
-            websiteUrl: blogwebsiteUrl1}))
+            description: correctDescription5,
+            websiteUrl: blogWebsiteUrl1,
+            createdAt: response.body.items[0].createdAt}))
     })
     it('11.Should return status 201 and newly created blog (/post)', async () => {
         const blogName2="testName2"
-        const blogwebsiteUrl2="https://www.youtube.com/test2"
-        const correctBlog2 = createBlogForTesting(blogName2, blogwebsiteUrl2)
+        const correctDescription5="correct description"
+        const blogWebsiteUrl2="https://www.youtube.com/test2"
+        const correctBlog2 = createBlogForTesting(blogName2,correctDescription5, blogWebsiteUrl2)
         const response=await request(app)
             .post('/blogs')
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
@@ -172,22 +188,28 @@ describe('endpoint /blogs ',  () => {
             .expect(201)
         expect(response.body).toEqual({
             id: response.body.id,
-                name: blogName2,
-                websiteUrl: blogwebsiteUrl2
+            name: blogName2,
+            description: correctDescription5,
+            websiteUrl: blogWebsiteUrl2,
+            createdAt: response.body.createdAt
         })
         expect(response.body.id).toEqual(expect.any(String))
+        expect(response.body.createdAt).toEqual(expect.any(String))
 
     })
     it('12.Should return status 200 and correct blogs (/get)', async () => {
         const blogName1="testName1"
-        const blogwebsiteUrl1="https://www.youtube.com/test1"
+        const blogWebsiteUrl1="https://www.youtube.com/test1"
         const blogName2="testName2"
-        const blogwebsiteUrl2="https://www.youtube.com/test2"
+        const blogWebsiteUrl2="https://www.youtube.com/test2"
+        const correctDescription="correct description"
         const response=await request(app)
             .get('/blogs')
             .expect(200)
         expect(response.body.items[0].id).toEqual(expect.any(String))
         expect(response.body.items[1].id).toEqual(expect.any(String))
+        expect(response.body.items[0].createdAt).toEqual(expect.any(String))
+        expect(response.body.items[1].createdAt).toEqual(expect.any(String))
         expect(response.body).toEqual({
             pagesCount: 1,
             page: 1,
@@ -195,51 +217,66 @@ describe('endpoint /blogs ',  () => {
             totalCount: 2,
             items: [{
                 id: response.body.items[0].id,
-                name: blogName1,
-                websiteUrl: blogwebsiteUrl1
+                name: blogName2,
+                description: correctDescription,
+                websiteUrl: blogWebsiteUrl2,
+                createdAt: response.body.items[0].createdAt
             },{
                 id: response.body.items[1].id,
-                name: blogName2,
-                websiteUrl: blogwebsiteUrl2
+                name: blogName1,
+                description: correctDescription,
+                websiteUrl: blogWebsiteUrl1,
+                createdAt: response.body.items[1].createdAt
             }]
         })
     })
     it('13.Should return status 200,correct blog and correct pagination (/get)', async () => {
-        const blogName1="testName1"
-        const blogwebsiteUrl1="https://www.youtube.com/test1"
+        const blogName2="testName2"
+        const blogWebsiteUrl2="https://www.youtube.com/test2"
+        const correctDescription="correct description"
         const response=await request(app)
-            .get('/blogs?PageNumber=1&PageSize=1')
+            .get('/blogs?pageNumber=1&pageSize=1')
             .expect(200)
         expect(response.body.items[0].id).toEqual(expect.any(String))
+        expect(response.body.items[0].createdAt).toEqual(expect.any(String))
         expect(response.body).toEqual(createDbReturnDataForAllBlogs(2,1,1,2,
             { id: response.body.items[0].id,
-                name: blogName1,
-                websiteUrl: blogwebsiteUrl1}))
+                name: blogName2,
+                description: correctDescription,
+                websiteUrl: blogWebsiteUrl2,
+                createdAt: response.body.items[0].createdAt}))
     })
     it('14.Should return status 200,correct blog and correct pagination (/get)', async () => {
-        const blogName2="testName2"
-        const blogwebsiteUrl2="https://www.youtube.com/test2"
+        const blogName1="testName1"
+        const blogWebsiteUrl1="https://www.youtube.com/test1"
+        const correctDescription="correct description"
         const response=await request(app)
-            .get('/blogs?PageNumber=2&PageSize=1')
+            .get('/blogs?pageNumber=2&pageSize=1')
             .expect(200)
         expect(response.body.items[0].id).toEqual(expect.any(String))
         expect(response.body).toEqual(createDbReturnDataForAllBlogs(2,2,1,2,
             { id: response.body.items[0].id,
-                name: blogName2,
-                websiteUrl: blogwebsiteUrl2}))
+                name: blogName1,
+                description: correctDescription,
+                websiteUrl: blogWebsiteUrl1,
+                createdAt: response.body.items[0].createdAt}))
     })
     it('15. return status 200 and correct blog by Id (/get)', async () => {
         const blogName1="testName1"
+        const correctDescription1="correct description"
         const blog=await BlogsModelClass.findOne({name: blogName1})
-        const blogwebsiteUrl1="https://www.youtube.com/test1"
+        const blogWebsiteUrl1="https://www.youtube.com/test1"
         const response=await request(app)
             .get(`/blogs/${blog!.id}`)
             .expect(200)
+        expect(response.body.createdAt).toEqual(expect.any(String))
         expect(blog!.id).toEqual(expect.any(String))
         expect(response.body).toEqual(
             { id: blog!.id,
                 name: blogName1,
-                websiteUrl: blogwebsiteUrl1})
+                description: correctDescription1,
+                websiteUrl: blogWebsiteUrl1,
+                createdAt: response.body.createdAt})
     })
     it('16.Should return status 404 with incorrect Id (/get)', async () => {
         await request(app)
@@ -248,7 +285,7 @@ describe('endpoint /blogs ',  () => {
 
     })
     it('17.Should return status 401 (/put) ', async () => {
-        const correctBlog = createBlogForTesting("testName", "https://www.youtube.com/test")
+        const correctBlog = createBlogForTesting("testName","correct description", "https://www.youtube.com/test")
         const response1= await request(app)
             .get('/blogs')
         await request(app)
@@ -266,30 +303,33 @@ describe('endpoint /blogs ',  () => {
     })
     it('19.Should return status 204 and updated blog (/put) ', async () => {
         const oldBlogName1="testName1"
+        const oldDescription1="correct description"
         const newBlogName1="newTestName1"
         const blog=await BlogsModelClass.findOne({name: oldBlogName1})
-        const newBlogwebsiteUrl1="https://www.youtube.com/test1new"
+        const newBlogWebsiteUrl1="https://www.youtube.com/test1new"
         await request(app)
             .put(`/blogs/${blog!.id}`)
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
-            .send({name: newBlogName1, websiteUrl: newBlogwebsiteUrl1})
+            .send({name: newBlogName1,description:oldDescription1, websiteUrl: newBlogWebsiteUrl1})
             .expect(204)
         const response=await request(app)
             .get(`/blogs/${blog!.id}`)
             .expect(200)
         expect(response.body.name).toBe(newBlogName1)
-        expect(response.body.websiteUrl).toBe(newBlogwebsiteUrl1)
+        expect(response.body.websiteUrl).toBe(newBlogWebsiteUrl1)
+        expect(response.body.description).toBe(oldDescription1)
 
     })
     it('20.Should return status 400 and and array with error in name (/put) ', async () => {
         const oldBlogName1="newTestName1"
+        const oldDescription1="correct description"
         const newBlogName1="newTestName11111111111111111111111111"
         const blog=await BlogsModelClass.findOne({name: oldBlogName1})
-        const newBlogwebsiteUrl1="https://www.youtube.com/test1new"
+        const newBlogWebsiteUrl1="https://www.youtube.com/test1new"
         const response=await request(app)
             .put(`/blogs/${blog!.id}`)
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
-            .send({name: newBlogName1, websiteUrl: newBlogwebsiteUrl1})
+            .send({name: newBlogName1,description:oldDescription1, websiteUrl: newBlogWebsiteUrl1})
             .expect(400)
         expect(response.body).toEqual({errorsMessages:[{field:"name","message":expect.any(String)}]})
     })
@@ -323,8 +363,8 @@ describe('endpoint /blogs ',  () => {
         const title="testTitle"
         const shortDescription="testShortDescription"
         const content="testContent"
-        const newPost=createPostForTestingInBlogs(title, shortDescription, content)
         const blog=await BlogsModelClass.findOne({"items.name": blogName2})
+        const newPost=createPostForTestingInBlogs(title, shortDescription, content,blog!.id)
         const response=await request(app)
             .post(`/blogs/${blog!.id}/posts`)
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
@@ -332,18 +372,18 @@ describe('endpoint /blogs ',  () => {
             .expect(201)
         expect(response.body.id).toEqual(expect.any(String))
         expect(response.body).toEqual({
-            "id": response.body.id,
-            "title": title,
-            "shortDescription": shortDescription,
-            "content": content,
-            "blogId": `${blog!.id}`,
-            "blogName": blogName2,
-            "createdAt": response.body.createdAt,
-            "extendedLikesInfo": {
-                "likesCount": 0,
-                "dislikesCount": 0,
-                "myStatus": "None",
-                "newestLikes": []
+            id: response.body.id,
+            title: title,
+            shortDescription: shortDescription,
+            content: content,
+            blogId: `${blog!.id}`,
+            blogName: blogName2,
+            createdAt: response.body.createdAt,
+            extendedLikesInfo: {
+                likesCount: 0,
+                dislikesCount: 0,
+                myStatus: "None",
+                newestLikes: []
             }
         })
     })
@@ -351,9 +391,9 @@ describe('endpoint /blogs ',  () => {
         const blogName2="testName2"
         const title=""
         const shortDescription="testShortDescription"
-        const content="testContent"
-        const newPost=createPostForTestingInBlogs(title, shortDescription, content)
         const blog=await BlogsModelClass.findOne({"items.name": blogName2})
+        const content="testContent"
+        const newPost=createPostForTestingInBlogs(title, shortDescription, content,blog!.id)
         const response=await request(app)
             .post(`/blogs/${blog!.id}/posts`)
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
@@ -366,8 +406,8 @@ describe('endpoint /blogs ',  () => {
         const title=""
         const shortDescription=""
         const content="testContent"
-        const newPost=createPostForTestingInBlogs(title, shortDescription, content)
         const blog=await BlogsModelClass.findOne({"items.name": blogName2})
+        const newPost=createPostForTestingInBlogs(title, shortDescription, content,blog!.id)
         const response=await request(app)
             .post(`/blogs/${blog!.id}/posts`)
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
@@ -379,9 +419,9 @@ describe('endpoint /blogs ',  () => {
         const blogName2="testName2"
         const title="testTitle"
         const shortDescription=""
-        const content="testContent"
-        const newPost=createPostForTestingInBlogs(title, shortDescription, content)
         const blog=await BlogsModelClass.findOne({"items.name": blogName2})
+        const content="testContent"
+        const newPost=createPostForTestingInBlogs(title, shortDescription, content,blog!.id)
         await request(app)
             .post(`/blogs/${blog!.id}/posts`)
             .send(newPost)
@@ -424,24 +464,6 @@ describe('endpoint /blogs ',  () => {
                 }
             ]
         })
-    })
-    it('30.Should return status 200,correct blog in query name (/get)', async () => {
-        const blogName2="blog"
-        const blogwebsiteUrl2="https://www.youtube.com/test3"
-        const correctBlog = createBlogForTesting(blogName2, blogwebsiteUrl2)
-        await request(app)
-            .post('/blogs')
-            .set('authorization', 'Basic YWRtaW46cXdlcnR5')
-            .send(correctBlog)
-            .expect(201)
-        const response2=await request(app)
-            .get('/blogs?SearchNameTerm=blog')
-            .expect(200)
-        expect(response2.body.items[0].id).toEqual(expect.any(String))
-        expect(response2.body).toEqual(createDbReturnDataForAllBlogs(1,1,10,1,
-            { id: response2.body.items[0].id,
-                name: blogName2,
-                websiteUrl: blogwebsiteUrl2}))
     })
 })
 
