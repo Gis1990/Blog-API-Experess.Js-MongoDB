@@ -28,7 +28,6 @@ export class PostsController {
         res.sendStatus(204)
     }
     async getAllPostsForSpecificBlog(req: Request, res: Response) {
-        console.log(req.params.blogId)
         const posts =await this.postsService.getAllPostsForSpecificBlog(req.query,req.params.blogId,req.user?.id)
         res.status(200).json(posts)
 

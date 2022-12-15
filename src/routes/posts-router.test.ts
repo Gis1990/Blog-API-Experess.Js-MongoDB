@@ -4,7 +4,7 @@ import request from "supertest";
 import {app} from "../index";
 import {BlogsModelClass} from "../repositories/db";
 import {createUserForTesting} from "./users-router.test";
-import {createBlogForTesting} from "./blogs-router.test";
+import {factoryForCreatingBlogsForTests} from "./blogs-router.test";
 
 
 export const createPostForTesting = (title:string,shortDescription:string, content:string, blogId:string) => {
@@ -95,7 +95,7 @@ describe('endpoint /posts ',  () => {
     })
     it('4.Should return status 201 and correct new post (/post) ', async () => {
         const blogName="blNameForPosts"
-        const correctBlog = createBlogForTesting(blogName, "https://www.youtube.com/posts")
+        const correctBlog = factoryForCreatingBlogsForTests(blogName, "https://www.youtube.com/posts")
         await request(app)
             .post('/blogs')
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
@@ -217,7 +217,7 @@ describe('endpoint /posts ',  () => {
             .expect(200)
         const accessToken=response2.body.accessToken
         const blogName="blNameForCom"
-        const correctblog = createBlogForTesting(blogName, "https://www.youtube.com/posts")
+        const correctblog = factoryForCreatingBlogsForTests(blogName, "https://www.youtube.com/posts")
         const response3=await request(app)
             .post('/blogs')
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')

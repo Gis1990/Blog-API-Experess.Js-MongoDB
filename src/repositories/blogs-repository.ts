@@ -3,20 +3,20 @@ import {BlogsModelClass} from "./db";
 
 
 export class BlogsRepository {
-    async getAllBlogs(SearchNameTerm:string|null,pageNumber:number,pageSize:number,sortBy:string,sortDirection:string):Promise<BlogDBClassPagination> {
+    async getAllBlogs(searchNameTerm:string|null,pageNumber:number,pageSize:number,sortBy:string,sortDirection:string):Promise<BlogDBClassPagination> {
         const skips = pageSize * (pageNumber - 1)
         let cursor
         let totalCount
         let sortObj:any={}
-        if (SearchNameTerm) {
+        if (searchNameTerm) {
             if (sortDirection==="desc"){
                 sortObj[sortBy]=-1
-                cursor = await BlogsModelClass.find({name: {$regex: SearchNameTerm, $options: 'i'}}, {_id: 0}).sort(sortObj).skip(skips).limit(pageSize).lean()
-                totalCount = await BlogsModelClass.count({name: {$regex: SearchNameTerm, $options: 'i'}})
+                cursor = await BlogsModelClass.find({name: {$regex: searchNameTerm, $options: 'i'}}, {_id: 0}).sort(sortObj).skip(skips).limit(pageSize).lean()
+                totalCount = await BlogsModelClass.count({name: {$regex: searchNameTerm, $options: 'i'}})
             }else{
                 sortObj[sortBy]=1
-                cursor = await BlogsModelClass.find({name: {$regex: SearchNameTerm, $options: 'i'}}, {_id: 0}).sort(sortObj).skip(skips).limit(pageSize).lean()
-                totalCount = await BlogsModelClass.count({name: {$regex: SearchNameTerm, $options: 'i'}})
+                cursor = await BlogsModelClass.find({name: {$regex: searchNameTerm, $options: 'i'}}, {_id: 0}).sort(sortObj).skip(skips).limit(pageSize).lean()
+                totalCount = await BlogsModelClass.count({name: {$regex: searchNameTerm, $options: 'i'}})
             }
         }else{
             if (sortDirection==="desc"){

@@ -2,7 +2,6 @@ import {MongoMemoryServer} from "mongodb-memory-server";
 import mongoose from "mongoose";
 import request from "supertest";
 import {app} from "../index";
-import {createBlogForTesting} from "./blogs-router.test";
 import {createOutputCommentForTesting, createPostForTesting} from "./posts-router.test";
 
 describe('endpoint /comments ',  () => {
@@ -40,7 +39,7 @@ describe('endpoint /comments ',  () => {
             .expect(200)
         const accessToken1=response2.body.accessToken
         const blogName="blNameForCom2"
-        const correctBlog = createBlogForTesting(blogName, "https://www.youtube.com/posts")
+        const correctBlog = factoryForCreatingBlogsForTests(blogName, "https://www.youtube.com/posts")
         const response3=await request(app)
             .post('/blogs')
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
