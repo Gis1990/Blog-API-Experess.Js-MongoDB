@@ -104,30 +104,28 @@ export class  AuthService  {
         }
     }
     async refreshAllTokens (oldRefreshToken:string): Promise<string[]|null> {
-        const userId = await this.jwtService.getUserIdByRefreshToken(oldRefreshToken)
-        const user = await this.usersRepository.findUserById(userId)
-        const usersDataFromToken = await this.jwtService.getUserDevicesDataFromRefreshToken(oldRefreshToken)
-        if ((user)&&(usersDataFromToken)) {
-            const accessToken = await this.jwtService.createAccessJWT(user)
-            usersDataFromToken.lastActiveDate=new Date()
-            const newLastActiveDate=usersDataFromToken.lastActiveDate
-            await this.usersRepository.updateLastActiveDate(userId,usersDataFromToken,newLastActiveDate)
-            const newRefreshToken = await this.jwtService.createRefreshJWT(user,usersDataFromToken)
-            return [accessToken,newRefreshToken]
-        } else {
-            return null
+        const userId = await this.jwtService.getUserIdByRefreshToken(oldRefreshToken);
+        const user = await this.usersRepository.findUserById(userId);
+        const usersDataFromToken = await this.jwtService.getUserDevicesDataFromRefreshToken(oldRefreshToken);
+        if (!user || !usersDataFromToken) {
+            return null;
         }
+        const accessToken = await this.jwtService.createAccessJWT(user);
+        usersDataFromToken.lastActiveDate = new Date();
+        const newLastActiveDate = usersDataFromToken.lastActiveDate;
+        await this.usersRepository.updateLastActiveDate(userId, usersDataFromToken, newLastActiveDate);
+        const newRefreshToken = await this.jwtService.createRefreshJWT(user, usersDataFromToken);
+        return [accessToken, newRefreshToken];
     }
     async refreshOnlyRefreshToken (oldRefreshToken:string): Promise<string|null> {
-        const userId = await this.jwtService.getUserIdByRefreshToken(oldRefreshToken)
-        const user = await this.usersRepository.findUserById(userId)
-        const usersDataFromToken = await this.jwtService.getUserDevicesDataFromRefreshToken(oldRefreshToken)
-        if ((user)&&(usersDataFromToken)) {
-            await this.usersRepository.terminateSpecificDevice(userId,usersDataFromToken.deviceId)
-            return await this.jwtService.createRefreshJWT(user,usersDataFromToken)
-        } else {
-            return null
+        const userId = await this.jwtService.getUserIdByRefreshToken(oldRefreshToken);
+        const user = await this.usersRepository.findUserById(userId);
+        const usersDataFromToken = await this.jwtService.getUserDevicesDataFromRefreshToken(oldRefreshToken);
+        if (!user || !usersDataFromToken) {
+            return null;
         }
+        await this.usersRepository.terminateSpecificDevice(userId, usersDataFromToken.deviceId);
+        return await this.jwtService.createRefreshJWT(user, usersDataFromToken);
     }
 }
 

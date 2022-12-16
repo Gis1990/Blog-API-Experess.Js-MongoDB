@@ -93,16 +93,20 @@ export class CommentsRepository {
         return result.matchedCount === 1;
     }
     async returnUsersLikeStatus(id: string,userId:string): Promise<string> {
-        const comment = await CommentsModelClass.findOne({id: id})
-        const findUsersLikes=comment!.usersLikesInfo.usersWhoPutLike.filter(user => user === userId)
-        const findUsersDislikes=comment!.usersLikesInfo.usersWhoPutDislike.filter(user => user === userId)
-        if (findUsersLikes!.length===1){
-            return "Like"
+        const comment = await CommentsModelClass.findOne({id: id});
+
+        const isLiked = comment?.usersLikesInfo.usersWhoPutLike.includes(userId);
+        const isDisliked = comment?.usersLikesInfo.usersWhoPutDislike.includes(userId);
+
+        if (isLiked) {
+            return "Like";
         }
-        if (findUsersDislikes!.length===1){
-            return "Dislike"
+
+        if (isDisliked) {
+            return "Dislike";
         }
-        return "None"
+
+        return "None";
     }
 }
 
