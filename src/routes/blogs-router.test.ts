@@ -140,79 +140,87 @@ describe('endpoint /blogs ',  () => {
             .expect(400)
         expect(response.body).toEqual({errorsMessages:[{field:"name","message":expect.any(String)},{field:"websiteUrl","message":expect.any(String)}]})
     })
-    it('9.Should return status 201 and newly created blog1 (/post)+ Should return blog 1 status 200  (/get )'+
-        'Should return status 201 and newly created blog2 (/post)+ Should return blogs status 200  (/get )', async () => {
-        // Create blog1 (/post)
-        const correctBlog1 = creatingBlogForTests(10, 5,true)
-        const response=await request(app)
-            .post('/blogs')
-            .set('authorization', 'Basic YWRtaW46cXdlcnR5')
+    it("9.should create and retrieve two blogs", async () => {
+        // Create blog1
+        const correctBlog1 = creatingBlogForTests(10, 5, true);
+        const response = await request(app)
+            .post("/blogs")
+            .set("authorization", "Basic YWRtaW46cXdlcnR5")
             .send(correctBlog1)
-            .expect(201)
+            .expect(201);
+
         expect(response.body).toEqual({
-            id: response.body.id,
+            id: expect.any(String),
             description: correctBlog1.description,
             name: correctBlog1.name,
             websiteUrl: correctBlog1.websiteUrl,
-            createdAt: response.body.createdAt,
-        })
-        expect(response.body.id).toEqual(expect.any(String))
-        expect(response.body.createdAt).toEqual(expect.any(String))
-        // Get blog1 (/get )
-        const response2=await request(app)
-            .get('/blogs')
-            .expect(200)
-        expect(response2.body.items[0].id).toEqual(expect.any(String))
-        expect(response2.body.items[0].createdAt).toEqual(expect.any(String))
-        expect(response2.body).toEqual(createDbReturnDataForAllBlogs(1,1,10,1,
-            { id: response2.body.items[0].id,
-                description: correctBlog1.description,
-                name: correctBlog1.name,
-                websiteUrl: correctBlog1.websiteUrl,
-                createdAt: response2.body.items[0].createdAt}))
-        // Create blog2 (/post)
-        const correctBlog2 = creatingBlogForTests(11, 300,true)
-        const response3=await request(app)
-            .post('/blogs')
-            .set('authorization', 'Basic YWRtaW46cXdlcnR5')
-            .send(correctBlog2 )
-            .expect(201)
+            createdAt: expect.any(String),
+        });
+
+        // Get all blogs
+        const response2 = await request(app)
+            .get("/blogs")
+            .expect(200);
+
+        expect(response2.body).toEqual(
+            createDbReturnDataForAllBlogs(
+                1,
+                1,
+                10,
+                1,
+                {
+                    id: expect.any(String),
+                    description: correctBlog1.description,
+                    name: correctBlog1.name,
+                    websiteUrl: correctBlog1.websiteUrl,
+                    createdAt: expect.any(String),
+                }
+            )
+        );
+
+        // Create blog2
+        const correctBlog2 = creatingBlogForTests(11, 300, true);
+        const response3 = await request(app)
+            .post("/blogs")
+            .set("authorization", "Basic YWRtaW46cXdlcnR5")
+            .send(correctBlog2)
+            .expect(201);
+
         expect(response3.body).toEqual({
-            id: response3.body.id,
+            id: expect.any(String),
             description: correctBlog2.description,
             name: correctBlog2.name,
             websiteUrl: correctBlog2.websiteUrl,
-            createdAt: response3.body.createdAt
-        })
-        expect(response3.body.id).toEqual(expect.any(String))
-        expect(response3.body.createdAt).toEqual(expect.any(String))
-        // Get blog1 +blog2 (/get )
-        const response4=await request(app)
-            .get('/blogs')
-            .expect(200)
-        expect(response4.body.items[0].id).toEqual(expect.any(String))
-        expect(response4.body.items[1].id).toEqual(expect.any(String))
-        expect(response4.body.items[0].createdAt).toEqual(expect.any(String))
-        expect(response4.body.items[1].createdAt).toEqual(expect.any(String))
+            createdAt: expect.any(String),
+        });
+
+        // Get all blogs
+        const response4 = await request(app)
+            .get("/blogs")
+            .expect(200);
+
         expect(response4.body).toEqual({
             pagesCount: 1,
             page: 1,
             pageSize: 10,
             totalCount: 2,
-            items: [{
-                id: response4.body.items[0].id,
-                description: correctBlog2.description,
-                name: correctBlog2.name,
-                websiteUrl: correctBlog2.websiteUrl,
-                createdAt: response4.body.items[0].createdAt
-            },{
-                id: response4.body.items[1].id,
-                description: correctBlog1.description,
-                name: correctBlog1.name,
-                websiteUrl: correctBlog1.websiteUrl,
-                createdAt: response4.body.items[1].createdAt
-            }]
-        })
+            items: [
+                {
+                    id: expect.any(String),
+                    description: correctBlog2.description,
+                    name: correctBlog2.name,
+                    websiteUrl: correctBlog2.websiteUrl,
+                    createdAt: expect.any(String),
+                },
+                {
+                    id: expect.any(String),
+                    description: correctBlog1.description,
+                    name: correctBlog1.name,
+                    websiteUrl: correctBlog1.websiteUrl,
+                    createdAt: expect.any(String),
+                },
+            ],
+        });
         // Get  correct blog with correct pagination (/get )
         const response5=await request(app)
             .get('/blogs?pageNumber=1&pageSize=1')
