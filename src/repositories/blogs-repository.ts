@@ -5,30 +5,14 @@ import {BlogsModelClass} from "./db";
 export class BlogsRepository {
     async getAllBlogs(searchNameTerm:string|null,pageNumber:number,pageSize:number,sortBy:string,sortDirection:string):Promise<BlogDBClassPagination> {
         const skips = pageSize * (pageNumber - 1)
-        let cursor
-        let totalCount
         let sortObj:any={}
+        sortObj[sortBy] = sortDirection === "desc" ? -1 : 1;
+        let query:any = {};
         if (searchNameTerm) {
-            if (sortDirection==="desc"){
-                sortObj[sortBy]=-1
-                cursor = await BlogsModelClass.find({name: {$regex: searchNameTerm, $options: 'i'}}, {_id: 0}).sort(sortObj).skip(skips).limit(pageSize).lean()
-                totalCount = await BlogsModelClass.count({name: {$regex: searchNameTerm, $options: 'i'}})
-            }else{
-                sortObj[sortBy]=1
-                cursor = await BlogsModelClass.find({name: {$regex: searchNameTerm, $options: 'i'}}, {_id: 0}).sort(sortObj).skip(skips).limit(pageSize).lean()
-                totalCount = await BlogsModelClass.count({name: {$regex: searchNameTerm, $options: 'i'}})
-            }
-        }else{
-            if (sortDirection==="desc"){
-                sortObj[sortBy]=-1
-                cursor = await BlogsModelClass.find({},  {_id: 0}).sort(sortObj).skip(skips).limit(pageSize).lean()
-                totalCount = await BlogsModelClass.count({})
-            }else{
-                sortObj[sortBy]=1
-                cursor = await BlogsModelClass.find({},  {_id: 0},).sort(sortObj).skip(skips).limit(pageSize).lean()
-                totalCount = await BlogsModelClass.count({})
+            query.name = { $regex: searchNameTerm, $options: "i" };
         }
-    }
+        const cursor = await BlogsModelClass.find(query, { _id: 0 }).sort(sortObj).skip(skips).limit(pageSize).lean();
+        const totalCount = await BlogsModelClass.count(query);
         return new BlogDBClassPagination(Math.ceil(totalCount/pageSize),pageNumber,pageSize,totalCount,cursor)
 
     }
