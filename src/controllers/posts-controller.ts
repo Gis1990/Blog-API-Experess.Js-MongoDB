@@ -1,14 +1,16 @@
 import {Request, Response} from "express";
 import {PostsService} from "../domain/posts-service";
+import {PostsQueryService} from "../domain/posts-query-service";
 
 export class PostsController {
-    constructor(protected postsService: PostsService) {}
+    constructor(protected postsService: PostsService,
+                protected postsQueryService: PostsQueryService) {}
     async getAllPosts (req: Request, res: Response) {
-        const allPosts= await this.postsService.getAllPosts(req.query,req.user?.id)
+        const allPosts= await this.postsQueryService.getAllPosts(req.query,req.user?.id)
         res.status(200).json(allPosts)
     }
     async getPost(req: Request, res: Response) {
-        const post= await this.postsService.getPostById(req.params.postId,req.user?.id)
+        const post= await this.postsQueryService.getPostById(req.params.postId,req.user?.id)
         res.status(200).json(post)
     }
     async createPost(req: Request, res: Response) {
@@ -28,7 +30,7 @@ export class PostsController {
         res.sendStatus(204)
     }
     async getAllPostsForSpecificBlog(req: Request, res: Response) {
-        const posts =await this.postsService.getAllPostsForSpecificBlog(req.query,req.params.blogId,req.user?.id)
+        const posts =await this.postsQueryService.getAllPostsForSpecificBlog(req.query,req.params.blogId,req.user?.id)
         res.status(200).json(posts)
 
     }

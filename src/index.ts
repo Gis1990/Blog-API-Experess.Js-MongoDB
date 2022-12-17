@@ -45,11 +45,11 @@ app.use("/testing",testingRouter)
 
 
 
-export const startApp=async ()=>{
+const startApp=async ()=>{
     await runDb()
     app.listen(port,async () => {
     console.log(`My app listening on port ${port}`)
 })}
 
- startApp()
+ startApp().then(r => console.log("App started"))
 

@@ -5,14 +5,20 @@ import mongoose from "mongoose";
 import {BlogsModelClass} from "../repositories/db";
 
 
-const randomString = (length:number) => {
-    return Buffer.from(Math.random().toString()).toString("base64").substring(0,length)
+export let randomString=(length:number)=> {
+    let result = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength = characters.length;
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
 }
 
 export const creatingBlogForTests = (nameLen:number,descriptionLen:number,correct:boolean) => {
     let url
     if (correct){
-        url="https://www.somesite.com/"+Buffer.from(Math.random().toString()).toString("base64").substring(0,5)
+        url="https://www.somesite.com/"+randomString(5)
     }
     else{
         url=""
@@ -68,6 +74,7 @@ describe('endpoint / ',  () => {
 describe('endpoint /blogs ',  () => {
     let mongoServer: MongoMemoryServer;
     beforeAll( async () => {
+        mongoose.set('strictQuery', false)
         mongoServer = await MongoMemoryServer.create()
         const mongoUri = mongoServer.getUri()
         await mongoose.connect(mongoUri);
@@ -140,7 +147,7 @@ describe('endpoint /blogs ',  () => {
             .expect(400)
         expect(response.body).toEqual({errorsMessages:[{field:"name","message":expect.any(String)},{field:"websiteUrl","message":expect.any(String)}]})
     })
-    it("9.should create and retrieve two blogs", async () => {
+    it("9.should create and retrieve blogs", async () => {
         // Create blog1
         const correctBlog1 = creatingBlogForTests(10, 5, true);
         const response = await request(app)
@@ -296,7 +303,7 @@ describe('endpoint /blogs ',  () => {
             .delete(`/blogs/${blog5?.id}`)
             .expect(401)
         //Should return status 201 and a new post for specific blog (/post)
-        const blog6=await BlogsModelClass.findOne({"items.name": updatedCorrectBlog.name})
+        const blog6=await BlogsModelClass.findOne({name:updatedCorrectBlog.name})
         const newPost=createPostForTestingInBlogs(15, 30, 200,blog6?.id)
         const response11=await request(app)
             .post(`/blogs/${blog6?.id}/posts`)
@@ -320,7 +327,7 @@ describe('endpoint /blogs ',  () => {
             }
         })
         // Should return status 400 and array with errors (/post)
-        const blog7=await BlogsModelClass.findOne({"items.name": updatedCorrectBlog.name})
+        const blog7=await BlogsModelClass.findOne({name: updatedCorrectBlog.name})
         const newIncorrectPost1=createPostForTestingInBlogs(0, 50, 900,blog7!.id)
         const response12=await request(app)
             .post(`/blogs/${blog7?.id}/posts`)
@@ -336,7 +343,7 @@ describe('endpoint /blogs ',  () => {
             .expect(400)
         expect(response13.body).toEqual({errorsMessages:[{field:"title","message":expect.any(String)},{field:"shortDescription","message":expect.any(String)}]})
         // Should return status 200 (/get)
-        const blog8=await BlogsModelClass.findOne({"items.name": updatedCorrectBlog.name})
+        const blog8=await BlogsModelClass.findOne({name: updatedCorrectBlog.name})
         const response14=await request(app)
             .get(`/blogs/${blog8?.id}/posts`)
             .expect(200)

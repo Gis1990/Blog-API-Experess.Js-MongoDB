@@ -1,10 +1,12 @@
 import {NextFunction, Request, Response} from "express";
 import {validationResult, Schema, param, ValidationChain, checkSchema} from "express-validator";
 import {ErrorType} from "../types/types";
-import {BlogsModelClass, CommentsModelClass, PostsModelClass, UsersAccountModelClass} from "../repositories/db";
-import {usersService} from "../composition-root";
-import {usersRepository} from "../composition-root";
-
+import {
+    blogsQueryRepository,
+    commentsQueryRepository,
+    postsQueryRepository,
+    usersQueryRepository,
+} from "../composition-root";
 
 const pattern=/^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/
 const patternForEmail=/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/
@@ -163,7 +165,7 @@ export const validationSchemaForPostsWithExtendedData:Schema = {
         },
         custom: {
             options: async(id) => {
-                const blog = await BlogsModelClass.findOne({id: id})
+                const blog = await blogsQueryRepository.getBlogById (id)
                 return (!!blog)?Promise.resolve():Promise.reject()
             },
             errorMessage: "The field blogId does not exist"
@@ -190,7 +192,7 @@ export const validationSchemaForUsers:Schema = {
         },
         custom: {
             options: async(login) => {
-                const user =  await usersService.findByLoginOrEmail(login)
+                const user =  await usersQueryRepository.findByLoginOrEmail(login)
                 return (!user)?Promise.resolve():Promise.reject()
             },
             errorMessage: "Login is already exist"
@@ -210,7 +212,7 @@ export const validationSchemaForUsers:Schema = {
         },
         custom: {
             options: async(email) => {
-                const user =  await usersService.findByLoginOrEmail(email)
+                const user =  await usersQueryRepository.findByLoginOrEmail(email)
                 return (!user)?Promise.resolve():Promise.reject()
             },
             errorMessage: "Email is already exist in database"
@@ -246,7 +248,7 @@ export const validationSchemaForEmails:Schema = {
         },
         custom: {
             options: async(email) => {
-                const user =  await usersService.findByLoginOrEmail(email)
+                const user =  await usersQueryRepository.findByLoginOrEmail(email)
                 if (!user) {
                     return Promise.reject()
                 }
@@ -293,7 +295,7 @@ export const validationSchemaForConfirmationCodes:Schema = {
         },
         custom: {
             options: async(code) => {
-                const user =  await usersRepository.findUserByConfirmationCode(code)
+                const user =  await usersQueryRepository.findUserByConfirmationCode(code)
                 if (!user) {
                     return Promise.reject()
                 }
@@ -395,7 +397,7 @@ export const validationSchemaForNewPassword:Schema = {
         },
         custom: {
             options: async(recoveryCode) => {
-                const user =  await usersRepository.findUserByRecoveryCode(recoveryCode)
+                const user =  await usersQueryRepository.findUserByRecoveryCode(recoveryCode)
                 if (!user) {
                     return Promise.reject()
                 }
@@ -423,7 +425,7 @@ const errorHandlerForIdValidation = (rq: Request, rs: Response, nxt: NextFunctio
 
 export const postsIdValidation = async (req: Request, res: Response, next: NextFunction) => {
     await param("postId","Id is not exist").custom(async postId=>{
-        const posts = await PostsModelClass.findOne({id: postId})
+        const posts = await postsQueryRepository.getPostById(postId)
         return (!!posts)?Promise.resolve():Promise.reject()}).run(req)
     errorHandlerForIdValidation(req,res,next)
 }
@@ -431,28 +433,28 @@ export const postsIdValidation = async (req: Request, res: Response, next: NextF
 
 export const blogsIdValidation = async (req: Request, res: Response, next: NextFunction) => {
          await param("blogId", "Id does not exist").custom(async blogId => {
-            const blog =await BlogsModelClass.findOne({id: blogId})
+            const blog =await blogsQueryRepository.getBlogById (blogId)
             return (!!blog)?Promise.resolve():Promise.reject()}).run(req)
         errorHandlerForIdValidation(req,res,next)
 }
 
 export const usersIdValidation = async (req: Request, res: Response, next: NextFunction) => {
     await param("userId", "Id does not exist").custom(async userId => {
-        const user =await UsersAccountModelClass.findOne({id: userId})
+        const user =await usersQueryRepository.findUserById(userId)
         return (!!user)?Promise.resolve():Promise.reject()}).run(req)
     errorHandlerForIdValidation(req,res,next)
 }
 
 export const commentsIdValidation = async (req: Request, res: Response, next: NextFunction) => {
     await param("commentId", "Id does not exist").custom(async commentId => {
-        const user =await CommentsModelClass.findOne({id: commentId})
+        const user =await commentsQueryRepository.getCommentById(commentId)
         return (!!user)?Promise.resolve():Promise.reject()}).run(req)
     errorHandlerForIdValidation(req,res,next)
 }
 
 export const deviceIdValidation = async (req: Request, res: Response, next: NextFunction) => {
     await param("deviceId","Id is not exist").custom(async deviceId=>{
-        const device = await UsersAccountModelClass.findOne({"userDevicesData.deviceId":deviceId})
+        const device = await usersQueryRepository.findUserByDeviceId(deviceId)
         return (!!device)?Promise.resolve():Promise.reject()}).run(req)
     errorHandlerForIdValidation(req,res,next)
 }

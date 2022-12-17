@@ -1,6 +1,7 @@
 import {Request,Response} from "express";
 import {UsersService} from "../domain/users-service";
 import {AuthService} from "../domain/auth-service";
+import {UsersQueryRepository} from "../repositories/users-query-repository";
 
 
 
@@ -8,9 +9,10 @@ import {AuthService} from "../domain/auth-service";
 
 export class UsersController{
     constructor(protected usersService:UsersService,
-                protected authService:AuthService) {}
+                protected authService:AuthService,
+                protected usersQueryRepository: UsersQueryRepository) {}
     async getAllUsers(req:Request,res:Response){
-        const allUsers=await this.usersService.getAllUsers(req.query)
+        const allUsers=await this.usersQueryRepository.getAllUsers(req.query)
         res.json(allUsers)
     }
     async deleteUser(req:Request,res:Response){

@@ -129,6 +129,7 @@ export const CommentsModelClass = mongoose.model('comments', commentsSchema);
 
 export async function runDb () {
   try {
+    await mongoose.set('strictQuery', false);
     await mongoose.connect(settings.mongo_URI);
     console.log ( "Connected successfully to mongo server" ) ;
   } catch {
@@ -136,3 +137,4 @@ export async function runDb () {
       await mongoose.disconnect() ;
   }
 }
+

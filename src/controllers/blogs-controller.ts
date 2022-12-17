@@ -1,15 +1,17 @@
 import {Request, Response} from "express";
 import {BlogsService} from "../domain/blogs-service";
+import {BlogsQueryRepository} from "../repositories/blogs-query-repository";
 
 
 export class BlogsController {
-    constructor(protected  blogsService: BlogsService) {}
+    constructor(protected  blogsService: BlogsService,
+                protected  blogsQueryRepository: BlogsQueryRepository) {}
     async getAllBlogs (req: Request, res: Response) {
-        const allBlogs= await this.blogsService.getAllBlogs(req.query)
+        const allBlogs= await this.blogsQueryRepository.getAllBlogs(req.query)
         res.json(allBlogs)
     }
     async getBlog(req: Request, res: Response) {
-        const blog= await this.blogsService.getBlogById(req.params.blogId)
+        const blog= await this.blogsQueryRepository.getBlogById(req.params.blogId)
         res.json(blog)
     }
     async createBlog(req: Request, res: Response) {

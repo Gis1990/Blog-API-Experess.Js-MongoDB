@@ -1,8 +1,9 @@
 import {Request, Response} from "express";
 import {CommentsService} from "../domain/comments-service";
 
+
 export class CommentsController{
-    constructor(protected commentsService: CommentsService) {}
+    constructor(protected commentsService: CommentsService,) {}
     async getComment(req: Request, res: Response) {
         const comment = await this.commentsService.getCommentById(req.params.commentId,req.user?.id)
         res.status(200).json(comment)
@@ -10,7 +11,6 @@ export class CommentsController{
     async getAllCommentsForSpecificPost(req: Request, res: Response) {
         const comments = await this.commentsService.getAllCommentsForSpecificPost(req.query, req.params.postId,req.user?.id)
         res.status(200).json(comments)
-
     }
     async createComment(req: Request, res: Response) {
         const newComment = await this.commentsService.createComment(req.body.content,req.params.postId, req.user!)

@@ -67,4 +67,3 @@ postsRouter.put('/:postId/like-status',
     postsController.likeOperation.bind(postsController))
 
 
-

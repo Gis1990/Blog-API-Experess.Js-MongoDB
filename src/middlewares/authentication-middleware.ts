@@ -1,7 +1,7 @@
 import {NextFunction, Request, Response} from "express";
 import {header, validationResult} from "express-validator";
-import {UsersService} from "../domain/users-service";
 import {JwtService} from "../application/jwt-service";
+import {UsersQueryRepository} from "../repositories/users-query-repository";
 
 
 export const authenticationMiddleware = async (req: Request, res: Response, next: NextFunction) => {
@@ -18,7 +18,7 @@ export const authenticationMiddleware = async (req: Request, res: Response, next
 
 
 export class  AuthAccessTokenController {
-    constructor(protected usersService: UsersService,
+    constructor(protected usersQueryRepository: UsersQueryRepository,
                 protected jwtService: JwtService) {
     }
     async authAccessToken(req: Request, res: Response, next: NextFunction) {
@@ -30,7 +30,7 @@ export class  AuthAccessTokenController {
         const userId = await this.jwtService.getUserIdByAccessToken(token)
         let userData
         if (userId) {
-            userData = await this.usersService.findUserById(userId)
+            userData = await this.usersQueryRepository.findUserById(userId)
         } else {
             res.sendStatus(401)
             return
@@ -51,7 +51,7 @@ export class  AuthAccessTokenController {
             const userId = await this.jwtService.getUserIdByAccessToken(token)
             let userData
             if (userId) {
-                userData = await this.usersService.findUserById(userId)
+                userData = await this.usersQueryRepository.findUserById(userId)
                 if (userData) {
                     req.user = userData
                     next()

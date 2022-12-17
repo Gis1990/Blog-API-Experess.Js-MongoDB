@@ -1,52 +1,8 @@
-import { NewestLikesClass, PostDBClass, PostDBClassPagination} from "../types/types";
+import { NewestLikesClass, PostDBClass} from "../types/types";
 import {PostsModelClass} from "./db";
 
 
 export class PostsRepository {
-    async getAllPosts(pageNumber: number, pageSize: number,sortBy:string,sortDirection:string): Promise<PostDBClassPagination> {
-        const skips = pageSize * (pageNumber - 1);
-        const totalCount = await PostsModelClass.count({});
-        let sortObj:any={}
-        if (sortDirection==="desc"){
-             sortObj[sortBy]=-1
-        }else{
-            sortObj[sortBy]=1
-        }
-        const cursor = await PostsModelClass.find({}, { _id: 0, usersLikesInfo: 0 }).sort(sortObj).skip(skips).limit(pageSize).lean();
-        return new PostDBClassPagination(Math.ceil(totalCount / pageSize), pageNumber, pageSize, totalCount, cursor);
-    }
-    async getAllPostsForSpecificBlog(
-        pageNumber: number,
-        pageSize: number,
-        blogId: string,
-        sortBy:string,
-        sortDirection:string
-    ): Promise<PostDBClassPagination> {
-        let cursor
-        const skips = pageSize * (pageNumber - 1);
-        let sortObj:any={}
-        const totalCount = await PostsModelClass.count({ blogId: blogId });
-        if (sortDirection==="desc"){
-             sortObj[sortBy]=-1
-             cursor = await PostsModelClass.find({ blogId: blogId }, { _id: 0, usersLikesInfo: 0 })
-                .sort(sortObj)
-                .skip(skips)
-                .limit(pageSize)
-                .lean();
-        }else{
-            sortObj[sortBy]=1
-            cursor = await PostsModelClass.find({ blogId: blogId }, { _id: 0, usersLikesInfo: 0 })
-                .sort(sortObj)
-                .skip(skips)
-                .limit(pageSize)
-                .lean();
-        }
-
-        return new PostDBClassPagination(Math.ceil(totalCount / pageSize), pageNumber, pageSize, totalCount, cursor);
-    }
-    async getPostById(id: string): Promise<PostDBClass | null> {
-        return PostsModelClass.findOne({ id: id }, { _id: 0, usersLikesInfo: 0 });
-    }
     async createPost(post: PostDBClass): Promise<PostDBClass> {
         await PostsModelClass.insertMany([post]);
         return post;
@@ -90,37 +46,43 @@ export class PostsRepository {
         let update: any = {};
 
         // If the user wants to like the post and has not already liked or disliked it,
+        // change users status to Like,
         // increase the likes count and add the user to the list of users who liked the post
         if (likeStatus === "Like" && !isLiked && !isDisliked) {
             update = {
                 "extendedLikesInfo.likesCount": post.extendedLikesInfo.likesCount + 1,
                 "extendedLikesInfo.myStatus": likeStatus,
-                "extendedLikesInfo.newestLikes": new NewestLikesClass(new Date(), userId, login),
-                "usersLikesInfo.usersWhoPutLike": userId,
+                $push: {
+                    "extendedLikesInfo.newestLikes": new NewestLikesClass(new Date(), userId, login),
+                    "usersLikesInfo.usersWhoPutLike": userId,
+                },
             };
         }
 
-            // If the user wants to dislike the post and has not already liked or disliked it,
+        // If the user wants to dislike the post and has not already liked or disliked it,
         // increase the dislikes count and add the user to the list of users who disliked the post
         else if (likeStatus === "Dislike" && !isDisliked && !isLiked) {
             update = {
                 "extendedLikesInfo.dislikesCount": post.extendedLikesInfo.dislikesCount + 1,
                 "extendedLikesInfo.myStatus": likeStatus,
-                "usersLikesInfo.usersWhoPutDislike": userId,
+                $push: {
+                    "usersLikesInfo.usersWhoPutDislike": userId,
+                },
             };
-            // If the user wants to change his status to None,but don't have like or dislike status
+        // If the user wants to change his status to None,but don't have like or dislike status
         } else if (likeStatus === "None" && !isDisliked && !isLiked) {
             update = {
                 "extendedLikesInfo.myStatus": likeStatus,
             };
-            // If the user wants to change his status to None and has already liked the post,
-            // decrease the likes count,
-            // remove the user from the list of users who liked the post,
+        // If the user wants to change his status to None and has already liked the post,
+        // decrease the likes count,
+        // remove the user from the list of users who liked the post,
         } else if (likeStatus === "None" && isLiked) {
             update = {
                 "extendedLikesInfo.likesCount": post.extendedLikesInfo.likesCount - 1,
                 "extendedLikesInfo.myStatus": likeStatus,
                 $pull: {
+                    "extendedLikesInfo.newestLikes": { userId: userId },
                     "usersLikesInfo.usersWhoPutLike": userId,
                 },
             };
@@ -145,7 +107,7 @@ export class PostsRepository {
                 "extendedLikesInfo.dislikesCount": post.extendedLikesInfo.dislikesCount + 1,
                 "extendedLikesInfo.myStatus": likeStatus,
                 $pull: {
-                    "extendedLikesInfo.newestLikes": { userId: userId },
+                    "extendedLikesInfo.newestLikes" :{ userId: userId },
                     "usersLikesInfo.usersWhoPutLike": userId,
                 },
                 $push: {
@@ -174,17 +136,6 @@ export class PostsRepository {
 
         const result = await PostsModelClass.updateOne({ id: id }, update);
         return result.matchedCount === 1;
-    }
-    async returnUsersLikeStatus(id: string, userId: string): Promise<string> {
-        const post = await PostsModelClass.findOne({id: id});
-
-        if (post?.usersLikesInfo.usersWhoPutLike.includes(userId)) {
-            return "Like";
-        } else if (post?.usersLikesInfo.usersWhoPutDislike.includes(userId)) {
-            return "Dislike";
-        } else {
-            return "None";
-        }
     }
 }
 

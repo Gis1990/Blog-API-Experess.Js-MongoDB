@@ -2,22 +2,16 @@ import request from 'supertest'
 import {app} from "../index";
 import {MongoMemoryServer} from "mongodb-memory-server";
 import mongoose from "mongoose";
-import {JwtService} from "../application/jwt-service";
+import {createUserForTesting} from "./users-router.test";
 
 
 
 
 
 describe('endpoint /auth ',  () => {
-    const createUserForTesting = (login:string,email:string,password:string) => {
-        return{
-            login: login,
-            email: email,
-            password: password
-        }
-    }
     let mongoServer: MongoMemoryServer;
     beforeAll( async () => {
+        mongoose.set('strictQuery', false)
         mongoServer = await MongoMemoryServer.create()
         const mongoUri = mongoServer.getUri()
         await mongoose.connect(mongoUri);
@@ -32,79 +26,70 @@ describe('endpoint /auth ',  () => {
             .expect(204)
     })
     it('2.Should return status 201 (/post) ', async () => {
-        const correctUser = createUserForTesting("authUser1", "authUser1@email.test", "authUser1Password")
-        const response=await request(app)
+        const correctUser = createUserForTesting(5, 2, 10)
+        const response1=await request(app)
             .post('/users')
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
             .send(correctUser)
             .expect(201)
-        expect(response.body.id).toEqual(expect.any(String))
-        expect(response.body).toEqual({id:response.body.id,login: "authUser1",email: "authUser1@email.test",createdAt:response.body.createdAt})
-    })
-    it('3.Should return status 200,JWT accessToken and JWT refreshToken in cookie (/post) ', async () => {
-        const login= "authUser1"
-        const password= "authUser1Password"
-        const response=await request(app)
+        expect(response1.body.id).toEqual(expect.any(String))
+        expect(response1.body.createdAt).toEqual(expect.any(String))
+        expect(response1.body).toEqual({id:response1.body.id,login: correctUser.login, email: correctUser.email, createdAt: response1.body.createdAt})
+    // Should return status 200,JWT accessToken and JWT refreshToken in cookie (/post)
+        const response2=await request(app)
             .post('/auth/login')
-            .send({"login": login,"password":password})
+            .send({loginOrEmail: correctUser.login,password:correctUser.password})
             .expect(200)
-        expect(response.body).toEqual({"accessToken":expect.any(String)})
-        expect(response.headers['set-cookie']).toEqual(expect.arrayContaining([expect.stringContaining('refreshToken')]))
-    })
-    it('4.Should return status 429 after 5 requests (/post) ', async () => {
+        expect(response2.body).toEqual({"accessToken":expect.any(String)})
+        expect(response2.headers['set-cookie']).toEqual(expect.arrayContaining([expect.stringContaining('refreshToken')]))
+    // Should return status 429 after 5 requests (/post)
         await new Promise(res => setTimeout(res, 10000))
-        const login= "authUser1"
-        const password= "authUser1Password"
         await request(app)
             .post('/auth/login')
-            .send({"login": login,"password":password})
+            .send({loginOrEmail: correctUser.login,password:correctUser.password})
             .expect(200)
             .then(function (res) {
                 return request(app)
                     .post("/auth/login")
-                    .send({"login": login,"password":password})
+                    .send({loginOrEmail: correctUser.login,password:correctUser.password})
                     .expect(200)
             })
             .then(function (res) {
                 return request(app)
                     .post("/auth/login")
-                    .send({"login": login,"password":password})
+                    .send({loginOrEmail: correctUser.login,password:correctUser.password})
                     .expect(200);
             })
             .then(function (res) {
                 return request(app)
                     .post("/auth/login")
-                    .send({"login": login,"password":password})
+                    .send({loginOrEmail: correctUser.login,password:correctUser.password})
                     .expect(200);
             })
             .then(function (res) {
                 return request(app)
                     .post("/auth/login")
-                    .send({"login": login,"password":password})
+                    .send({loginOrEmail: correctUser.login,password:correctUser.password})
                     .expect(200);
             })
             .then(function (res) {
                 return request(app)
                     .post("/auth/login")
-                    .send({"login": login,"password":password})
+                    .send({loginOrEmail: correctUser.login,"password":correctUser.password})
                     .expect(429);
             },)
-    })
-    it('5.Should return status 401  (/post) ', async () => {
+    // Should return status 401  (/post)
         await new Promise(res => setTimeout(res, 10000))
         const incorrectLogin = "authUser"
-        const password = "authUser1Password"
         await request(app)
             .post('/auth/login')
-            .send({"login": incorrectLogin, "password": password})
+            .send({loginOrEmail: incorrectLogin, password: correctUser.password})
             .expect(401)
-    })
-    it('6.Should return status 401  (/post) ', async () => {
-        const login = "authUser!"
+    // Should return status 401  (/post)
         const incorrectPassword = "authUser1Passwor"
         await request(app)
             .post('/auth/login')
-            .send({"login": login, "password": incorrectPassword})
+            .send({loginOrEmail: correctUser.login, password: incorrectPassword})
             .expect(401)
     })
 })

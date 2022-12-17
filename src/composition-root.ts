@@ -17,31 +17,41 @@ import {JwtService} from "./application/jwt-service";
 import {AuthAccessTokenController} from "./middlewares/authentication-middleware";
 import {SecurityController} from "./controllers/security-controller";
 import {SecurityService} from "./domain/security-service";
+import {BlogsQueryRepository} from "./repositories/blogs-query-repository";
+import {CommentsQueryRepository} from "./repositories/comments-query-repository";
+import {PostsQueryRepository} from "./repositories/posts-query-repository";
+import {PostsQueryService} from "./domain/posts-query-service";
+import {UsersQueryRepository} from "./repositories/users-query-repository";
 
 
 export const usersRepository = new UsersRepository();
+export const usersQueryRepository = new UsersQueryRepository();
 const blogsRepository = new BlogsRepository();
+export const blogsQueryRepository = new BlogsQueryRepository();
 const postsRepository = new PostsRepository();
+export const postsQueryRepository = new PostsQueryRepository();
 const commentsRepository = new CommentsRepository()
+export const commentsQueryRepository = new CommentsQueryRepository()
 const blogsService = new BlogsService(blogsRepository);
-const postsService = new PostsService(postsRepository,blogsRepository);
-const commentsService = new CommentsService(commentsRepository);
+const postsService = new PostsService(postsRepository,blogsQueryRepository);
+const postsQueryService = new PostsQueryService(postsQueryRepository,blogsQueryRepository);
+const commentsService = new CommentsService(commentsRepository,commentsQueryRepository);
 const jwtService = new JwtService()
 export const usersService = new UsersService(usersRepository);
 const emailController = new EmailAdapter();
-const authService= new AuthService(usersRepository,emailController,usersService,jwtService);
-const securityService= new SecurityService(usersRepository,jwtService);
+const authService= new AuthService(usersRepository,usersQueryRepository,emailController,usersService,jwtService);
+const securityService= new SecurityService(usersRepository,jwtService,usersQueryRepository);
 
 
 
 
 
-export const blogsController = new BlogsController(blogsService);
-export const postsController = new PostsController(postsService);
+export const blogsController = new BlogsController(blogsService,blogsQueryRepository);
+export const postsController = new PostsController(postsService,postsQueryService);
 export const commentsController = new CommentsController(commentsService);
-export const usersController = new UsersController(usersService,authService);
+export const usersController = new UsersController(usersService,authService,usersQueryRepository);
 export const authController = new AuthController(authService);
 export const securityController = new SecurityController(securityService);
-export const authAccessTokenController = new AuthAccessTokenController(usersService,jwtService);
+export const authAccessTokenController = new AuthAccessTokenController(usersQueryRepository,jwtService);
 
 
