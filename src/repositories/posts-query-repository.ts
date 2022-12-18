@@ -47,6 +47,9 @@ export class PostsQueryRepository {
     async getPostById(id: string): Promise<PostDBClass | null> {
         return PostsModelClass.findOne({ id: id }, { _id: 0, usersLikesInfo: 0 });
     }
+    async getPostByIdForLikeOperation(id: string): Promise<PostDBClass | null> {
+        return  PostsModelClass.findOne({ id: id });
+    }
     async returnUsersLikeStatus(id: string, userId: string): Promise<string> {
         const post = await PostsModelClass.findOne({id: id});
         if (post?.usersLikesInfo.usersWhoPutLike.includes(userId)) {

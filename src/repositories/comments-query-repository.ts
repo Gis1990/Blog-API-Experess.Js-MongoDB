@@ -25,6 +25,9 @@ export class CommentsQueryRepository {
         const totalCount = await CommentsModelClass.count({postId: postId})
         return new CommentDBClassPagination(Math.ceil(totalCount / pageSize), pageNumber, pageSize, totalCount, cursor)
     }
+    async getCommentByIdForLikeOperation(id: string): Promise<CommentDBClass | null> {
+        return CommentsModelClass.findOne({id: id})
+    }
     async returnUsersLikeStatus(id: string,userId:string): Promise<string> {
         const comment = await CommentsModelClass.findOne({id: id});
 
