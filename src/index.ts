@@ -43,7 +43,9 @@ app.use("/security",securityRouter)
 
 app.use("/testing",testingRouter)
 
-
+const jestIsRunning=()=>{
+    return process.env.JEST_WORKER_ID !== undefined;
+}
 
 const startApp=async ()=>{
     await runDb()
@@ -51,5 +53,7 @@ const startApp=async ()=>{
     console.log(`My app listening on port ${port}`)
 })}
 
- startApp().then(r => console.log("App started"))
+if (!jestIsRunning()){
+    startApp().then(r => console.log("App started"))
+}
 

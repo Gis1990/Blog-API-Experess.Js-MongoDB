@@ -50,7 +50,6 @@ export class PostsQueryRepository {
     async returnUsersLikeStatus(id: string, userId: string): Promise<string> {
         const post = await PostsModelClass.findOne({id: id});
         if (post?.usersLikesInfo.usersWhoPutLike.includes(userId)) {
-            console.log(1);
             return "Like";
         } else if (post?.usersLikesInfo.usersWhoPutDislike.includes(userId)) {
             return "Dislike";

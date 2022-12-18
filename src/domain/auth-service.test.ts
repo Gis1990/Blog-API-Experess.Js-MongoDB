@@ -13,7 +13,7 @@ import {usersQueryRepository} from "../composition-root";
 
 
 describe("integration tests for AuthService", () => {
-
+    mongoose.disconnect()
     let mongoServer: MongoMemoryServer;
     beforeAll( async () => {
         mongoServer = await MongoMemoryServer.create()
@@ -42,7 +42,7 @@ describe("integration tests for AuthService", () => {
         it("this.emailAdapter.send Email should be called", async () => {
             let email = "anton.pavlovskiy1991@gmail.com"
             let login = "anton1"
-            const result = await authService.createUserWithConfirmationEmail(login, email, "12345678")
+            await authService.createUserWithConfirmationEmail(login, email, "12345678")
             expect(emailControllerMock.sendEmailWithRegistration).toBeCalled()
         })
         it("should return correct created user ", async () => {
