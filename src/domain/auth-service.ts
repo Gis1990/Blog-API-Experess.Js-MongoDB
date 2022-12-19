@@ -106,6 +106,7 @@ export class  AuthService  {
             return false
         }
     }
+
     async refreshAllTokens (oldRefreshToken:string): Promise<string[]|null> {
         const userId = await this.jwtService.getUserIdByRefreshToken(oldRefreshToken);
         const user = await this.usersQueryRepository.findUserById(userId);
