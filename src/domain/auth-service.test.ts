@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import {UsersRepository} from "../repositories/users-repository";
 import {EmailAdapter} from "../application/email-adapter";
 import {UsersService} from "./users-service";
@@ -8,11 +9,14 @@ import mongoose from "mongoose";
 import {UsersAccountModelClass} from "../repositories/db";
 import {ObjectId} from "mongodb";
 import {addMinutes} from "date-fns";
-import {usersQueryRepository} from "../composition-root";
+import {container} from "../composition-root";
+import {UsersQueryRepository} from "../repositories/users-query-repository";
 
 
 
 describe("integration tests for AuthService", () => {
+    const usersQueryRepository = container.get<UsersQueryRepository>(
+        UsersQueryRepository)
     mongoose.disconnect()
     let mongoServer: MongoMemoryServer;
     beforeAll( async () => {

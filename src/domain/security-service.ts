@@ -2,13 +2,14 @@ import {userDevicesDataClass} from "../types/types";
 import {UsersRepository} from "../repositories/users-repository";
 import {JwtService} from "../application/jwt-service";
 import {UsersQueryRepository} from "../repositories/users-query-repository";
+import {inject, injectable} from "inversify";
 
 
-
+@injectable()
 export class  SecurityService  {
-    constructor(protected usersRepository: UsersRepository,
-                protected jwtService:JwtService,
-                protected usersQueryRepository: UsersQueryRepository) {}
+    constructor(@inject(UsersRepository) protected usersRepository: UsersRepository,
+                @inject(JwtService) protected jwtService:JwtService,
+                @inject(UsersQueryRepository) protected usersQueryRepository: UsersQueryRepository) {}
     async returnAllDevices(refreshToken:string): Promise<userDevicesDataClass[]|null> {
         const userId = await this.jwtService.getUserIdByRefreshToken(refreshToken)
         const user = await this.usersQueryRepository.findUserById(userId)

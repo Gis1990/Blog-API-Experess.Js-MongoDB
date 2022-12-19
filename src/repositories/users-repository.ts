@@ -6,8 +6,9 @@ import {
 } from "../types/types";
 import {UsersAccountModelClass} from "./db";
 import {v4 as uuidv4} from "uuid";
+import {injectable} from "inversify";
 
-
+@injectable()
 export  class UsersRepository  {
     async updateConfirmation (id: string):Promise<boolean> {
         const result = await UsersAccountModelClass.updateOne({id: id}, {$set: {"emailConfirmation.isConfirmed": true}})

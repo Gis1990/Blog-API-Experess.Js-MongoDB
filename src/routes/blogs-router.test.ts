@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import request from 'supertest'
 import {app} from "../index";
 import {MongoMemoryServer} from "mongodb-memory-server";

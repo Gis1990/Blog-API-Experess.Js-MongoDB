@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import {MongoMemoryServer} from "mongodb-memory-server";
 import mongoose from "mongoose";
 import {BlogsRepository} from "../repositories/blogs-repository";

@@ -1,9 +1,10 @@
 import {Request, Response} from "express";
 import {CommentsService} from "../domain/comments-service";
+import {inject, injectable} from "inversify";
 
-
+@injectable()
 export class CommentsController{
-    constructor(protected commentsService: CommentsService,) {}
+    constructor(@inject(CommentsService) protected commentsService: CommentsService) {}
     async getComment(req: Request, res: Response) {
         const comment = await this.commentsService.getCommentById(req.params.commentId,req.user?.id)
         res.status(200).json(comment)

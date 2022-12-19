@@ -3,9 +3,10 @@ import {
     UserDBClassPagination,
 } from "../types/types";
 import {UsersAccountModelClass} from "./db";
+import {injectable} from "inversify";
 
 
-
+@injectable()
 export  class UsersQueryRepository  {
     async getAllUsers (queryAllUsersClass:{searchLoginTerm?:string|null,searchEmailTerm?:string|null,pageNumber?: number, pageSize?: number,sortBy?:string,sortDirection?:string }): Promise<UserDBClassPagination> {
         let {

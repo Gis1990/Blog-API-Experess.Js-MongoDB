@@ -1,7 +1,8 @@
 import {BlogDBClass, BlogDBClassPagination} from "../types/types";
 import {BlogsModelClass} from "./db";
+import {injectable} from "inversify";
 
-
+@injectable()
 export class BlogsQueryRepository {
     async getAllBlogs(queryAllBlogsClass:{searchNameTerm?:string|null,pageNumber?:number,pageSize?:number,sortBy?:string,sortDirection?:string }):Promise<BlogDBClassPagination> {
         let {

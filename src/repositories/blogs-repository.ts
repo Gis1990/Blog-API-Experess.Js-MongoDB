@@ -1,7 +1,8 @@
 import {BlogDBClass} from "../types/types";
 import {BlogsModelClass} from "./db";
+import {injectable} from "inversify";
 
-
+@injectable()
 export class BlogsRepository {
     async createBlog(blog: BlogDBClass):Promise<BlogDBClass> {
         await BlogsModelClass.insertMany([blog]);
