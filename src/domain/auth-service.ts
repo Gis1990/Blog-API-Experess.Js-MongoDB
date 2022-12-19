@@ -110,7 +110,11 @@ export class  AuthService  {
         const userId = await this.jwtService.getUserIdByRefreshToken(oldRefreshToken);
         const user = await this.usersQueryRepository.findUserById(userId);
         const usersDataFromToken = await this.jwtService.getUserDevicesDataFromRefreshToken(oldRefreshToken);
-        if (!user || !usersDataFromToken) {
+        const lastActiveDateFromJWT = user?.userDevicesData.find((item)=>item.deviceId===usersDataFromToken?.deviceId)?.lastActiveDate
+        if (!user || !usersDataFromToken||!lastActiveDateFromJWT) {
+            return null;
+        }
+        if (usersDataFromToken.lastActiveDate >lastActiveDateFromJWT ) {
             return null;
         }
         const accessToken = await this.jwtService.createAccessJWT(user);
@@ -124,7 +128,11 @@ export class  AuthService  {
         const userId = await this.jwtService.getUserIdByRefreshToken(oldRefreshToken);
         const user = await this.usersQueryRepository.findUserById(userId);
         const usersDataFromToken = await this.jwtService.getUserDevicesDataFromRefreshToken(oldRefreshToken);
-        if (!user || !usersDataFromToken) {
+        const lastActiveDateFromJWT = user?.userDevicesData.find((item)=>item.deviceId===usersDataFromToken?.deviceId)?.lastActiveDate
+        if (!user || !usersDataFromToken||!lastActiveDateFromJWT) {
+            return null;
+        }
+        if (usersDataFromToken.lastActiveDate >lastActiveDateFromJWT ) {
             return null;
         }
         await this.usersRepository.terminateSpecificDevice(userId, usersDataFromToken.deviceId);
