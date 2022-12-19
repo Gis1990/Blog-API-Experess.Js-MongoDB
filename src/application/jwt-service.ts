@@ -1,9 +1,10 @@
 import {settings} from "../settings";
 import {UserAccountDBClass, userDevicesDataClass} from "../types/types";
 import jwt from 'jsonwebtoken'
+import {injectable} from "inversify";
 
 
-
+@injectable()
 export class JwtService {
     async createAccessJWT(user: UserAccountDBClass) {
         const accessToken = jwt.sign({userId: user.id}, settings.jwtAccessTokenSecret, {expiresIn: '15 minutes'})

@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import {BlogsRepository} from "./repositories/blogs-repository";
 import {BlogsService} from "./domain/blogs-service";
 import {BlogsController} from "./controllers/blogs-controller";
@@ -20,38 +21,88 @@ import {SecurityService} from "./domain/security-service";
 import {BlogsQueryRepository} from "./repositories/blogs-query-repository";
 import {CommentsQueryRepository} from "./repositories/comments-query-repository";
 import {PostsQueryRepository} from "./repositories/posts-query-repository";
-import {PostsQueryService} from "./domain/posts-query-service";
 import {UsersQueryRepository} from "./repositories/users-query-repository";
-
-
-export const usersRepository = new UsersRepository();
-export const usersQueryRepository = new UsersQueryRepository();
-const blogsRepository = new BlogsRepository();
-export const blogsQueryRepository = new BlogsQueryRepository();
-const postsRepository = new PostsRepository();
-export const postsQueryRepository = new PostsQueryRepository();
-const commentsRepository = new CommentsRepository()
-export const commentsQueryRepository = new CommentsQueryRepository()
-const blogsService = new BlogsService(blogsRepository);
-const postsService = new PostsService(postsRepository,blogsQueryRepository,postsQueryRepository);
-const postsQueryService = new PostsQueryService(postsQueryRepository,blogsQueryRepository);
-const commentsService = new CommentsService(commentsRepository,commentsQueryRepository);
-const jwtService = new JwtService()
-export const usersService = new UsersService(usersRepository);
-const emailController = new EmailAdapter();
-const authService= new AuthService(usersRepository,usersQueryRepository,emailController,usersService,jwtService);
-const securityService= new SecurityService(usersRepository,jwtService,usersQueryRepository);
+import {Container} from "inversify";
+import {PostsQueryService} from "./domain/posts-query-service";
 
 
 
 
+export const container = new Container();
+//blogs
+container.bind(BlogsController).to(BlogsController).inSingletonScope();
+container.bind<BlogsService>(BlogsService).to(BlogsService).inSingletonScope();
+container.bind<BlogsRepository>(BlogsRepository).to(BlogsRepository).inSingletonScope();
+container.bind<BlogsQueryRepository>(BlogsQueryRepository).to(BlogsQueryRepository).inSingletonScope();
+//posts
+container.bind(PostsController).to(PostsController).inSingletonScope();
+container.bind<PostsService>(PostsService).to(PostsService).inSingletonScope();
+container.bind<PostsQueryService>(PostsQueryService).to(PostsQueryService).inSingletonScope();
+container.bind<PostsRepository>(PostsRepository).to(PostsRepository).inSingletonScope();
+container.bind<PostsQueryRepository>(PostsQueryRepository).to(PostsQueryRepository).inSingletonScope();
+// comments
+container.bind(CommentsController).to(CommentsController).inSingletonScope();
+container.bind<CommentsService>(CommentsService).to(CommentsService).inSingletonScope();
+container.bind<CommentsRepository>(CommentsRepository).to(CommentsRepository).inSingletonScope();
+container.bind<CommentsQueryRepository>(CommentsQueryRepository).to(CommentsQueryRepository).inSingletonScope();
+//users
+container.bind(UsersController).to(UsersController).inSingletonScope();
+container.bind<UsersService>(UsersService).to(UsersService).inSingletonScope();
+container.bind<UsersRepository>(UsersRepository).to(UsersRepository).inSingletonScope();
+container.bind<UsersQueryRepository>(UsersQueryRepository).to(UsersQueryRepository).inSingletonScope();
+//auth
+container.bind(AuthController).to(AuthController).inSingletonScope();
+container.bind<AuthService>(AuthService).to(AuthService).inSingletonScope();
+//security
+container.bind(SecurityController).to(SecurityController).inSingletonScope();
+container.bind<SecurityService>(SecurityService).to(SecurityService).inSingletonScope();
+//jwt
+container.bind<JwtService>(JwtService).to(JwtService).inSingletonScope();
+//email
+container.bind<EmailAdapter>(EmailAdapter).to(EmailAdapter).inSingletonScope();
 
-export const blogsController = new BlogsController(blogsService,blogsQueryRepository);
-export const postsController = new PostsController(postsService,postsQueryService);
-export const commentsController = new CommentsController(commentsService);
-export const usersController = new UsersController(usersService,authService,usersQueryRepository);
-export const authController = new AuthController(authService);
-export const securityController = new SecurityController(securityService);
-export const authAccessTokenController = new AuthAccessTokenController(usersQueryRepository,jwtService);
+
+
+
+// export const usersRepository = new UsersRepository();
+// export const usersQueryRepository = new UsersQueryRepository();
+// // const blogsRepository = new BlogsRepository();
+// // export const blogsQueryRepository = new BlogsQueryRepository();
+// const postsRepository = new PostsRepository();
+// export const postsQueryRepository = new PostsQueryRepository();
+// const commentsRepository = new CommentsRepository()
+// export const commentsQueryRepository = new CommentsQueryRepository()
+// // const blogsService = new BlogsService(blogsRepository);
+// const postsService = new PostsService(postsRepository,blogsQueryRepository,postsQueryRepository);
+// const postsQueryService = new PostsQueryService(postsQueryRepository,blogsQueryRepository);
+// const commentsService = new CommentsService(commentsRepository,commentsQueryRepository);
+// const jwtService = new JwtService()
+// export const usersService = new UsersService(usersRepository);
+// const emailController = new EmailAdapter();
+// const authService= new AuthService(usersRepository,usersQueryRepository,emailController,usersService,jwtService);
+// const securityService= new SecurityService(usersRepository,jwtService,usersQueryRepository);
+
+
+
+
+
+// export const blogsController = new BlogsController(blogsService,blogsQueryRepository);
+// export const postsController = new PostsController(postsService,postsQueryService);
+// export const commentsController = new CommentsController(commentsService);
+// export const usersController = new UsersController(usersService,authService,usersQueryRepository);
+// export const authController = new AuthController(authService);
+// export const securityController = new SecurityController(securityService);
+// export const authAccessTokenController = new AuthAccessTokenController(usersQueryRepository,jwtService);
+
+
+export const blogsController = container.resolve (BlogsController)
+export const postsController = container.resolve (PostsController)
+export const commentsController = container.resolve (CommentsController)
+export const usersController = container.resolve (UsersController)
+export const authController = container.resolve (AuthController)
+export const securityController = container.resolve (SecurityController)
+export const authAccessTokenController = container.resolve (AuthAccessTokenController)
+
+
 
 

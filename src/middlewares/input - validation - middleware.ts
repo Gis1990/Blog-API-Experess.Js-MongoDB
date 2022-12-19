@@ -2,11 +2,13 @@ import {NextFunction, Request, Response} from "express";
 import {validationResult, Schema, param, ValidationChain, checkSchema} from "express-validator";
 import {ErrorType} from "../types/types";
 import {
-    blogsQueryRepository,
-    commentsQueryRepository,
-    postsQueryRepository,
-    usersQueryRepository,
+    container
+
 } from "../composition-root";
+import {UsersQueryRepository} from "../repositories/users-query-repository";
+import {CommentsQueryRepository} from "../repositories/comments-query-repository";
+import {BlogsQueryRepository} from "../repositories/blogs-query-repository";
+import {PostsQueryRepository} from "../repositories/posts-query-repository";
 
 const pattern=/^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/
 const patternForEmail=/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/
@@ -165,6 +167,8 @@ export const validationSchemaForPostsWithExtendedData:Schema = {
         },
         custom: {
             options: async(id) => {
+                const blogsQueryRepository = container.get<BlogsQueryRepository>(
+                    BlogsQueryRepository)
                 const blog = await blogsQueryRepository.getBlogById (id)
                 return (!!blog)?Promise.resolve():Promise.reject()
             },
@@ -192,6 +196,9 @@ export const validationSchemaForUsers:Schema = {
         },
         custom: {
             options: async(login) => {
+                const usersQueryRepository = container.get<UsersQueryRepository>(
+                    UsersQueryRepository
+                )
                 const user =  await usersQueryRepository.findByLoginOrEmail(login)
                 return (!user)?Promise.resolve():Promise.reject()
             },
@@ -212,6 +219,9 @@ export const validationSchemaForUsers:Schema = {
         },
         custom: {
             options: async(email) => {
+                const usersQueryRepository = container.get<UsersQueryRepository>(
+                    UsersQueryRepository
+                )
                 const user =  await usersQueryRepository.findByLoginOrEmail(email)
                 return (!user)?Promise.resolve():Promise.reject()
             },
@@ -248,6 +258,9 @@ export const validationSchemaForEmails:Schema = {
         },
         custom: {
             options: async(email) => {
+                const usersQueryRepository = container.get<UsersQueryRepository>(
+                    UsersQueryRepository
+                )
                 const user =  await usersQueryRepository.findByLoginOrEmail(email)
                 if (!user) {
                     return Promise.reject()
@@ -295,6 +308,9 @@ export const validationSchemaForConfirmationCodes:Schema = {
         },
         custom: {
             options: async(code) => {
+                const usersQueryRepository = container.get<UsersQueryRepository>(
+                    UsersQueryRepository
+                )
                 const user =  await usersQueryRepository.findUserByConfirmationCode(code)
                 if (!user) {
                     return Promise.reject()
@@ -397,6 +413,9 @@ export const validationSchemaForNewPassword:Schema = {
         },
         custom: {
             options: async(recoveryCode) => {
+                const usersQueryRepository = container.get<UsersQueryRepository>(
+                    UsersQueryRepository
+                )
                 const user =  await usersQueryRepository.findUserByRecoveryCode(recoveryCode)
                 if (!user) {
                     return Promise.reject()
@@ -425,6 +444,9 @@ const errorHandlerForIdValidation = (rq: Request, rs: Response, nxt: NextFunctio
 
 export const postsIdValidation = async (req: Request, res: Response, next: NextFunction) => {
     await param("postId","Id is not exist").custom(async postId=>{
+        const postsQueryRepository = container.get<PostsQueryRepository>(
+            PostsQueryRepository
+        )
         const posts = await postsQueryRepository.getPostById(postId)
         return (!!posts)?Promise.resolve():Promise.reject()}).run(req)
     errorHandlerForIdValidation(req,res,next)
@@ -433,6 +455,9 @@ export const postsIdValidation = async (req: Request, res: Response, next: NextF
 
 export const blogsIdValidation = async (req: Request, res: Response, next: NextFunction) => {
          await param("blogId", "Id does not exist").custom(async blogId => {
+             const blogsQueryRepository = container.get<BlogsQueryRepository>(
+                 BlogsQueryRepository
+             )
             const blog =await blogsQueryRepository.getBlogById (blogId)
             return (!!blog)?Promise.resolve():Promise.reject()}).run(req)
         errorHandlerForIdValidation(req,res,next)
@@ -440,6 +465,9 @@ export const blogsIdValidation = async (req: Request, res: Response, next: NextF
 
 export const usersIdValidation = async (req: Request, res: Response, next: NextFunction) => {
     await param("userId", "Id does not exist").custom(async userId => {
+        const usersQueryRepository = container.get<UsersQueryRepository>(
+            UsersQueryRepository
+        )
         const user =await usersQueryRepository.findUserById(userId)
         return (!!user)?Promise.resolve():Promise.reject()}).run(req)
     errorHandlerForIdValidation(req,res,next)
@@ -447,6 +475,9 @@ export const usersIdValidation = async (req: Request, res: Response, next: NextF
 
 export const commentsIdValidation = async (req: Request, res: Response, next: NextFunction) => {
     await param("commentId", "Id does not exist").custom(async commentId => {
+        const commentsQueryRepository= container.get<CommentsQueryRepository>(
+            CommentsQueryRepository
+        )
         const user =await commentsQueryRepository.getCommentById(commentId)
         return (!!user)?Promise.resolve():Promise.reject()}).run(req)
     errorHandlerForIdValidation(req,res,next)
@@ -454,6 +485,9 @@ export const commentsIdValidation = async (req: Request, res: Response, next: Ne
 
 export const deviceIdValidation = async (req: Request, res: Response, next: NextFunction) => {
     await param("deviceId","Id is not exist").custom(async deviceId=>{
+        const usersQueryRepository = container.get<UsersQueryRepository>(
+            UsersQueryRepository
+        )
         const device = await usersQueryRepository.findUserByDeviceId(deviceId)
         return (!!device)?Promise.resolve():Promise.reject()}).run(req)
     errorHandlerForIdValidation(req,res,next)

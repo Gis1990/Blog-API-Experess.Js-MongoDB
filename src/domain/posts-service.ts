@@ -8,11 +8,14 @@ import {
 } from "../types/types";
 import {BlogsQueryRepository} from "../repositories/blogs-query-repository";
 import {PostsQueryRepository} from "../repositories/posts-query-repository";
+import {inject, injectable} from "inversify";
 
 
-
+@injectable()
 export class PostsService {
-    constructor(protected postsRepository: PostsRepository,protected blogsQueryRepository: BlogsQueryRepository,protected postsQueryRepository: PostsQueryRepository) {}
+    constructor(@inject(PostsRepository) protected postsRepository: PostsRepository,
+                @inject(BlogsQueryRepository) protected blogsQueryRepository: BlogsQueryRepository,
+                @inject(PostsQueryRepository) protected postsQueryRepository: PostsQueryRepository) {}
     async createPost(
         title: string,
         shortDescription: string,

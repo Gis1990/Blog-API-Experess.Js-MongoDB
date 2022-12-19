@@ -15,22 +15,23 @@ import {EmailAdapter} from "../application/email-adapter";
 import {UsersService} from "./users-service";
 import {JwtService} from "../application/jwt-service";
 import {UsersQueryRepository} from "../repositories/users-query-repository";
+import {inject, injectable} from "inversify";
 
 
-
+@injectable()
 export class  AuthService  {
-    constructor(protected usersRepository: UsersRepository,
-                protected usersQueryRepository: UsersQueryRepository,
-                protected emailController:EmailAdapter,
-                protected usersService:UsersService,
-                protected jwtService:JwtService) {}
+    constructor(@inject(UsersRepository) protected usersRepository: UsersRepository,
+                @inject(UsersQueryRepository) protected usersQueryRepository: UsersQueryRepository,
+                @inject(EmailAdapter) protected emailAdapter:EmailAdapter,
+                @inject(UsersService) protected usersService:UsersService,
+                @inject(JwtService) protected jwtService:JwtService) {}
     async createUserWithConfirmationEmail(login: string,email:string, password: string): Promise<UserAccountDBClass> {
         const passwordHash = await this._generateHash(password)
         const emailRecoveryCodeData:UserRecoveryCodeClass=new UserRecoveryCodeClass("",new Date())
         const emailConfirmation: UserAccountEmailClass = new  UserAccountEmailClass([],uuidv4(),add (new Date(),{hours:1}),false)
         const newUser: UserAccountDBClass = new UserAccountDBClass(new ObjectId(),Number((new Date())).toString(), login, email, passwordHash, new Date().toISOString(),emailRecoveryCodeData, [],emailConfirmation,[])
         const newUserWithConfirmationCode=this.usersRepository.createUser(newUser)
-        await this.emailController.sendEmailWithRegistration(email,newUser.emailConfirmation.confirmationCode)
+        await this.emailAdapter.sendEmailWithRegistration(email,newUser.emailConfirmation.confirmationCode)
         await this.usersRepository.addEmailLog(email)
         return newUserWithConfirmationCode
     }
@@ -75,7 +76,7 @@ export class  AuthService  {
         const user = await this.usersQueryRepository.findByLoginOrEmail(email)
         if (user){
             const passwordRecoveryData:UserRecoveryCodeClass=new UserRecoveryCodeClass(uuidv4(),add (new Date(),{hours:1}))
-            await this.emailController.sendEmailWithPasswordRecovery(email,passwordRecoveryData.recoveryCode)
+            await this.emailAdapter.sendEmailWithPasswordRecovery(email,passwordRecoveryData.recoveryCode)
             await this.usersRepository.addPasswordRecoveryCode(user.id,passwordRecoveryData)
             return true
         }else{
@@ -98,7 +99,7 @@ export class  AuthService  {
         }
         const updatedUser = await this.usersQueryRepository.findByLoginOrEmail(email)
         if (updatedUser){
-            await this.emailController.sendEmailWithRegistration(email,updatedUser.emailConfirmation.confirmationCode)
+            await this.emailAdapter.sendEmailWithRegistration(email,updatedUser.emailConfirmation.confirmationCode)
             await this.usersRepository.addEmailLog(email)
             return true
         }else {

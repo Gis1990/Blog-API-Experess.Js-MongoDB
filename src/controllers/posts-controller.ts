@@ -1,10 +1,12 @@
 import {Request, Response} from "express";
 import {PostsService} from "../domain/posts-service";
 import {PostsQueryService} from "../domain/posts-query-service";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class PostsController {
-    constructor(protected postsService: PostsService,
-                protected postsQueryService: PostsQueryService) {}
+    constructor(@inject(PostsService) protected postsService: PostsService,
+                @inject(PostsQueryService) protected postsQueryService: PostsQueryService) {}
     async getAllPosts (req: Request, res: Response) {
         const allPosts= await this.postsQueryService.getAllPosts(req.query,req.user?.id)
         res.status(200).json(allPosts)

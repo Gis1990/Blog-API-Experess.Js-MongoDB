@@ -8,13 +8,14 @@ import {
 import {ObjectId} from "mongodb";
 import {CommentsRepository} from "../repositories/comments-repository";
 import {CommentsQueryRepository} from "../repositories/comments-query-repository";
+import {inject, injectable} from "inversify";
 
 
 
-
+@injectable()
 export class CommentsService  {
-    constructor(protected commentsRepository: CommentsRepository,
-                protected commentsQueryRepository: CommentsQueryRepository) {}
+    constructor(@inject(CommentsRepository) protected commentsRepository: CommentsRepository,
+                @inject(CommentsQueryRepository) protected commentsQueryRepository: CommentsQueryRepository) {}
     async getCommentById(id: string,userId: string | undefined): Promise<CommentDBClass | null> {
         const comment = await this.commentsQueryRepository.getCommentById(id)
         if (!comment){

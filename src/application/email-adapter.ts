@@ -1,6 +1,9 @@
 import  nodemailer from 'nodemailer'
 import {settings} from '../settings'
+import {injectable} from "inversify";
 
+
+@injectable()
 export class EmailAdapter {
   constructor() {}
   async sendEmailWithRegistration (email: string, confirmationCode: string) {

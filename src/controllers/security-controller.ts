@@ -1,10 +1,11 @@
 import {Request, Response} from "express";
 import {SecurityService} from "../domain/security-service";
+import {inject, injectable} from "inversify";
 
 
-
+@injectable()
 export class SecurityController{
-    constructor(protected  securityService: SecurityService) {}
+    constructor(@inject(SecurityService) protected  securityService: SecurityService) {}
     async devices(req: Request, res: Response) {
         const allDevices = await this.securityService.returnAllDevices(req.cookies.refreshToken)
         if (allDevices){

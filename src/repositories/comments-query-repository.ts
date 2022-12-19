@@ -1,10 +1,11 @@
 import {CommentDBClass, CommentDBClassPagination} from "../types/types";
 import {CommentsModelClass} from "./db";
+import {injectable} from "inversify";
 
 
 
 
-
+@injectable()
 export class CommentsQueryRepository {
     async getCommentById(id: string): Promise<CommentDBClass | null> {
         return CommentsModelClass.findOne({id: id}, {_id: 0, postId: 0,usersLikesInfo:0 })

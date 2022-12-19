@@ -1,7 +1,8 @@
 import {  PostDBClass, PostDBClassPagination} from "../types/types";
 import {PostsModelClass} from "./db";
+import {injectable} from "inversify";
 
-
+@injectable()
 export class PostsQueryRepository {
     async getAllPosts(pageNumber: number, pageSize: number,sortBy:string,sortDirection:string): Promise<PostDBClassPagination> {
         const skips = pageSize * (pageNumber - 1);

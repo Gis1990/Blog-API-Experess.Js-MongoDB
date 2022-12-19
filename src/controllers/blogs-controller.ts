@@ -1,11 +1,12 @@
 import {Request, Response} from "express";
 import {BlogsService} from "../domain/blogs-service";
 import {BlogsQueryRepository} from "../repositories/blogs-query-repository";
+import {inject, injectable} from "inversify";
 
-
+@injectable()
 export class BlogsController {
-    constructor(protected  blogsService: BlogsService,
-                protected  blogsQueryRepository: BlogsQueryRepository) {}
+    constructor(@inject(BlogsService) protected  blogsService: BlogsService,
+                @inject(BlogsQueryRepository) protected  blogsQueryRepository: BlogsQueryRepository) {}
     async getAllBlogs (req: Request, res: Response) {
         const allBlogs= await this.blogsQueryRepository.getAllBlogs(req.query)
         res.json(allBlogs)

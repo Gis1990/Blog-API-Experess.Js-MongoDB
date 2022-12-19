@@ -2,6 +2,8 @@ import {NextFunction, Request, Response} from "express";
 import {header, validationResult} from "express-validator";
 import {JwtService} from "../application/jwt-service";
 import {UsersQueryRepository} from "../repositories/users-query-repository";
+import {inject, injectable} from "inversify";
+
 
 
 export const authenticationMiddleware = async (req: Request, res: Response, next: NextFunction) => {
@@ -16,10 +18,10 @@ export const authenticationMiddleware = async (req: Request, res: Response, next
 
 
 
-
+@injectable()
 export class  AuthAccessTokenController {
-    constructor(protected usersQueryRepository: UsersQueryRepository,
-                protected jwtService: JwtService) {
+    constructor(@inject(UsersQueryRepository) protected usersQueryRepository: UsersQueryRepository,
+                @inject(JwtService) protected jwtService: JwtService) {
     }
     async authAccessToken(req: Request, res: Response, next: NextFunction) {
         if (!req.headers.authorization) {

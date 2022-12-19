@@ -1,10 +1,11 @@
 import {Request, Response} from "express";
 import {AuthService} from "../domain/auth-service";
+import {inject, injectable} from "inversify";
 
 
-
+@injectable()
 export class AuthController{
-    constructor(protected  authService: AuthService) {}
+    constructor(@inject(AuthService) protected  authService: AuthService) {}
     async registrationConfirmation(req: Request, res: Response) {
             const result = await this.authService.confirmEmail(req.body.code)
             if (result) {
