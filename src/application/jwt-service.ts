@@ -25,6 +25,7 @@ export class JwtService {
             return null
         }
     }
+
     async getUserIdByRefreshToken(token: string) {
         try {
             const result: any = jwt.verify(token, settings.jwtRefreshTokenSecret)
