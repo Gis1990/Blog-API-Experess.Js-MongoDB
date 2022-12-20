@@ -8,7 +8,7 @@ import {injectable} from "inversify";
 
 @injectable()
 export  class UsersQueryRepository  {
-    async getAllUsers (queryAllUsersClass:{searchLoginTerm?:string|null,searchEmailTerm?:string|null,pageNumber?: number, pageSize?: number,sortBy?:string,sortDirection?:string }): Promise<UserDBClassPagination> {
+    async getAllUsers (obj:{searchLoginTerm?:string|null,searchEmailTerm?:string|null,pageNumber?: number, pageSize?: number,sortBy?:string,sortDirection?:string }): Promise<UserDBClassPagination> {
         let {
             searchLoginTerm = null,
             searchEmailTerm = null,
@@ -16,7 +16,7 @@ export  class UsersQueryRepository  {
             pageSize = 10,
             sortBy = "createdAt",
             sortDirection = "desc",
-        } = queryAllUsersClass;
+        } = obj;
 
         pageNumber= Number(pageNumber)
         pageSize=  Number(pageSize)

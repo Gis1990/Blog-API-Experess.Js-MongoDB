@@ -4,14 +4,14 @@ import {injectable} from "inversify";
 
 @injectable()
 export class BlogsQueryRepository {
-    async getAllBlogs(queryAllBlogsClass:{searchNameTerm?:string|null,pageNumber?:number,pageSize?:number,sortBy?:string,sortDirection?:string }):Promise<BlogDBClassPagination> {
+    async getAllBlogs(obj:{searchNameTerm?:string|null,pageNumber?:number,pageSize?:number,sortBy?:string,sortDirection?:string }):Promise<BlogDBClassPagination> {
         let {
             searchNameTerm = null,
             pageNumber = 1,
             pageSize = 10,
             sortBy = "createdAt",
             sortDirection = "desc",
-        } = queryAllBlogsClass;
+        } = obj;
         pageNumber= Number(pageNumber)
         pageSize=  Number(pageSize)
 
