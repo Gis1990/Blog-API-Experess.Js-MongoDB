@@ -23,29 +23,6 @@ export class NewBlogClassResponseModel {
     }
 }
 
-export class queryAllBlogsClass {
-    constructor(
-        public searchNameTerm: string,
-        public pageNumber: number,
-        public pageSize: number,
-        public sortBy: string,
-        public sortDirection: string,
-    ) {}
-}
-
-export class queryAllUsersClass {
-    constructor(
-        public searchLoginTerm: string,
-        public searchEmailTerm: string,
-        public pageNumber: number,
-        public pageSize: number,
-        public sortBy: string,
-        public sortDirection: string,
-    ) {}
-}
-
-
-
 
 export class CommentDBClass {
     constructor(
@@ -235,11 +212,6 @@ export class LoginAttemptsClass {
     constructor(
         public attemptDate: Date,
         public ip: string) {
-    }
-}
-
-export class RefreshTokenClass {
-    constructor(public token: string) {
     }
 }
 

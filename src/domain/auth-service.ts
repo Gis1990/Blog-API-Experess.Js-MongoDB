@@ -111,17 +111,19 @@ export class  AuthService  {
         const userId = await this.jwtService.getUserIdByRefreshToken(oldRefreshToken);
         const user = await this.usersQueryRepository.findUserById(userId);
         const usersDataFromToken = await this.jwtService.getUserDevicesDataFromRefreshToken(oldRefreshToken);
-        const lastActiveDateFromJWT = user?.userDevicesData.find((item)=>item.deviceId===usersDataFromToken?.deviceId)?.lastActiveDate
-        if (!user || !usersDataFromToken||!lastActiveDateFromJWT) {
+        const lastActiveDateFromDB = user?.userDevicesData.find((item)=>item.deviceId===usersDataFromToken?.deviceId)?.lastActiveDate
+        if (!user || !usersDataFromToken||!lastActiveDateFromDB) {
             return null;
         }
-        if (usersDataFromToken.lastActiveDate >lastActiveDateFromJWT ) {
+        const stringDateFromJWT = usersDataFromToken.lastActiveDate
+        const lastActiveDateFromJWT = new Date(stringDateFromJWT);
+        if (lastActiveDateFromJWT.getTime()!==lastActiveDateFromDB.getTime() ) {
             return null;
         }
         const accessToken = await this.jwtService.createAccessJWT(user);
         usersDataFromToken.lastActiveDate = new Date();
         const newLastActiveDate = usersDataFromToken.lastActiveDate;
-        await this.usersRepository.updateLastActiveDate(userId, usersDataFromToken, newLastActiveDate);
+        await this.usersRepository.updateLastActiveDate( usersDataFromToken, newLastActiveDate);
         const newRefreshToken = await this.jwtService.createRefreshJWT(user, usersDataFromToken);
         return [accessToken, newRefreshToken];
     }
@@ -129,11 +131,13 @@ export class  AuthService  {
         const userId = await this.jwtService.getUserIdByRefreshToken(oldRefreshToken);
         const user = await this.usersQueryRepository.findUserById(userId);
         const usersDataFromToken = await this.jwtService.getUserDevicesDataFromRefreshToken(oldRefreshToken);
-        const lastActiveDateFromJWT = user?.userDevicesData.find((item)=>item.deviceId===usersDataFromToken?.deviceId)?.lastActiveDate
-        if (!user || !usersDataFromToken||!lastActiveDateFromJWT) {
+        const lastActiveDateFromDB = user?.userDevicesData.find((item)=>item.deviceId===usersDataFromToken?.deviceId)?.lastActiveDate
+        if (!user || !usersDataFromToken||!lastActiveDateFromDB) {
             return null;
         }
-        if (usersDataFromToken.lastActiveDate >lastActiveDateFromJWT ) {
+        const stringDateFromJWT = usersDataFromToken.lastActiveDate
+        const lastActiveDateFromJWT = new Date(stringDateFromJWT);
+        if (lastActiveDateFromJWT.getTime()!==lastActiveDateFromDB.getTime() ) {
             return null;
         }
         await this.usersRepository.terminateSpecificDevice(userId, usersDataFromToken.deviceId);
