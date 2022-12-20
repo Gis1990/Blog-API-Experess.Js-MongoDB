@@ -16,6 +16,7 @@ export class JwtService {
             settings.jwtRefreshTokenSecret, {expiresIn: '20 seconds'})
         return refreshToken
     }
+
     async getUserIdByAccessToken(token: string) {
         try {
             const result: any = jwt.verify(token, settings.jwtAccessTokenSecret)
