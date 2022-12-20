@@ -7,16 +7,15 @@ import {injectable} from "inversify";
 @injectable()
 export class JwtService {
     async createAccessJWT(user: UserAccountDBClass) {
-        const accessToken = jwt.sign({userId: user.id}, settings.jwtAccessTokenSecret, {expiresIn: '15 minutes'})
+        const accessToken = jwt.sign({userId: user.id}, settings.jwtAccessTokenSecret, {expiresIn: '10 seconds'})
         return accessToken
     }
     async createRefreshJWT(user: UserAccountDBClass,userDevicesData: userDevicesDataClass) {
         const refreshToken = jwt.sign({userId: user.id,ip:userDevicesData.ip,title:userDevicesData.title,
             lastActiveDate:userDevicesData.lastActiveDate,deviceId:userDevicesData.deviceId},
-            settings.jwtRefreshTokenSecret, {expiresIn: '1 hour'})
+            settings.jwtRefreshTokenSecret, {expiresIn: '20 seconds'})
         return refreshToken
     }
-
     async getUserIdByAccessToken(token: string) {
         try {
             const result: any = jwt.verify(token, settings.jwtAccessTokenSecret)
@@ -25,7 +24,6 @@ export class JwtService {
             return null
         }
     }
-
     async getUserIdByRefreshToken(token: string) {
         try {
             const result: any = jwt.verify(token, settings.jwtRefreshTokenSecret)
