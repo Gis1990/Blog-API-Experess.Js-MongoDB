@@ -110,21 +110,20 @@ export class  AuthService  {
     async refreshAllTokens (oldRefreshToken:string): Promise<string[]|null> {
         const userId = await this.jwtService.getUserIdByRefreshToken(oldRefreshToken);
         const user = await this.usersQueryRepository.findUserById(userId);
-        const usersDataFromToken = await this.jwtService.getUserDevicesDataFromRefreshToken(oldRefreshToken);
-        const lastActiveDateFromDB = user?.userDevicesData.find((item)=>item.deviceId===usersDataFromToken?.deviceId)?.lastActiveDate
-        if (!user || !usersDataFromToken||!lastActiveDateFromDB) {
+        const usersDataAboutDeviceFromToken = await this.jwtService.getUserDevicesDataFromRefreshToken(oldRefreshToken);
+        const lastActiveDateFromDB = user?.userDevicesData.find((item)=>item.deviceId===usersDataAboutDeviceFromToken?.deviceId)?.lastActiveDate
+        if (!user || !usersDataAboutDeviceFromToken||!lastActiveDateFromDB) {
             return null;
         }
-        const stringDateFromJWT = usersDataFromToken.lastActiveDate
+        const stringDateFromJWT = usersDataAboutDeviceFromToken.lastActiveDate
         const lastActiveDateFromJWT = new Date(stringDateFromJWT);
         if (lastActiveDateFromJWT.getTime()!==lastActiveDateFromDB.getTime() ) {
             return null;
         }
         const accessToken = await this.jwtService.createAccessJWT(user);
-        usersDataFromToken.lastActiveDate = new Date();
-        const newLastActiveDate = usersDataFromToken.lastActiveDate;
-        await this.usersRepository.updateLastActiveDate( usersDataFromToken, newLastActiveDate);
-        const newRefreshToken = await this.jwtService.createRefreshJWT(user, usersDataFromToken);
+        const newLastActiveDate = new Date();
+        await this.usersRepository.updateLastActiveDate( usersDataAboutDeviceFromToken, newLastActiveDate);
+        const newRefreshToken = await this.jwtService.createRefreshJWT(user, usersDataAboutDeviceFromToken);
         return [accessToken, newRefreshToken];
     }
     async refreshOnlyRefreshToken (oldRefreshToken:string): Promise<string|null> {

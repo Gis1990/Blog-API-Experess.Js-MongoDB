@@ -36,7 +36,7 @@ export  class UsersRepository  {
         const result = await UsersAccountModelClass.updateOne({id: id}, {$push: {userDevicesData: userDevicesData}})
         return result.modifiedCount === 1
     }
-    async updateLastActiveDate (userDevicesData: userDevicesDataClass,newLastActiveDate:string):Promise<boolean> {
+    async updateLastActiveDate (userDevicesData: userDevicesDataClass,newLastActiveDate:Date):Promise<boolean> {
         const result = await UsersAccountModelClass.updateOne({"userDevicesData.deviceId":userDevicesData.deviceId},{$set:{"userDevicesData.$.lastActiveDate": newLastActiveDate}})
         return result.modifiedCount === 1
     }
