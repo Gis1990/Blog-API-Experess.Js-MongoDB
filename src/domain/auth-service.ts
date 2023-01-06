@@ -1,8 +1,6 @@
 import {ObjectId} from "mongodb";
 import {
-    NewUserClassResponseModel,
     UserAccountDBClass,
-    userDevicesDataClass,
     UserRecoveryCodeClass
 } from "../types/types";
 
@@ -12,7 +10,6 @@ import add from "date-fns/add";
 import {UserAccountEmailClass} from "../types/types";
 import {UsersRepository} from "../repositories/users-repository";
 import {EmailAdapter} from "../application/email-adapter";
-import {UsersService} from "./users-service";
 import {JwtService} from "../application/jwt-service";
 import {UsersQueryRepository} from "../repositories/users-query-repository";
 import {inject, injectable} from "inversify";
@@ -20,43 +17,19 @@ import {inject, injectable} from "inversify";
 
 @injectable()
 export class  AuthService  {
-    constructor(@inject(UsersRepository) protected usersRepository: UsersRepository,
-                @inject(UsersQueryRepository) protected usersQueryRepository: UsersQueryRepository,
-                @inject(EmailAdapter) protected emailAdapter:EmailAdapter,
-                @inject(UsersService) protected usersService:UsersService,
-                @inject(JwtService) protected jwtService:JwtService) {}
-    async createUserWithConfirmationEmail(login: string,email:string, password: string): Promise<UserAccountDBClass> {
+    constructor(@inject(UsersRepository) private usersRepository: UsersRepository,
+                @inject(UsersQueryRepository) private usersQueryRepository: UsersQueryRepository,
+                @inject(EmailAdapter) private emailAdapter:EmailAdapter,
+                @inject(JwtService) private jwtService:JwtService) {}
+    async createUser(login: string,email:string, password: string,isConfirmed:boolean): Promise<UserAccountDBClass> {
         const passwordHash = await this._generateHash(password)
         const emailRecoveryCodeData:UserRecoveryCodeClass=new UserRecoveryCodeClass("",new Date())
-        const emailConfirmation: UserAccountEmailClass = new  UserAccountEmailClass([],uuidv4(),add (new Date(),{hours:1}),false)
-        const newUser: UserAccountDBClass = new UserAccountDBClass(new ObjectId(),Number((new Date())).toString(), login, email, passwordHash, new Date().toISOString(),emailRecoveryCodeData, [],emailConfirmation,[])
-        const newUserWithConfirmationCode=this.usersRepository.createUser(newUser)
-        await this.emailAdapter.sendEmailWithRegistration(email,newUser.emailConfirmation.confirmationCode)
-        await this.usersRepository.addEmailLog(email)
-        return newUserWithConfirmationCode
-    }
-    async createUserWithoutConfirmationEmail(login: string,email:string, password: string): Promise<NewUserClassResponseModel> {
-        const passwordHash = await this._generateHash(password)
-        const emailConfirmation: UserAccountEmailClass = new  UserAccountEmailClass([],uuidv4(),add (new Date(),{hours:1}),true)
-        const emailRecoveryCodeData:UserRecoveryCodeClass=new UserRecoveryCodeClass("",new Date())
+        const emailConfirmation: UserAccountEmailClass = new  UserAccountEmailClass([],uuidv4(),add (new Date(),{hours:1}),isConfirmed)
         const newUser: UserAccountDBClass = new UserAccountDBClass(new ObjectId(),Number((new Date())).toString(), login, email, passwordHash, new Date().toISOString(),emailRecoveryCodeData, [],emailConfirmation,[])
         const user=await this.usersRepository.createUser(newUser)
-        return (({ id, login,email,createdAt }) => ({ id, login,email,createdAt }))(user)
-    }
-    async checkCredentials(loginOrEmail: string, password: string,ip:string,title:string|undefined):Promise<string[]|null> {
-        const user = await this.usersQueryRepository.findByLoginOrEmail(loginOrEmail)
-        if (!user) return null
-        await this.usersRepository.addLoginAttempt(user.id,ip)
-        const isHashesEqual = await this._isHashesEquals(password, user.passwordHash)
-        if (isHashesEqual&&user.emailConfirmation.isConfirmed) {
-            const userDevicesData: userDevicesDataClass = new  userDevicesDataClass(ip,new Date(),Number((new Date())).toString(),title)
-            await this.usersRepository.addUserDevicesData(user.id,userDevicesData)
-            const accessToken = await this.jwtService.createAccessJWT(user)
-            const refreshToken = await this.jwtService.createRefreshJWT(user,userDevicesData)
-            return [accessToken,refreshToken]
-        } else {
-            return null
-        }
+        await this.emailAdapter.sendEmailWithRegistration(email,newUser.emailConfirmation.confirmationCode)
+        await this.usersRepository.addEmailLog(email)
+        return user
     }
     async _generateHash(password: string) {
         return await bcrypt.hash(password, 10)
@@ -64,50 +37,7 @@ export class  AuthService  {
     async _isHashesEquals(password: string, hash2: string) {
         return await bcrypt.compare(password, hash2)
     }
-    async confirmEmail(code: string):Promise<boolean> {
-        const user = await this.usersQueryRepository.findUserByConfirmationCode(code)
-        if (!user) return false
-        if (user.emailConfirmation.isConfirmed) return false;
-        if (user.emailConfirmation.confirmationCode !== code) return false;
-        if (user.emailConfirmation.expirationDate <new Date()) return false;
-        return await this.usersRepository.updateConfirmation(user.id)
-    }
-    async passwordRecovery (email: string): Promise<true> {
-        const user = await this.usersQueryRepository.findByLoginOrEmail(email)
-        if (user){
-            const passwordRecoveryData:UserRecoveryCodeClass=new UserRecoveryCodeClass(uuidv4(),add (new Date(),{hours:1}))
-            await this.emailAdapter.sendEmailWithPasswordRecovery(email,passwordRecoveryData.recoveryCode)
-            await this.usersRepository.addPasswordRecoveryCode(user.id,passwordRecoveryData)
-            return true
-        }else{
-            return true
-        }
-    }
-    async acceptNewPassword(newPassword:string,recoveryCode: string):Promise<boolean> {
-        const user = await this.usersQueryRepository.findUserByRecoveryCode(recoveryCode)
-        if (!user) return false
-        if (user.emailRecoveryCode.expirationDate <new Date()) return false;
-        const passwordHash = await this._generateHash(newPassword)
-        return await this.usersRepository.updatePasswordHash(user.id,passwordHash)
-    }
-    async registrationEmailResending (email: string): Promise<boolean> {
-        const user = await this.usersQueryRepository.findByLoginOrEmail(email)
-        if (user){
-            await this.usersService.updateConfirmationCode(user.id)
-        }else{
-            return false
-        }
-        const updatedUser = await this.usersQueryRepository.findByLoginOrEmail(email)
-        if (updatedUser){
-            await this.emailAdapter.sendEmailWithRegistration(email,updatedUser.emailConfirmation.confirmationCode)
-            await this.usersRepository.addEmailLog(email)
-            return true
-        }else {
-            return false
-        }
-    }
-
-    async refreshAllTokens (oldRefreshToken:string): Promise<string[]|null> {
+    async comparingDataFromTokens (oldRefreshToken:string): Promise<[UserAccountDBClass, { ip: any; lastActiveDate: any; title: any; deviceId: any }]|null> {
         const userId = await this.jwtService.getUserIdByRefreshToken(oldRefreshToken);
         const user = await this.usersQueryRepository.findUserById(userId);
         const usersDataAboutDeviceFromToken = await this.jwtService.getUserDevicesDataFromRefreshToken(oldRefreshToken);
@@ -120,28 +50,9 @@ export class  AuthService  {
         if (lastActiveDateFromJWT.getTime()!==lastActiveDateFromDB.getTime() ) {
             return null;
         }
-        const accessToken = await this.jwtService.createAccessJWT(user);
-        const newLastActiveDate = new Date();
-        await this.usersRepository.updateLastActiveDate( usersDataAboutDeviceFromToken, newLastActiveDate);
-        const newRefreshToken = await this.jwtService.createRefreshJWT(user, usersDataAboutDeviceFromToken);
-        return [accessToken, newRefreshToken];
+        return [user, usersDataAboutDeviceFromToken];
     }
-    async refreshOnlyRefreshToken (oldRefreshToken:string): Promise<string|null> {
-        const userId = await this.jwtService.getUserIdByRefreshToken(oldRefreshToken);
-        const user = await this.usersQueryRepository.findUserById(userId);
-        const usersDataFromToken = await this.jwtService.getUserDevicesDataFromRefreshToken(oldRefreshToken);
-        const lastActiveDateFromDB = user?.userDevicesData.find((item)=>item.deviceId===usersDataFromToken?.deviceId)?.lastActiveDate
-        if (!user || !usersDataFromToken||!lastActiveDateFromDB) {
-            return null;
-        }
-        const stringDateFromJWT = usersDataFromToken.lastActiveDate
-        const lastActiveDateFromJWT = new Date(stringDateFromJWT);
-        if (lastActiveDateFromJWT.getTime()!==lastActiveDateFromDB.getTime() ) {
-            return null;
-        }
-        await this.usersRepository.terminateSpecificDevice(userId, usersDataFromToken.deviceId);
-        return await this.jwtService.createRefreshJWT(user, usersDataFromToken);
-    }
+
 }
 
 

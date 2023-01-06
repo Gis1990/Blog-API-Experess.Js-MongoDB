@@ -10,8 +10,8 @@ import {inject, injectable} from "inversify";
 
 @injectable()
 export class PostsQueryService {
-    constructor(@inject(PostsQueryRepository) protected postsQueryRepository: PostsQueryRepository,
-                @inject(BlogsQueryRepository)protected blogsQueryRepository: BlogsQueryRepository) {
+    constructor(@inject(PostsQueryRepository) private postsQueryRepository: PostsQueryRepository,
+                @inject(BlogsQueryRepository)private blogsQueryRepository: BlogsQueryRepository) {
     }
     async getAllPosts(obj: { pageNumber?: number, pageSize?: number, sortBy?: string, sortDirection?: string }, userId: string | undefined): Promise<PostDBClassPagination> {
         const {pageNumber = 1, pageSize = 10, sortBy = "createdAt", sortDirection = "desc"} = obj

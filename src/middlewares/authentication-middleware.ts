@@ -20,8 +20,8 @@ export const authenticationMiddleware = async (req: Request, res: Response, next
 
 @injectable()
 export class  AuthAccessTokenController {
-    constructor(@inject(UsersQueryRepository) protected usersQueryRepository: UsersQueryRepository,
-                @inject(JwtService) protected jwtService: JwtService) {
+    constructor(@inject(UsersQueryRepository) private usersQueryRepository: UsersQueryRepository,
+                @inject(JwtService) private jwtService: JwtService) {
     }
     async authAccessToken(req: Request, res: Response, next: NextFunction) {
         if (!req.headers.authorization) {

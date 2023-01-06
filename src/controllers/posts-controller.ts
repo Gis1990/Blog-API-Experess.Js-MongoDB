@@ -1,12 +1,18 @@
 import {Request, Response} from "express";
-import {PostsService} from "../domain/posts-service";
 import {PostsQueryService} from "../domain/posts-query-service";
 import {inject, injectable} from "inversify";
+import {DeletePostUseCase} from "../domain/use-cases/posts/delete-post-use-case";
+import {CreatePostUseCase} from "../domain/use-cases/posts/create-post-use-case";
+import {UpdatePostUseCase} from "../domain/use-cases/posts/update-post-use-case";
+import {LikeOperationForPostUseCase} from "../domain/use-cases/posts/like-operation-for-post-use-case";
 
 @injectable()
 export class PostsController {
-    constructor(@inject(PostsService) protected postsService: PostsService,
-                @inject(PostsQueryService) protected postsQueryService: PostsQueryService) {}
+    constructor(@inject(PostsQueryService) private postsQueryService: PostsQueryService,
+                @inject(CreatePostUseCase) private createPostUseCase: CreatePostUseCase,
+                @inject(UpdatePostUseCase) private updatePostUseCase: UpdatePostUseCase,
+                @inject(DeletePostUseCase) private deletePostUseCase: DeletePostUseCase,
+                @inject(LikeOperationForPostUseCase) private likeOperationForPostUseCase: LikeOperationForPostUseCase) {}
     async getAllPosts (req: Request, res: Response) {
         const allPosts= await this.postsQueryService.getAllPosts(req.query,req.user?.id)
         res.status(200).json(allPosts)
@@ -16,19 +22,19 @@ export class PostsController {
         res.status(200).json(post)
     }
     async createPost(req: Request, res: Response) {
-        const newPost= await this.postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, req.params.blogId)
+        const newPost= await this.createPostUseCase.execute(req.body.title, req.body.shortDescription, req.body.content, req.params.blogId)
         res.status(201).json(newPost)
     }
     async createPostWithExtendedData(req: Request, res: Response) {
-        const newPost= await this.postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, req.body.blogId)
+        const newPost= await this.createPostUseCase.execute(req.body.title, req.body.shortDescription, req.body.content, req.body.blogId)
         res.status(201).json(newPost)
     }
     async updatePost(req: Request, res: Response) {
-        await this.postsService.updatePost(req.params.postId, req.body.title, req.body.shortDescription, req.body.content, req.body.blogId)
+        await this.updatePostUseCase.execute(req.params.postId, req.body.title, req.body.shortDescription, req.body.content, req.body.blogId)
         res.sendStatus(204)
     }
     async deletePost(req: Request, res: Response) {
-        await this.postsService.deletePost(req.params.postId)
+        await this.deletePostUseCase.execute(req.params.postId)
         res.sendStatus(204)
     }
     async getAllPostsForSpecificBlog(req: Request, res: Response) {
@@ -37,7 +43,7 @@ export class PostsController {
 
     }
     async likeOperation(req: Request, res: Response) {
-        await this.postsService.likeOperation(req.params.postId,req.user!.id,req.user!.login,req.body.likeStatus)
+        await this.likeOperationForPostUseCase.execute(req.params.postId,req.user!.id,req.user!.login,req.body.likeStatus)
         res.sendStatus(204)
     }
 }

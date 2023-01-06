@@ -12,7 +12,7 @@ export class BlogDBClass {
     }
 }
 
-export class NewBlogClassResponseModel {
+export class NewBlogViewModelClass {
     constructor(
         public id: string,
         public name: string,
@@ -40,7 +40,7 @@ export class CommentDBClass {
 }
 
 
-export class NewCommentClassResponseModel {
+export class NewCommentViewModelClass {
     constructor(
         public id: string,
         public content: string,
@@ -181,7 +181,7 @@ export class UserAccountEmailClass {
     }
 }
 
-export class NewUserClassResponseModel {
+export class NewUserViewModel {
     constructor(
         public id: string,
         public login: string,
