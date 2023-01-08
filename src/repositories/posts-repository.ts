@@ -1,4 +1,4 @@
-import { PostDBClass} from "../types/types";
+import { PostDBClass} from "../types/classes";
 import {PostsModelClass} from "./db";
 import {injectable} from "inversify";
 

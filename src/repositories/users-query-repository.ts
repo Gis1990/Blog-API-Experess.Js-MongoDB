@@ -1,14 +1,14 @@
 import {
     UserAccountDBClass,
-    UserDBClassPagination,
-} from "../types/types";
+    UserDBPaginationClass,
+} from "../types/classes";
 import {UsersAccountModelClass} from "./db";
 import {injectable} from "inversify";
 
 
 @injectable()
 export  class UsersQueryRepository  {
-    async getAllUsers (obj:{searchLoginTerm?:string|null,searchEmailTerm?:string|null,pageNumber?: number, pageSize?: number,sortBy?:string,sortDirection?:string }): Promise<UserDBClassPagination> {
+    async getAllUsers (obj:{searchLoginTerm?:string|null,searchEmailTerm?:string|null,pageNumber?: number, pageSize?: number,sortBy?:string,sortDirection?:string }): Promise<UserDBPaginationClass> {
         let {
             searchLoginTerm = null,
             searchEmailTerm = null,
@@ -53,7 +53,7 @@ export  class UsersQueryRepository  {
         const totalCount = await UsersAccountModelClass.count(query);
 
         // Return a new UserDBClassPagination object with the calculated pagination information and the retrieved documents
-        return new UserDBClassPagination(Math.ceil(totalCount/pageSize),pageNumber,pageSize,totalCount,cursor);
+        return new UserDBPaginationClass(Math.ceil(totalCount/pageSize),pageNumber,pageSize,totalCount,cursor);
     }
     async findUserById(id: string): Promise<UserAccountDBClass | null> {
         let user = await UsersAccountModelClass.findOne({id: id},{_id:0,emailConfirmation:0,loginAttempts:0,passwordHash:0,createdAt:0,emailRecoveryCode:0})

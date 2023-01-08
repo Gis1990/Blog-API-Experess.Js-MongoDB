@@ -1,4 +1,8 @@
-import {CommentDBClass, CommentDBClassPagination} from "../types/types";
+import {
+    CommentDBClass,
+    CommentDBPaginationClass,
+    CommentViewModelClass,
+} from "../types/classes";
 import {CommentsModelClass} from "./db";
 import {injectable} from "inversify";
 
@@ -7,44 +11,63 @@ import {injectable} from "inversify";
 
 @injectable()
 export class CommentsQueryRepository {
-    async getCommentById(id: string): Promise<CommentDBClass | null> {
-        return CommentsModelClass.findOne({id: id}, {_id: 0, postId: 0,usersLikesInfo:0 })
+    async getCommentById(id: string, userId: string | undefined): Promise<CommentViewModelClass | null> {
+        const comment = await CommentsModelClass.findOne({ id: id });
+        if (!comment) {
+            return null
+        }
+        const commentDB = comment as CommentDBClass;
+        commentDB.returnUsersLikeStatusForComment(userId);
+        return new CommentViewModelClass(commentDB.id,
+            commentDB.content,
+            commentDB.userId,
+            commentDB.userLogin,
+            commentDB.createdAt,
+            commentDB.likesInfo);
     }
-    async getAllCommentsForSpecificPost(pageNumber: number, pageSize: number,sortBy:string,sortDirection:string, postId: string): Promise<CommentDBClassPagination> {
-        const skips = pageSize * (pageNumber - 1)
-        let sortObj:any={}
-        if (sortDirection==="desc"){
-            sortObj[sortBy]=-1
-            }else{
-            sortObj[sortBy]=1
-            }
-        const cursor = await CommentsModelClass.find({postId: postId}, {
-            _id: 0,
-            postId: 0,
-            usersLikesInfo:0
-        }).sort(sortObj).skip(skips).limit(pageSize).lean()
+    async getAllCommentsForSpecificPost(obj:{pageNumber?:number,pageSize?:number,sortBy?:string,sortDirection?:string},
+                                        postId: string,
+                                        userId: string | undefined,
+    ): Promise<CommentDBPaginationClass> {
+        const { pageNumber = 1, pageSize = 10, sortBy = "createdAt", sortDirection = "desc" } = obj
+        // Calculate the number of documents to skip based on the page size and number
+        const skips = pageSize * (pageNumber - 1);
+        // Create an object to store the sort criteria
+        const sortObj: any = {};
+        if (sortDirection === "desc") {
+            sortObj[sortBy] = -1;
+        } else {
+            sortObj[sortBy] = 1;
+        }
+        // Retrieve the documents from the commentsModelClass collection, applying the sort, skip, and limit options
+        const cursor = await CommentsModelClass.find({}).sort(sortObj).skip(skips).limit(pageSize);
+        const cursorWithCorrectViewModel: CommentViewModelClass[]=[]
+        cursor.forEach((elem) => {
+            const commentDB = elem as CommentDBClass;
+            commentDB.returnUsersLikeStatusForComment(userId);
+            cursorWithCorrectViewModel.push(new CommentViewModelClass(commentDB.id,
+                commentDB.content,
+                commentDB.userId,
+                commentDB.userLogin,
+                commentDB.createdAt,
+                commentDB.likesInfo))
+        })
         const totalCount = await CommentsModelClass.count({postId: postId})
-        return new CommentDBClassPagination(Math.ceil(totalCount / pageSize), pageNumber, pageSize, totalCount, cursor)
+        return new CommentDBPaginationClass(
+            Math.ceil(totalCount / pageSize),
+            pageNumber,
+            pageSize,
+            totalCount,
+            cursorWithCorrectViewModel,
+        );
     }
     async getCommentByIdForLikeOperation(id: string): Promise<CommentDBClass | null> {
         return CommentsModelClass.findOne({id: id})
     }
-    async returnUsersLikeStatus(id: string,userId:string): Promise<string> {
-        const comment = await CommentsModelClass.findOne({id: id});
-
-        const isLiked = comment?.usersLikesInfo.usersWhoPutLike.includes(userId);
-        const isDisliked = comment?.usersLikesInfo.usersWhoPutDislike.includes(userId);
-
-        if (isLiked) {
-            return "Like";
-        }
-
-        if (isDisliked) {
-            return "Dislike";
-        }
-
-        return "None";
+    async getCommentForIdValidation(id: string): Promise<CommentDBClass | null> {
+        return CommentsModelClass.findOne({id: id})
     }
+
 }
 
 

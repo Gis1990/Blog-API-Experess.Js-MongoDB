@@ -1,5 +1,5 @@
 import {settings} from "../settings";
-import {UserAccountDBClass, userDevicesDataClass} from "../types/types";
+import {UserAccountDBClass, UserDevicesDataClass} from "../types/classes";
 import jwt from 'jsonwebtoken'
 import {injectable} from "inversify";
 
@@ -10,7 +10,7 @@ export class JwtService {
         const accessToken = jwt.sign({userId: user.id}, settings.jwtAccessTokenSecret, {expiresIn: '15 minutes'})
         return accessToken
     }
-    async createRefreshJWT(user: UserAccountDBClass,userDevicesData: userDevicesDataClass) {
+    async createRefreshJWT(user: UserAccountDBClass,userDevicesData: UserDevicesDataClass) {
         const refreshToken = jwt.sign({userId: user.id,ip:userDevicesData.ip,title:userDevicesData.title,
             lastActiveDate:userDevicesData.lastActiveDate,deviceId:userDevicesData.deviceId},
             settings.jwtRefreshTokenSecret, {expiresIn: '1 hour'})

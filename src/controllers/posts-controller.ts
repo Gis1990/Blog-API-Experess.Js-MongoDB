@@ -1,24 +1,24 @@
 import {Request, Response} from "express";
-import {PostsQueryService} from "../domain/posts-query-service";
 import {inject, injectable} from "inversify";
 import {DeletePostUseCase} from "../domain/use-cases/posts/delete-post-use-case";
 import {CreatePostUseCase} from "../domain/use-cases/posts/create-post-use-case";
 import {UpdatePostUseCase} from "../domain/use-cases/posts/update-post-use-case";
 import {LikeOperationForPostUseCase} from "../domain/use-cases/posts/like-operation-for-post-use-case";
+import {PostsQueryRepository} from "../repositories/posts-query-repository";
 
 @injectable()
 export class PostsController {
-    constructor(@inject(PostsQueryService) private postsQueryService: PostsQueryService,
+    constructor(@inject(PostsQueryRepository) private postsQueryRepository: PostsQueryRepository,
                 @inject(CreatePostUseCase) private createPostUseCase: CreatePostUseCase,
                 @inject(UpdatePostUseCase) private updatePostUseCase: UpdatePostUseCase,
                 @inject(DeletePostUseCase) private deletePostUseCase: DeletePostUseCase,
                 @inject(LikeOperationForPostUseCase) private likeOperationForPostUseCase: LikeOperationForPostUseCase) {}
     async getAllPosts (req: Request, res: Response) {
-        const allPosts= await this.postsQueryService.getAllPosts(req.query,req.user?.id)
+        const allPosts= await this.postsQueryRepository.getAllPosts(req.query,req.user?.id)
         res.status(200).json(allPosts)
     }
     async getPost(req: Request, res: Response) {
-        const post= await this.postsQueryService.getPostById(req.params.postId,req.user?.id)
+        const post= await this.postsQueryRepository.getPostById(req.params.postId,req.user?.id)
         res.status(200).json(post)
     }
     async createPost(req: Request, res: Response) {
@@ -38,7 +38,7 @@ export class PostsController {
         res.sendStatus(204)
     }
     async getAllPostsForSpecificBlog(req: Request, res: Response) {
-        const posts =await this.postsQueryService.getAllPostsForSpecificBlog(req.query,req.params.blogId,req.user?.id)
+        const posts =await this.postsQueryRepository.getAllPostsForSpecificBlog(req.query,req.params.blogId,req.user?.id)
         res.status(200).json(posts)
 
     }

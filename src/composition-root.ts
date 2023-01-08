@@ -4,7 +4,6 @@ import {BlogsController} from "./controllers/blogs-controller";
 import {PostsRepository} from "./repositories/posts-repository";
 import {PostsController} from "./controllers/posts-controller";
 import {CommentsRepository} from "./repositories/comments-repository";
-import {CommentsService} from "./domain/comments-service";
 import {CommentsController} from "./controllers/comments-controller";
 import {UsersRepository} from "./repositories/users-repository";
 import {UsersController} from "./controllers/users-controller";
@@ -19,7 +18,6 @@ import {CommentsQueryRepository} from "./repositories/comments-query-repository"
 import {PostsQueryRepository} from "./repositories/posts-query-repository";
 import {UsersQueryRepository} from "./repositories/users-query-repository";
 import {Container} from "inversify";
-import {PostsQueryService} from "./domain/posts-query-service";
 import {CreateBlogUseCase} from "./domain/use-cases/blogs/create-blog-use-case";
 import {UpdateBlogUseCase} from "./domain/use-cases/blogs/update-blog-use-case";
 import {DeleteBlogUseCase} from "./domain/use-cases/blogs/delete-blog-use-case";
@@ -56,65 +54,63 @@ import {RegistrationEmailResendingUseCase} from "./domain/use-cases/auth/registr
 
 export const container = new Container();
 //blogs
-container.bind(BlogsController).to(BlogsController).inSingletonScope();
-container.bind<BlogsRepository>(BlogsRepository).to(BlogsRepository).inSingletonScope();
-container.bind<BlogsQueryRepository>(BlogsQueryRepository).to(BlogsQueryRepository).inSingletonScope();
+container.bind(BlogsController).to(BlogsController);
+container.bind<BlogsRepository>(BlogsRepository).to(BlogsRepository);
+container.bind<BlogsQueryRepository>(BlogsQueryRepository).to(BlogsQueryRepository);
 //blogs use cases
-container.bind<CreateBlogUseCase>(CreateBlogUseCase).to(CreateBlogUseCase).inSingletonScope();
-container.bind<UpdateBlogUseCase>(UpdateBlogUseCase).to(UpdateBlogUseCase).inSingletonScope();
-container.bind<DeleteBlogUseCase>(DeleteBlogUseCase).to(DeleteBlogUseCase).inSingletonScope();
+container.bind<CreateBlogUseCase>(CreateBlogUseCase).to(CreateBlogUseCase);
+container.bind<UpdateBlogUseCase>(UpdateBlogUseCase).to(UpdateBlogUseCase);
+container.bind<DeleteBlogUseCase>(DeleteBlogUseCase).to(DeleteBlogUseCase);
 //posts
-container.bind(PostsController).to(PostsController).inSingletonScope();
-container.bind<PostsQueryService>(PostsQueryService).to(PostsQueryService).inSingletonScope();
-container.bind<PostsRepository>(PostsRepository).to(PostsRepository).inSingletonScope();
-container.bind<PostsQueryRepository>(PostsQueryRepository).to(PostsQueryRepository).inSingletonScope();
+container.bind(PostsController).to(PostsController);
+container.bind<PostsRepository>(PostsRepository).to(PostsRepository);
+container.bind<PostsQueryRepository>(PostsQueryRepository).to(PostsQueryRepository);
 //posts use cases
-container.bind<CreatePostUseCase>(CreatePostUseCase).to(CreatePostUseCase).inSingletonScope();
-container.bind<DeletePostUseCase>(DeletePostUseCase).to(DeletePostUseCase).inSingletonScope();
-container.bind<LikeOperationForPostUseCase>(LikeOperationForPostUseCase).to(LikeOperationForPostUseCase).inSingletonScope();
-container.bind<UpdatePostUseCase>(UpdatePostUseCase).to(UpdatePostUseCase).inSingletonScope();
+container.bind<CreatePostUseCase>(CreatePostUseCase).to(CreatePostUseCase);
+container.bind<DeletePostUseCase>(DeletePostUseCase).to(DeletePostUseCase);
+container.bind<LikeOperationForPostUseCase>(LikeOperationForPostUseCase).to(LikeOperationForPostUseCase);
+container.bind<UpdatePostUseCase>(UpdatePostUseCase).to(UpdatePostUseCase);
 // comments
-container.bind(CommentsController).to(CommentsController).inSingletonScope();
-container.bind<CommentsService>(CommentsService).to(CommentsService).inSingletonScope();
-container.bind<CommentsRepository>(CommentsRepository).to(CommentsRepository).inSingletonScope();
-container.bind<CommentsQueryRepository>(CommentsQueryRepository).to(CommentsQueryRepository).inSingletonScope();
+container.bind(CommentsController).to(CommentsController);
+container.bind<CommentsRepository>(CommentsRepository).to(CommentsRepository);
+container.bind<CommentsQueryRepository>(CommentsQueryRepository).to(CommentsQueryRepository);
 //comments use cases
-container.bind<CreateCommentUseCase>(CreateCommentUseCase).to(CreateCommentUseCase).inSingletonScope();
-container.bind<DeleteCommentUseCase>(DeleteCommentUseCase).to(DeleteCommentUseCase).inSingletonScope();
-container.bind<LikeOperationForCommentUseCase>(LikeOperationForCommentUseCase).to(LikeOperationForCommentUseCase).inSingletonScope();
-container.bind<UpdateCommentUseCase>(UpdateCommentUseCase).to(UpdateCommentUseCase).inSingletonScope();
+container.bind<CreateCommentUseCase>(CreateCommentUseCase).to(CreateCommentUseCase);
+container.bind<DeleteCommentUseCase>(DeleteCommentUseCase).to(DeleteCommentUseCase);
+container.bind<LikeOperationForCommentUseCase>(LikeOperationForCommentUseCase).to(LikeOperationForCommentUseCase);
+container.bind<UpdateCommentUseCase>(UpdateCommentUseCase).to(UpdateCommentUseCase);
 
 //users
-container.bind(UsersController).to(UsersController).inSingletonScope();
-container.bind<UsersRepository>(UsersRepository).to(UsersRepository).inSingletonScope();
-container.bind<UsersQueryRepository>(UsersQueryRepository).to(UsersQueryRepository).inSingletonScope();
+container.bind(UsersController).to(UsersController);
+container.bind<UsersRepository>(UsersRepository).to(UsersRepository);
+container.bind<UsersQueryRepository>(UsersQueryRepository).to(UsersQueryRepository);
 //users use cases
-container.bind<DeleteUserUseCase>(DeleteUserUseCase).to(DeleteUserUseCase).inSingletonScope();
+container.bind<DeleteUserUseCase>(DeleteUserUseCase).to(DeleteUserUseCase);
 //auth
-container.bind(AuthController).to(AuthController).inSingletonScope();
-container.bind<AuthService>(AuthService).to(AuthService).inSingletonScope();
+container.bind(AuthController).to(AuthController);
+container.bind<AuthService>(AuthService).to(AuthService);
 //auth use cases
-container.bind<AcceptNewPasswordUseCase>(AcceptNewPasswordUseCase).to(AcceptNewPasswordUseCase).inSingletonScope();
-container.bind<CheckCredentialsUseCase>(CheckCredentialsUseCase).to(CheckCredentialsUseCase).inSingletonScope();
-container.bind<ConfirmEmailUseCase>(ConfirmEmailUseCase).to(ConfirmEmailUseCase).inSingletonScope();
-container.bind<CreateUserWithConfirmationEmailUseCase>(CreateUserWithConfirmationEmailUseCase).to(CreateUserWithConfirmationEmailUseCase).inSingletonScope();
-container.bind<CreateUserWithoutConfirmationEmailUseCase>(CreateUserWithoutConfirmationEmailUseCase).to(CreateUserWithoutConfirmationEmailUseCase).inSingletonScope();
-container.bind<PasswordRecoveryUseCase>(PasswordRecoveryUseCase).to(PasswordRecoveryUseCase).inSingletonScope();
-container.bind<RefreshAllTokensUseCase>(RefreshAllTokensUseCase).to(RefreshAllTokensUseCase).inSingletonScope();
-container.bind<RefreshOnlyRefreshTokenUseCase>(RefreshOnlyRefreshTokenUseCase).to(RefreshOnlyRefreshTokenUseCase).inSingletonScope();
-container.bind<RegistrationEmailResendingUseCase>(RegistrationEmailResendingUseCase).to(RegistrationEmailResendingUseCase).inSingletonScope();
+container.bind<AcceptNewPasswordUseCase>(AcceptNewPasswordUseCase).to(AcceptNewPasswordUseCase);
+container.bind<CheckCredentialsUseCase>(CheckCredentialsUseCase).to(CheckCredentialsUseCase);
+container.bind<ConfirmEmailUseCase>(ConfirmEmailUseCase).to(ConfirmEmailUseCase);
+container.bind<CreateUserWithConfirmationEmailUseCase>(CreateUserWithConfirmationEmailUseCase).to(CreateUserWithConfirmationEmailUseCase);
+container.bind<CreateUserWithoutConfirmationEmailUseCase>(CreateUserWithoutConfirmationEmailUseCase).to(CreateUserWithoutConfirmationEmailUseCase);
+container.bind<PasswordRecoveryUseCase>(PasswordRecoveryUseCase).to(PasswordRecoveryUseCase);
+container.bind<RefreshAllTokensUseCase>(RefreshAllTokensUseCase).to(RefreshAllTokensUseCase);
+container.bind<RefreshOnlyRefreshTokenUseCase>(RefreshOnlyRefreshTokenUseCase).to(RefreshOnlyRefreshTokenUseCase);
+container.bind<RegistrationEmailResendingUseCase>(RegistrationEmailResendingUseCase).to(RegistrationEmailResendingUseCase);
 //security
-container.bind(SecurityController).to(SecurityController).inSingletonScope();
+container.bind(SecurityController).to(SecurityController);
 //security use cases
-container.bind<AuthCredentialsCheckUseCase>(AuthCredentialsCheckUseCase).to(AuthCredentialsCheckUseCase).inSingletonScope()
-container.bind<CheckAccessRightsUseCase>(CheckAccessRightsUseCase).to(CheckAccessRightsUseCase).inSingletonScope();
-container.bind<ReturnAllDevicesUseCase>(ReturnAllDevicesUseCase).to(ReturnAllDevicesUseCase).inSingletonScope();
-container.bind<TerminateAllDevicesUseCase>(TerminateAllDevicesUseCase).to(TerminateAllDevicesUseCase).inSingletonScope();
-container.bind<TerminateSpecificDeviceUseCase>(TerminateSpecificDeviceUseCase).to(TerminateSpecificDeviceUseCase).inSingletonScope();
+container.bind<AuthCredentialsCheckUseCase>(AuthCredentialsCheckUseCase).to(AuthCredentialsCheckUseCase)
+container.bind<CheckAccessRightsUseCase>(CheckAccessRightsUseCase).to(CheckAccessRightsUseCase);
+container.bind<ReturnAllDevicesUseCase>(ReturnAllDevicesUseCase).to(ReturnAllDevicesUseCase);
+container.bind<TerminateAllDevicesUseCase>(TerminateAllDevicesUseCase).to(TerminateAllDevicesUseCase);
+container.bind<TerminateSpecificDeviceUseCase>(TerminateSpecificDeviceUseCase).to(TerminateSpecificDeviceUseCase);
 //jwt
-container.bind<JwtService>(JwtService).to(JwtService).inSingletonScope();
+container.bind<JwtService>(JwtService).to(JwtService);
 //email
-container.bind<EmailAdapter>(EmailAdapter).to(EmailAdapter).inSingletonScope();
+container.bind<EmailAdapter>(EmailAdapter).to(EmailAdapter);
 
 
 export const blogsController = container.resolve (BlogsController)

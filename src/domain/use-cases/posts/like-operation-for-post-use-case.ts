@@ -1,7 +1,7 @@
 import {PostsRepository} from "../../../repositories/posts-repository";
 import {inject, injectable} from "inversify";
 import {PostsQueryRepository} from "../../../repositories/posts-query-repository";
-import {NewestLikesClass} from "../../../types/types";
+import {NewestLikesClass} from "../../../types/classes";
 
 
 @injectable()

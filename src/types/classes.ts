@@ -12,7 +12,7 @@ export class BlogDBClass {
     }
 }
 
-export class NewBlogViewModelClass {
+export class BlogViewModelClass {
     constructor(
         public id: string,
         public name: string,
@@ -37,10 +37,33 @@ export class CommentDBClass {
         public usersLikesInfo: UsersLikesInfoClass
     ) {
     }
+    returnUsersLikeStatusForComment(userId: string | undefined): CommentDBClass {
+        if (userId) {
+            this.likesInfo.myStatus = this.getLikesDataInfoForComment(userId);
+        } else {
+            this.likesInfo.myStatus = "None";
+        }
+        return this;
+    }
+
+    getLikesDataInfoForComment(userId: string): string {
+        const isLiked = this.usersLikesInfo.usersWhoPutLike.includes(userId);
+        const isDisliked = this.usersLikesInfo.usersWhoPutDislike.includes(userId);
+
+        if (isLiked) {
+            return "Like";
+        }
+
+        if (isDisliked) {
+            return "Dislike";
+        }
+
+        return "None";
+    }
 }
 
 
-export class NewCommentViewModelClass {
+export class CommentViewModelClass {
     constructor(
         public id: string,
         public content: string,
@@ -72,7 +95,37 @@ export class PostDBClass {
         public usersLikesInfo: UsersLikesInfoClass,
     ) {
     }
+
+    returnUsersLikeStatusForPost(userId: string | undefined): PostDBClass {
+        this.extendedLikesInfo.newestLikes = this.extendedLikesInfo.newestLikes
+            .slice(-3)
+            .sort((a, b) => b.addedAt.getTime() - a.addedAt.getTime());
+        if (userId) {
+            this.extendedLikesInfo.myStatus = this.getLikesDataInfoForPost(userId);
+        } else {
+            this.extendedLikesInfo.myStatus = "None";
+        }
+        return this;
+    }
+
+    getLikesDataInfoForPost(userId: string): string {
+
+        const isLiked = this.usersLikesInfo.usersWhoPutLike.includes(userId);
+        const isDisliked = this.usersLikesInfo.usersWhoPutDislike.includes(userId);
+
+        if (isLiked) {
+            return "Like";
+        }
+
+        if (isDisliked) {
+            return "Dislike";
+        }
+
+        return "None";
+    }
 }
+
+
 
 
 
@@ -96,32 +149,32 @@ export class BlogDBClassPagination {
     }
 }
 
-export class PostDBClassPagination {
+export class PostDBPaginationClass {
     constructor(
         public pagesCount: number,
         public page: number,
         public pageSize: number,
         public totalCount: number,
-        public items: PostDBClass[]
+        public items: PostViewModelClass[]
     ) {
     }
 }
 
 
-export class CommentDBClassPagination {
+export class CommentDBPaginationClass {
     constructor(
         public pagesCount: number,
         public page: number,
         public pageSize: number,
         public totalCount: number,
-        public items: CommentDBClass[]
+        public items: CommentViewModelClass[]
     ) {
     }
 }
 
 
 
-export class UserDBClassPagination {
+export class UserDBPaginationClass {
     constructor(
         public pagesCount: number,
         public page: number,
@@ -144,7 +197,7 @@ export class UserAccountDBClass {
         public emailRecoveryCode: UserRecoveryCodeClass,
         public loginAttempts: LoginAttemptsClass[],
         public emailConfirmation: UserAccountEmailClass,
-        public userDevicesData: userDevicesDataClass[]
+        public userDevicesData: UserDevicesDataClass[]
     ) {
     }
 }
@@ -160,7 +213,7 @@ export class UserRecoveryCodeClass {
 
 
 
-export class userDevicesDataClass {
+export class UserDevicesDataClass {
     constructor(
         public ip: string,
         public lastActiveDate: Date,
@@ -192,7 +245,7 @@ export class NewUserViewModel {
 }
 
 
-export class NewPostClassResponseModel {
+export class PostViewModelClass {
     constructor(
         public id: string,
         public title: string,
@@ -201,6 +254,7 @@ export class NewPostClassResponseModel {
         public blogId: string,
         public blogName: string,
         public createdAt: Date,
+        public extendedLikesInfo: ExtendedLikesInfoClass,
     ) {
     }
 }
@@ -262,6 +316,5 @@ export class LikesInfoClass {
     ) {
     }
 }
-
 
 

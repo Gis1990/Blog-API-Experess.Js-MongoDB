@@ -1,10 +1,10 @@
 import {
     CommentDBClass,
     LikesInfoClass,
-    NewCommentViewModelClass,
+    CommentViewModelClass,
     UserAccountDBClass,
     UsersLikesInfoClass
-} from "../../../types/types";
+} from "../../../types/classes";
 import {ObjectId} from "mongodb";
 import {CommentsRepository} from "../../../repositories/comments-repository";
 import {inject, injectable} from "inversify";
@@ -13,7 +13,7 @@ import {inject, injectable} from "inversify";
 export class CreateCommentUseCase {
     constructor(@inject(CommentsRepository) private commentsRepository: CommentsRepository) {}
 
-    async execute(content: string,postId:string, user:UserAccountDBClass): Promise<NewCommentViewModelClass> {
+    async execute(content: string,postId:string, user:UserAccountDBClass): Promise<CommentViewModelClass> {
         const likes: LikesInfoClass= new LikesInfoClass(0,0,"None")
         const usersLikesInfo: UsersLikesInfoClass= new UsersLikesInfoClass([],[])
         const comment:CommentDBClass = new CommentDBClass (new ObjectId(),Number((new Date())).toString() ,content,user.id,user.login,postId,new Date().toISOString(),likes,usersLikesInfo)

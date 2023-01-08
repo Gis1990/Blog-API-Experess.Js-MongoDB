@@ -1,6 +1,6 @@
 import {NextFunction, Request, Response} from "express";
 import {validationResult, Schema, param, ValidationChain, checkSchema} from "express-validator";
-import {ErrorType} from "../types/types";
+import {ErrorType} from "../types/classes";
 import {
     container
 
@@ -447,8 +447,8 @@ export const postsIdValidation = async (req: Request, res: Response, next: NextF
         const postsQueryRepository = container.get<PostsQueryRepository>(
             PostsQueryRepository
         )
-        const posts = await postsQueryRepository.getPostById(postId)
-        return (!!posts)?Promise.resolve():Promise.reject()}).run(req)
+        const post = await postsQueryRepository.getPostForIdValidation(postId)
+        return (!!post)?Promise.resolve():Promise.reject()}).run(req)
     errorHandlerForIdValidation(req,res,next)
 }
 
@@ -478,7 +478,7 @@ export const commentsIdValidation = async (req: Request, res: Response, next: Ne
         const commentsQueryRepository= container.get<CommentsQueryRepository>(
             CommentsQueryRepository
         )
-        const user =await commentsQueryRepository.getCommentById(commentId)
+        const user =await commentsQueryRepository.getCommentForIdValidation(commentId)
         return (!!user)?Promise.resolve():Promise.reject()}).run(req)
     errorHandlerForIdValidation(req,res,next)
 }

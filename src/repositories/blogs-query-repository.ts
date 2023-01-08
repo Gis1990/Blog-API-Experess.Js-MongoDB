@@ -1,4 +1,4 @@
-import {BlogDBClass, BlogDBClassPagination} from "../types/types";
+import {BlogDBClass, BlogDBClassPagination} from "../types/classes";
 import {BlogsModelClass} from "./db";
 import {injectable} from "inversify";
 

@@ -2,12 +2,12 @@ import {ObjectId} from "mongodb";
 import {
     UserAccountDBClass,
     UserRecoveryCodeClass
-} from "../types/types";
+} from "../types/classes";
 
 import bcrypt from "bcrypt";
 import {v4 as uuidv4} from "uuid";
 import add from "date-fns/add";
-import {UserAccountEmailClass} from "../types/types";
+import {UserAccountEmailClass} from "../types/classes";
 import {UsersRepository} from "../repositories/users-repository";
 import {EmailAdapter} from "../application/email-adapter";
 import {JwtService} from "../application/jwt-service";

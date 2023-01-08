@@ -2,8 +2,8 @@ import {
     LoginAttemptsClass,
     SentEmailsClass,
     UserAccountDBClass,
-    userDevicesDataClass, UserRecoveryCodeClass
-} from "../types/types";
+    UserDevicesDataClass, UserRecoveryCodeClass
+} from "../types/classes";
 import {UsersAccountModelClass} from "./db";
 import {v4 as uuidv4} from "uuid";
 import {injectable} from "inversify";
@@ -32,15 +32,15 @@ export  class UsersRepository  {
         const result = await UsersAccountModelClass.updateOne({id: id}, {$set:{passwordHash: passwordHash}})
         return result.modifiedCount === 1
     }
-    async addUserDevicesData (id: string,userDevicesData: userDevicesDataClass):Promise<boolean> {
+    async addUserDevicesData (id: string,userDevicesData: UserDevicesDataClass):Promise<boolean> {
         const result = await UsersAccountModelClass.updateOne({id: id}, {$push: {userDevicesData: userDevicesData}})
         return result.modifiedCount === 1
     }
-    async updateLastActiveDate (userDevicesData: userDevicesDataClass,newLastActiveDate:Date):Promise<boolean> {
+    async updateLastActiveDate (userDevicesData: UserDevicesDataClass, newLastActiveDate:Date):Promise<boolean> {
         const result = await UsersAccountModelClass.updateOne({"userDevicesData.deviceId":userDevicesData.deviceId},{$set:{"userDevicesData.$.lastActiveDate": newLastActiveDate}})
         return result.modifiedCount === 1
     }
-    async terminateAllDevices (id: string,userDevicesData: userDevicesDataClass):Promise<boolean> {
+    async terminateAllDevices (id: string,userDevicesData: UserDevicesDataClass):Promise<boolean> {
         await UsersAccountModelClass.updateOne({id: id}, {$set: {userDevicesData: []}})
         const result = await UsersAccountModelClass.updateOne({id: id}, {$push: {userDevicesData: userDevicesData}})
         return result.modifiedCount === 1

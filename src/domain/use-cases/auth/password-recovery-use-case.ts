@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import { add } from "date-fns";
 import {inject, injectable} from "inversify";
-import {UserRecoveryCodeClass} from "../../../types/types";
+import {UserRecoveryCodeClass} from "../../../types/classes";
 import {UsersQueryRepository} from "../../../repositories/users-query-repository";
 import {UsersRepository} from "../../../repositories/users-repository";
 import {EmailAdapter} from "../../../application/email-adapter";

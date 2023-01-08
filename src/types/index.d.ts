@@ -1,5 +1,5 @@
 
-import {UserAccountDBClass} from './types'
+import {UserAccountDBClass} from './classes'
 
 declare global {
     declare namespace Express {

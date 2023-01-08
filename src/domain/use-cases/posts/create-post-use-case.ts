@@ -1,9 +1,9 @@
 import {
     ExtendedLikesInfoClass,
-    NewPostClassResponseModel,
+    PostViewModelClass,
     PostDBClass,
     UsersLikesInfoClass
-} from "../../../types/types";
+} from "../../../types/classes";
 import {ObjectId} from "mongodb";
 import {PostsRepository} from "../../../repositories/posts-repository";
 import {BlogsQueryRepository} from "../../../repositories/blogs-query-repository";
@@ -18,7 +18,7 @@ export class CreatePostUseCase {
         shortDescription: string,
         content: string,
         blogId: string,
-    ): Promise<NewPostClassResponseModel> {
+    ): Promise<PostViewModelClass> {
         const blog = await this.blogsQueryRepository.getBlogById(blogId);
         let blogName;
         blog ? (blogName = blog.name) : (blogName = "");

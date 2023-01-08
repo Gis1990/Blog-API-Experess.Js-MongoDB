@@ -1,4 +1,4 @@
-import {UserAccountDBClass} from "../../../types/types";
+import {UserAccountDBClass} from "../../../types/classes";
 import {inject, injectable} from "inversify";
 import {AuthService} from "../../auth-service";
 import {UsersRepository} from "../../../repositories/users-repository";

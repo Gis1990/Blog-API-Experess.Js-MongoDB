@@ -58,6 +58,8 @@ export class  AuthAccessTokenController {
                     req.user = userData
                     next()
                 }
+            }else{
+                next()
             }
         }
     }

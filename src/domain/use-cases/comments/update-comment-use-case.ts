@@ -11,7 +11,7 @@ export class UpdateCommentUseCase {
     ) {}
 
     async execute(id: string, content: string,userId: string | undefined): Promise<boolean> {
-        const comment = await this.commentsQueryRepository.getCommentById(id)
+        const comment = await this.commentsQueryRepository.getCommentById(id,userId)
         if (!comment) {
             return false
         }
