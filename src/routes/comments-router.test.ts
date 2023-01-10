@@ -2,9 +2,14 @@ import {MongoMemoryServer} from "mongodb-memory-server";
 import mongoose from "mongoose";
 import request from "supertest";
 import {app} from "../index";
-import {createUserForTesting} from "./users-router.test";
-import {creatingBlogForTests} from "./blogs-router.test";
-import {createContentCommentForTesting, createOutputCommentForTesting, createPostForTesting} from "./posts-router.test";
+import {
+    createContentCommentForTesting,
+    createOutputCommentForTesting,
+    createPostForTesting,
+    createUserForTesting,
+    creatingBlogForTests
+} from "../tests/test.functions";
+
 
 
 

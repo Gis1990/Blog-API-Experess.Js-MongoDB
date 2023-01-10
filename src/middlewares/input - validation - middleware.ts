@@ -1,6 +1,6 @@
 import {NextFunction, Request, Response} from "express";
 import {validationResult, Schema, param, ValidationChain, checkSchema} from "express-validator";
-import {ErrorType} from "../types/classes";
+import {ErrorClass} from "../classes/classes";
 import {
     container
 
@@ -500,7 +500,7 @@ const validate = (validations: ValidationChain[]) => {
     return async (req: Request, res: Response, next: NextFunction) => {
         await Promise.all(validations.map(validation => validation.run(req)));
         const err = validationResult(req)
-        const errors:Array<ErrorType>= err.array({onlyFirstError:true}).map(elem=>{
+        const errors:Array<ErrorClass>= err.array({onlyFirstError:true}).map(elem=>{
             return {
                 message:elem.msg,
                 field:elem.param

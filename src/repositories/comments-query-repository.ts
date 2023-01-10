@@ -2,7 +2,7 @@ import {
     CommentDBClass,
     CommentDBPaginationClass,
     CommentViewModelClass,
-} from "../types/classes";
+} from "../classes/classes";
 import {CommentsModelClass} from "./db";
 import {injectable} from "inversify";
 

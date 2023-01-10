@@ -3,50 +3,14 @@ import mongoose from "mongoose";
 import request from "supertest";
 import { app } from "../index";
 import { BlogsModelClass } from "../repositories/db";
-import { createUserForTesting } from "./users-router.test";
-import { creatingBlogForTests, randomString } from "./blogs-router.test";
+import {
+    createContentCommentForTesting,
+    createOutputCommentForTesting, createPostForTesting,
+    createUserForTesting,
+    creatingBlogForTests
+} from "../tests/test.functions";
 
-export const createPostForTesting = (
-    titleLen: number,
-    shortDescriptionLen: number,
-    contentLen: number,
-    blogId: string,
-) => {
-    return {
-        title: randomString(titleLen),
-        shortDescription: randomString(shortDescriptionLen),
-        content: randomString(contentLen),
-        blogId: blogId,
-    };
-};
 
-export const createContentCommentForTesting = (contentLen: number) => {
-    return {
-        content: randomString(contentLen),
-    };
-};
-
-export const createOutputCommentForTesting = (
-    contentLen: number,
-    userId: string,
-    userLogin: string,
-    likesCount: number,
-    dislikesCount: number,
-    myStatus: string,
-) => {
-    return {
-        id: expect.any(String),
-        content: randomString(contentLen),
-        userId: userId,
-        userLogin: userLogin,
-        createdAt: expect.any(String),
-        likesInfo: {
-            likesCount: 0,
-            dislikesCount: 0,
-            myStatus: myStatus,
-        },
-    };
-};
 
 describe("endpoint /posts ", () => {
     const emptyAllPostsDbReturnData = {

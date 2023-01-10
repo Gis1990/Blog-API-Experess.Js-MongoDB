@@ -131,9 +131,13 @@ export class PostDBClass {
 
 
 
-export type ErrorType={
-    message: string
-    field: string
+export class ErrorClass {
+    constructor(
+        public message: string,
+        public field: string
+    ) {
+    }
+
 }
 
 

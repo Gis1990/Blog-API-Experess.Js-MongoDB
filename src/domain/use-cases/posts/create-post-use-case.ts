@@ -3,7 +3,7 @@ import {
     PostViewModelClass,
     PostDBClass,
     UsersLikesInfoClass
-} from "../../../types/classes";
+} from "../../../classes/classes";
 import {ObjectId} from "mongodb";
 import {PostsRepository} from "../../../repositories/posts-repository";
 import {BlogsQueryRepository} from "../../../repositories/blogs-query-repository";

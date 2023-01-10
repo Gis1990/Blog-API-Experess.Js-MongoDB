@@ -2,7 +2,8 @@ import request from 'supertest'
 import {app} from "../index";
 import {MongoMemoryServer} from "mongodb-memory-server";
 import mongoose from "mongoose";
-import {createUserForTesting} from "./users-router.test";
+import {createUserForTesting} from "../tests/test.functions";
+
 
 
 

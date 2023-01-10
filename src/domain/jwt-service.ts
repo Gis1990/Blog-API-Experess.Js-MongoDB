@@ -1,5 +1,5 @@
 import {settings} from "../settings";
-import {UserAccountDBClass, UserDevicesDataClass} from "../types/classes";
+import {UserAccountDBClass, UserDevicesDataClass} from "../classes/classes";
 import jwt from 'jsonwebtoken'
 import {injectable} from "inversify";
 

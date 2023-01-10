@@ -1,7 +1,7 @@
 import {inject, injectable} from "inversify";
 import {UsersQueryRepository} from "../../../repositories/users-query-repository";
 import {UsersRepository} from "../../../repositories/users-repository";
-import {EmailAdapter} from "../../../application/email-adapter";
+import {EmailAdapter} from "../../email-adapter";
 
 @injectable()
 export class RegistrationEmailResendingUseCase {

@@ -1,6 +1,6 @@
-import {UserDevicesDataClass} from "../../../types/classes";
+import {UserDevicesDataClass} from "../../../classes/classes";
 import {inject, injectable} from "inversify";
-import {JwtService} from "../../../application/jwt-service";
+import {JwtService} from "../../jwt-service";
 import {UsersQueryRepository} from "../../../repositories/users-query-repository";
 
 @injectable()

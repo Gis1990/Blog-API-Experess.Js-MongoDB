@@ -1,4 +1,4 @@
-import {NewUserViewModel} from "../../../types/classes";
+import {NewUserViewModel} from "../../../classes/classes";
 import {injectable} from "inversify";
 import {AuthService} from "../../auth-service";
 

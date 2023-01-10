@@ -3,17 +3,8 @@ import mongoose from "mongoose";
 import request from "supertest";
 import {app} from "../index";
 import {UsersAccountModelClass} from "../repositories/db";
-import {randomString} from "./blogs-router.test";
+import {createUserForTesting} from "../tests/test.functions";
 
-
-
-export const createUserForTesting = (loginLen:number,emailLen:number,passwordLen:number) => {
-    return{
-        login: randomString(loginLen),
-        email: randomString(emailLen)+"test@email.test",
-        password: randomString(passwordLen)
-    }
-}
 
 
 

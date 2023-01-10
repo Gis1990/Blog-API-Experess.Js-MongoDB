@@ -8,7 +8,7 @@ import {
     SentEmailsClass,
     LoginAttemptsClass,
     NewestLikesClass, UserDevicesDataClass,
-} from "../types/classes";
+} from "../classes/classes";
 require('dotenv').config()
 
 const blogsSchema = new mongoose.Schema<BlogDBClass>({

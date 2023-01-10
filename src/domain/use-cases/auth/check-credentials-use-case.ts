@@ -1,9 +1,9 @@
-import {UserDevicesDataClass} from "../../../types/classes";
+import {UserDevicesDataClass} from "../../../classes/classes";
 import {inject, injectable} from "inversify";
 import {AuthService} from "../../auth-service";
 import {UsersQueryRepository} from "../../../repositories/users-query-repository";
 import {UsersRepository} from "../../../repositories/users-repository";
-import {JwtService} from "../../../application/jwt-service";
+import {JwtService} from "../../jwt-service";
 
 @injectable()
 export class CheckCredentialsUseCase {

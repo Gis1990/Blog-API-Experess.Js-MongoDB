@@ -3,7 +3,7 @@ import {
     SentEmailsClass,
     UserAccountDBClass,
     UserDevicesDataClass, UserRecoveryCodeClass
-} from "../types/classes";
+} from "../classes/classes";
 import {UsersAccountModelClass} from "./db";
 import {v4 as uuidv4} from "uuid";
 import {injectable} from "inversify";

@@ -1,16 +1,12 @@
 import {ObjectId} from "mongodb";
-import {
-    UserAccountDBClass,
-    UserRecoveryCodeClass
-} from "../types/classes";
+import {UserAccountDBClass, UserAccountEmailClass, UserRecoveryCodeClass} from "../classes/classes";
 
 import bcrypt from "bcrypt";
 import {v4 as uuidv4} from "uuid";
 import add from "date-fns/add";
-import {UserAccountEmailClass} from "../types/classes";
 import {UsersRepository} from "../repositories/users-repository";
-import {EmailAdapter} from "../application/email-adapter";
-import {JwtService} from "../application/jwt-service";
+import {EmailAdapter} from "./email-adapter";
+import {JwtService} from "./jwt-service";
 import {UsersQueryRepository} from "../repositories/users-query-repository";
 import {inject, injectable} from "inversify";
 
@@ -26,10 +22,7 @@ export class  AuthService  {
         const emailRecoveryCodeData:UserRecoveryCodeClass=new UserRecoveryCodeClass("",new Date())
         const emailConfirmation: UserAccountEmailClass = new  UserAccountEmailClass([],uuidv4(),add (new Date(),{hours:1}),isConfirmed)
         const newUser: UserAccountDBClass = new UserAccountDBClass(new ObjectId(),Number((new Date())).toString(), login, email, passwordHash, new Date().toISOString(),emailRecoveryCodeData, [],emailConfirmation,[])
-        const user=await this.usersRepository.createUser(newUser)
-        await this.emailAdapter.sendEmailWithRegistration(email,newUser.emailConfirmation.confirmationCode)
-        await this.usersRepository.addEmailLog(email)
-        return user
+        return await this.usersRepository.createUser(newUser)
     }
     async _generateHash(password: string) {
         return await bcrypt.hash(password, 10)

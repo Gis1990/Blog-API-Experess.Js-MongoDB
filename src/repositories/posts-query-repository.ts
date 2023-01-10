@@ -1,4 +1,4 @@
-import {PostDBClass, PostDBPaginationClass, PostViewModelClass} from "../types/classes";
+import {PostDBClass, PostDBPaginationClass, PostViewModelClass} from "../classes/classes";
 import {PostsModelClass} from "./db";
 import {injectable} from "inversify";
 

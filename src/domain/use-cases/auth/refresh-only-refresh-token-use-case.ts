@@ -1,6 +1,6 @@
 import {inject, injectable} from "inversify";
 import {UsersRepository} from "../../../repositories/users-repository";
-import {JwtService} from "../../../application/jwt-service";
+import {JwtService} from "../../jwt-service";
 import {AuthService} from "../../auth-service";
 
 

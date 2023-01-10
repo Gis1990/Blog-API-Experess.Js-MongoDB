@@ -1,4 +1,4 @@
-import {CommentDBClass} from "../types/classes";
+import {CommentDBClass} from "../classes/classes";
 import {CommentsModelClass} from "./db";
 import {injectable} from "inversify";
 

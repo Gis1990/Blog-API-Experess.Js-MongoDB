@@ -4,7 +4,7 @@ import {
     CommentViewModelClass,
     UserAccountDBClass,
     UsersLikesInfoClass
-} from "../../../types/classes";
+} from "../../../classes/classes";
 import {ObjectId} from "mongodb";
 import {CommentsRepository} from "../../../repositories/comments-repository";
 import {inject, injectable} from "inversify";

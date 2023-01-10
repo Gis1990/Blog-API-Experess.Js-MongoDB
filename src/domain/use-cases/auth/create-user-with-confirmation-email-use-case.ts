@@ -1,8 +1,8 @@
-import {UserAccountDBClass} from "../../../types/classes";
+import {UserAccountDBClass} from "../../../classes/classes";
 import {inject, injectable} from "inversify";
 import {AuthService} from "../../auth-service";
 import {UsersRepository} from "../../../repositories/users-repository";
-import {EmailAdapter} from "../../../application/email-adapter";
+import {EmailAdapter} from "../../email-adapter";
 
 @injectable()
 export class CreateUserWithConfirmationEmailUseCase {

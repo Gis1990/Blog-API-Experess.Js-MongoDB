@@ -1,4 +1,4 @@
-import {BlogDBClass, BlogViewModelClass} from "../../../types/classes";
+import {BlogDBClass, BlogViewModelClass} from "../../../classes/classes";
 import {ObjectId} from "mongodb";
 import {inject, injectable} from "inversify";
 import {BlogsRepository} from "../../../repositories/blogs-repository";
