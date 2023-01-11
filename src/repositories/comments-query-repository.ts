@@ -35,7 +35,7 @@ export class CommentsQueryRepository {
             sortObj[sortBy] = 1;
         }
         // Retrieve the documents from the commentsModelClass collection, applying the sort, skip, and limit options
-        const cursor = await CommentsModelClass.find({}).sort(sortObj).skip(skips).limit(pageSize);
+        const cursor = await CommentsModelClass.find({postId: postId}).sort(sortObj).skip(skips).limit(pageSize);
         const cursorWithCorrectViewModel: CommentViewModelClass[]=[]
         cursor.forEach((elem) => {
             elem.returnUsersLikeStatusForComment(userId);
