@@ -10,6 +10,9 @@ export class BlogDBClass {
         public createdAt: Date,
     ) {
     }
+    async transformToBlogViewModelClass(): Promise<BlogViewModelClass> {
+        return new BlogViewModelClass(this.id, this.name, this.description, this.websiteUrl, this.createdAt);
+    }
 }
 
 export class BlogViewModelClass {
@@ -37,16 +40,16 @@ export class CommentDBClass {
         public usersLikesInfo: UsersLikesInfoClass
     ) {
     }
-    returnUsersLikeStatusForComment(userId: string | undefined): CommentDBClass {
+     returnUsersLikeStatusForComment(userId: string | undefined): CommentDBClass {
         if (userId) {
-            this.likesInfo.myStatus = this.getLikesDataInfoForComment(userId);
+            this.likesInfo.myStatus =  this.getLikesDataInfoForComment(userId);
         } else {
             this.likesInfo.myStatus = "None";
         }
         return this;
     }
 
-    getLikesDataInfoForComment(userId: string): string {
+     getLikesDataInfoForComment(userId: string): string {
         const isLiked = this.usersLikesInfo.usersWhoPutLike.includes(userId);
         const isDisliked = this.usersLikesInfo.usersWhoPutDislike.includes(userId);
 
@@ -60,7 +63,19 @@ export class CommentDBClass {
 
         return "None";
     }
+     transformToCommentViewModelClass(): CommentViewModelClass {
+        return new CommentViewModelClass(
+            this.id,
+            this.content,
+            this.userId,
+            this.userLogin,
+            this.createdAt,
+            this.likesInfo,
+        );
+    }
 }
+
+
 
 
 export class CommentViewModelClass {
@@ -95,20 +110,19 @@ export class PostDBClass {
         public usersLikesInfo: UsersLikesInfoClass,
     ) {
     }
-
-    returnUsersLikeStatusForPost(userId: string | undefined): PostDBClass {
+     returnUsersLikeStatusForPost(userId: string | undefined): PostDBClass {
         this.extendedLikesInfo.newestLikes = this.extendedLikesInfo.newestLikes
             .slice(-3)
             .sort((a, b) => b.addedAt.getTime() - a.addedAt.getTime());
         if (userId) {
-            this.extendedLikesInfo.myStatus = this.getLikesDataInfoForPost(userId);
+            this.extendedLikesInfo.myStatus =  this.getLikesDataInfoForPost(userId);
         } else {
             this.extendedLikesInfo.myStatus = "None";
         }
         return this;
     }
 
-    getLikesDataInfoForPost(userId: string): string {
+     getLikesDataInfoForPost(userId: string): string {
 
         const isLiked = this.usersLikesInfo.usersWhoPutLike.includes(userId);
         const isDisliked = this.usersLikesInfo.usersWhoPutDislike.includes(userId);
@@ -121,7 +135,20 @@ export class PostDBClass {
             return "Dislike";
         }
 
-        return "None";
+        return "None";}
+
+
+     transformToPostViewModelClass(): PostViewModelClass {
+        return new PostViewModelClass(
+            this.id,
+            this.title,
+            this.shortDescription,
+            this.content,
+            this.blogId,
+            this.blogName,
+            this.createdAt,
+            this.extendedLikesInfo,
+        );
     }
 }
 

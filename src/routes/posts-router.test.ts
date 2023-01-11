@@ -1,5 +1,3 @@
-import { MongoMemoryServer } from "mongodb-memory-server";
-import mongoose from "mongoose";
 import request from "supertest";
 import { app } from "../index";
 import { BlogsModelClass } from "../repositories/db";
@@ -7,57 +5,19 @@ import {
     createContentCommentForTesting,
     createOutputCommentForTesting, createPostForTesting,
     createUserForTesting,
-    creatingBlogForTests
+    createBlogForTests, emptyAllPostsDbReturnData, createOutputPostForTesting, setupTestDB, teardownTestDB
 } from "../tests/test.functions";
 
 
-
 describe("endpoint /posts ", () => {
-    const emptyAllPostsDbReturnData = {
-        pagesCount: 0,
-        page: 1,
-        pageSize: 10,
-        totalCount: 0,
-        items: [],
-    };
-    const createOutputPostForTesting = (
-        title: string,
-        shortDescription: string,
-        content: string,
-        blogId: string,
-        blogName: string,
-        likesCount: number,
-        dislikesCount: number,
-        newestLikes: [],
-    ) => {
-        return {
-            id: expect.any(String),
-            title: title,
-            shortDescription: shortDescription,
-            content: content,
-            blogId: blogId,
-            blogName: blogName,
-            createdAt: expect.any(String),
-            extendedLikesInfo: {
-                likesCount: likesCount,
-                dislikesCount: dislikesCount,
-                myStatus: expect.any(String),
-                newestLikes: newestLikes,
-            },
-        };
-    };
+
     // This block sets up a MongoDB in-memory server and starts a connection to it before running the tests
     // and cleans up after all tests are finished
-    let mongoServer: MongoMemoryServer;
     beforeAll(async () => {
-        mongoose.set("strictQuery", false);
-        mongoServer = await MongoMemoryServer.create();
-        const mongoUri = mongoServer.getUri();
-        await mongoose.connect(mongoUri);
+        await setupTestDB();
     });
     afterAll(async () => {
-        await mongoose.disconnect();
-        await mongoServer.stop();
+        await teardownTestDB();
     });
     // Test deleting all data from the testing endpoint and expecting a status code of 204
     it("1.Should return status 204 (/delete)", async () => {
@@ -70,7 +30,7 @@ describe("endpoint /posts ", () => {
     });
     it("3.Should return status 201 and correct new post (/post) ", async () => {
         // Create  a new blog and expecting a status code of 201
-        const correctBlog = creatingBlogForTests(10, 5, true);
+        const correctBlog = createBlogForTests(10, 5, true);
         await request(app).post("/blogs").set("authorization", "Basic YWRtaW46cXdlcnR5").send(correctBlog).expect(201);
         // Find the new blog in the database
         const blog = await BlogsModelClass.findOne({ name: correctBlog.name });
@@ -185,7 +145,7 @@ describe("endpoint /posts ", () => {
             .expect(200);
         const accessToken = response2.body.accessToken;
         // Create  a new blog and expecting a status code of 201
-        const correctBlog = creatingBlogForTests(10, 5, true);
+        const correctBlog = createBlogForTests(10, 5, true);
         const response3 = await request(app)
             .post("/blogs")
             .set("authorization", "Basic YWRtaW46cXdlcnR5")
@@ -249,7 +209,7 @@ describe("endpoint /posts ", () => {
     });
     it("6.Should return status 201 and correct new post (/get) ", async () => {
         // Test creating a new blog and expecting a status code of 201
-        const correctBlog = creatingBlogForTests(10, 5, true);
+        const correctBlog = createBlogForTests(10, 5, true);
         await request(app).post("/blogs").set("authorization", "Basic YWRtaW46cXdlcnR5").send(correctBlog).expect(201);
         // Find the created blog in the database
         const blog = await BlogsModelClass.findOne({ name: correctBlog.name });
@@ -336,7 +296,7 @@ describe("endpoint /posts ", () => {
             .expect(200);
         const accessToken2 = response2.body.accessToken;
         // Create  a new blog and expecting a status code of 201
-        const correctBlog = creatingBlogForTests(10, 5, true);
+        const correctBlog = createBlogForTests(10, 5, true);
         const response3 = await request(app)
             .post("/blogs")
             .set("authorization", "Basic YWRtaW46cXdlcnR5")
@@ -465,7 +425,7 @@ describe("endpoint /posts ", () => {
             accessTokens.push(response2.body.accessToken);
         }
         // Create  a new blog and expecting a status code of 201
-        const correctBlog = creatingBlogForTests(10, 5, true);
+        const correctBlog = createBlogForTests(10, 5, true);
         const response1 = await request(app)
             .post("/blogs")
             .set("authorization", "Basic YWRtaW46cXdlcnR5")

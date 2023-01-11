@@ -29,9 +29,6 @@ const newestLikesSchema = new mongoose.Schema<NewestLikesClass>({
 
 
 
-
-
-
 const postsSchema = new mongoose.Schema<PostDBClass>({
     id:String,
     title: String,
@@ -53,34 +50,6 @@ const postsSchema = new mongoose.Schema<PostDBClass>({
     },
     {versionKey: false},
 );
-
-postsSchema.methods.returnUsersLikeStatusForPost = function( userId: string | undefined): PostDBClass {
-    this.extendedLikesInfo.newestLikes = this.extendedLikesInfo.newestLikes
-        .slice(-3)
-        .sort((a: { addedAt: { getTime: () => number; }; }, b: { addedAt: { getTime: () => number; }; }) => b.addedAt.getTime() - a.addedAt.getTime());
-    if (userId) {
-        this.extendedLikesInfo.myStatus = this.getLikesDataInfoForPost(userId);
-    } else {
-        this.extendedLikesInfo.myStatus = "None";
-    }
-    return <PostDBClass>this;
-};
-
-postsSchema.methods.getLikesDataInfoForPost=function(userId: string): string {
-    const isLiked = this.usersLikesInfo.usersWhoPutLike.includes(userId);
-    const isDisliked = this.usersLikesInfo.usersWhoPutDislike.includes(userId);
-
-    if (isLiked) {
-        return "Like";
-    }
-
-    if (isDisliked) {
-        return "Dislike";
-    }
-
-    return "None";
-}
-
 
 
 
@@ -146,46 +115,16 @@ const commentsSchema = new mongoose.Schema<CommentDBClass>({
     versionKey: false
 });
 
-commentsSchema.methods.returnUsersLikeStatusForComment = function( userId: string | undefined): CommentDBClass {
-    if (userId) {
-        this.likesInfo.myStatus = this.getLikesDataInfoForComment(userId);
-    } else {
-        this.likesInfo.myStatus = "None";
-    }
-    return <CommentDBClass>this;
-};
-
-commentsSchema.methods.getLikesDataInfoForComment=function(userId: string): string {
-    const isLiked = this.usersLikesInfo.usersWhoPutLike.includes(userId);
-    const isDisliked = this.usersLikesInfo.usersWhoPutDislike.includes(userId);
-
-    if (isLiked) {
-        return "Like";
-    }
-
-    if (isDisliked) {
-        return "Dislike";
-    }
-
-    return "None";
-}
 
 
+postsSchema.loadClass(PostDBClass);
+commentsSchema.loadClass(CommentDBClass);
 
 export const BlogsModelClass = mongoose.model('blogs', blogsSchema);
 export const PostsModelClass = mongoose.model('posts', postsSchema);
 export const UsersAccountModelClass = mongoose.model('users', usersAccountSchema);
 export const CommentsModelClass = mongoose.model('comments', commentsSchema);
 
-// postsSchema.methods = {
-//     getLikesDataInfoForPost: PostDBClass.prototype.getLikesDataInfoForPost,
-//     returnUsersLikeStatusForPost: PostDBClass.prototype.returnUsersLikeStatusForPost,
-// };
-//
-// commentsSchema.methods = {
-//     getLikesDataInfoForPost: PostDBClass.prototype.getLikesDataInfoForPost,
-//     returnUsersLikeStatus: PostDBClass.prototype.returnUsersLikeStatusForPost,
-// };
 
 
 export async function runDb () {

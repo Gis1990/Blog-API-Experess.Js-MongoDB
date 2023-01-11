@@ -1,14 +1,12 @@
 import "reflect-metadata";
 import request from 'supertest'
 import {app} from "../index";
-import {MongoMemoryServer} from "mongodb-memory-server";
-import mongoose from "mongoose";
 import {BlogsModelClass} from "../repositories/db";
 import {
     createDbReturnDataForAllBlogs,
     createPostForTestingInBlogs,
-    creatingBlogForTests,
-    emptyAllBlogsDbReturnData
+    createBlogForTests,
+    emptyAllBlogsDbReturnData, setupTestDB, teardownTestDB
 } from "../tests/test.functions";
 
 
@@ -24,17 +22,12 @@ describe('endpoint / ',  () => {
 
 
 describe('endpoint /blogs ',  () => {
-    let mongoServer: MongoMemoryServer;
-    beforeAll( async () => {
-        mongoose.set('strictQuery', false)
-        mongoServer = await MongoMemoryServer.create()
-        const mongoUri = mongoServer.getUri()
-        await mongoose.connect(mongoUri);
-    })
+    beforeAll(async () => {
+        await setupTestDB();
+    });
     afterAll(async () => {
-        await mongoose.disconnect();
-        await mongoServer.stop();
-    })
+        await teardownTestDB();
+    });
     it('1.Should return status 204 (/delete)', async () => {
         await request(app)
             .delete('/testing/all-data')
@@ -47,7 +40,7 @@ describe('endpoint /blogs ',  () => {
         expect(response.body).toEqual(emptyAllBlogsDbReturnData)
     })
     it('3.Should return status 401 (/post) ', async () => {
-        const correctBlog = creatingBlogForTests(10, 5,true)
+        const correctBlog = createBlogForTests(10, 5,true)
         await request(app)
             .post('/blogs')
             .send(correctBlog)
@@ -55,7 +48,7 @@ describe('endpoint /blogs ',  () => {
 
     })
     it('4.Should return status 400 and array with error in websiteUrl (/post)', async () => {
-        const notCorrectBlog = creatingBlogForTests(11, 7,false)
+        const notCorrectBlog = createBlogForTests(11, 7,false)
         const response=await request(app)
             .post('/blogs')
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
@@ -64,7 +57,7 @@ describe('endpoint /blogs ',  () => {
         expect(response.body).toEqual({errorsMessages:[{field:"websiteUrl","message":expect.any(String)}]})
     })
     it('5.Should return status 400 and array with errors in name and websiteUrl (/post)', async () => {
-        const notCorrectBlog = creatingBlogForTests(20, 7,false)
+        const notCorrectBlog = createBlogForTests(20, 7,false)
         const response=await request(app)
             .post('/blogs')
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
@@ -73,7 +66,7 @@ describe('endpoint /blogs ',  () => {
         expect(response.body).toEqual({errorsMessages:[{field:"name","message":expect.any(String)},{field:"websiteUrl","message":expect.any(String)}]})
     })
     it('6.Should return status 400 and array with error in name (/post)', async () => {
-        const notCorrectBlog = creatingBlogForTests(30, 5,true)
+        const notCorrectBlog = createBlogForTests(30, 5,true)
         const response=await request(app)
             .post('/blogs')
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
@@ -82,7 +75,7 @@ describe('endpoint /blogs ',  () => {
         expect(response.body).toEqual({errorsMessages:[{field:"name","message":expect.any(String)}]})
     })
     it('7.Should return status 400 and array with error in name (/post)', async () => {
-        const notCorrectBlog = creatingBlogForTests(0, 5,true)
+        const notCorrectBlog = createBlogForTests(0, 5,true)
         const response=await request(app)
             .post('/blogs')
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
@@ -91,7 +84,7 @@ describe('endpoint /blogs ',  () => {
         expect(response.body).toEqual({errorsMessages:[{field:"name","message":expect.any(String)}]})
     })
     it('8.Should return status 400 and array with errors in name and websiteUrl (/post)', async () => {
-        const notCorrectBlog = creatingBlogForTests(0, 10,false)
+        const notCorrectBlog = createBlogForTests(0, 10,false)
         const response=await request(app)
             .post('/blogs')
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
@@ -101,7 +94,7 @@ describe('endpoint /blogs ',  () => {
     })
     it("9.should create and retrieve blogs", async () => {
         // Create blog1
-        const correctBlog1 = creatingBlogForTests(10, 5, true);
+        const correctBlog1 = createBlogForTests(10, 5, true);
         const response = await request(app)
             .post("/blogs")
             .set("authorization", "Basic YWRtaW46cXdlcnR5")
@@ -138,7 +131,7 @@ describe('endpoint /blogs ',  () => {
         );
 
         // Create blog2
-        const correctBlog2 = creatingBlogForTests(11, 300, true);
+        const correctBlog2 = createBlogForTests(11, 300, true);
         const response3 = await request(app)
             .post("/blogs")
             .set("authorization", "Basic YWRtaW46cXdlcnR5")
@@ -218,7 +211,7 @@ describe('endpoint /blogs ',  () => {
                 createdAt: response7.body.createdAt})
         // Should return status 204 and updated blog (/put)
         const blog2=await BlogsModelClass.findOne({name: correctBlog1.name})
-        const updatedCorrectBlog = creatingBlogForTests(10, 5,true)
+        const updatedCorrectBlog = createBlogForTests(10, 5,true)
         await request(app)
             .put(`/blogs/${blog2?.id}`)
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
@@ -231,7 +224,7 @@ describe('endpoint /blogs ',  () => {
         expect(response8.body.websiteUrl).toBe(updatedCorrectBlog.websiteUrl)
         expect(response8.body.description).toBe(updatedCorrectBlog.description)
         // Should return status 400 and and array with error in name (/put)
-        const updatedIncorrectBlog = creatingBlogForTests(100, 200,true)
+        const updatedIncorrectBlog = createBlogForTests(100, 200,true)
         const blog3=await BlogsModelClass.findOne({name: updatedCorrectBlog.name})
         const response9=await request(app)
             .put(`/blogs/${blog3?.id}`)
@@ -335,7 +328,7 @@ describe('endpoint /blogs ',  () => {
 
     })
     it('11.Should return status 401 (/put) ', async () => {
-        const correctBlog = creatingBlogForTests(11, 300,true)
+        const correctBlog = createBlogForTests(11, 300,true)
         const response1= await request(app)
             .get('/blogs')
         await request(app)

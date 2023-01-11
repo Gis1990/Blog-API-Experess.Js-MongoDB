@@ -1,9 +1,4 @@
-import {
-    ExtendedLikesInfoClass,
-    PostViewModelClass,
-    PostDBClass,
-    UsersLikesInfoClass
-} from "../../../classes/classes";
+import {ExtendedLikesInfoClass, PostDBClass, PostViewModelClass, UsersLikesInfoClass} from "../../../classes/classes";
 import {ObjectId} from "mongodb";
 import {PostsRepository} from "../../../repositories/posts-repository";
 import {BlogsQueryRepository} from "../../../repositories/blogs-query-repository";
@@ -36,16 +31,7 @@ export class CreatePostUseCase {
             likesInfo,
             usersLikesInfo,
         );
-        const newPost = await this.postsRepository.createPost(post);
-        return (({ id, title, shortDescription, content, blogId, blogName, createdAt, extendedLikesInfo }) => ({
-            id,
-            title,
-            shortDescription,
-            content,
-            blogId,
-            blogName,
-            createdAt,
-            extendedLikesInfo,
-        }))(newPost);
+        return await this.postsRepository.createPost(post)
+
     }
 }

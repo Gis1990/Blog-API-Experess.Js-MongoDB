@@ -1,32 +1,18 @@
-import {MongoMemoryServer} from "mongodb-memory-server";
-import mongoose from "mongoose";
 import request from "supertest";
 import {app} from "../index";
 import {UsersAccountModelClass} from "../repositories/db";
-import {createUserForTesting} from "../tests/test.functions";
+import {createUserForTesting, emptyAllUsersDbReturnData, setupTestDB, teardownTestDB} from "../tests/test.functions";
 
 
 
 
 describe('endpoint /users ',  () => {
-    const emptyAllUsersDbReturnData={
-        pagesCount: 0,
-        page: 1,
-        pageSize: 10,
-        totalCount: 0,
-        items: []
-    }
-    let mongoServer: MongoMemoryServer;
     beforeAll(async () => {
-        mongoose.set('strictQuery', false)
-        mongoServer = await MongoMemoryServer.create()
-        const mongoUri = mongoServer.getUri()
-        await mongoose.connect(mongoUri);
-    })
+        await setupTestDB();
+    });
     afterAll(async () => {
-        await mongoose.disconnect();
-        await mongoServer.stop();
-    })
+        await teardownTestDB();
+    });
     it('1.Should return status 204 (/delete)', async () => {
         await request(app)
             .delete('/testing/all-data')

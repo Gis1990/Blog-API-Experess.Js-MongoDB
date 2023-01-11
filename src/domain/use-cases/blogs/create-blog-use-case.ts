@@ -9,8 +9,6 @@ export class CreateBlogUseCase {
 
     async execute(name: string,description:string, websiteUrl: string): Promise<BlogViewModelClass> {
         let blog: BlogDBClass = new BlogDBClass (new ObjectId(),Number((new Date())).toString() ,name,description, websiteUrl,new Date())
-        const newBlog=await this.blogsRepository.createBlog(blog)
-        const {_id,...newBlogRest}=newBlog
-        return  newBlogRest
+        return  await this.blogsRepository.createBlog(blog)
     }
 }

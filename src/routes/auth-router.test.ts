@@ -1,8 +1,6 @@
 import request from 'supertest'
 import {app} from "../index";
-import {MongoMemoryServer} from "mongodb-memory-server";
-import mongoose from "mongoose";
-import {createUserForTesting} from "../tests/test.functions";
+import {createUserForTesting, setupTestDB, teardownTestDB} from "../tests/test.functions";
 
 
 
@@ -11,17 +9,12 @@ import {createUserForTesting} from "../tests/test.functions";
 // This block sets up a MongoDB in-memory server and starts a connection to it before running the tests
 // and cleans up after all tests are finished
 describe('endpoint /auth ',  () => {
-    let mongoServer: MongoMemoryServer;
-    beforeAll( async () => {
-        mongoose.set('strictQuery', false)
-        mongoServer = await MongoMemoryServer.create()
-        const mongoUri = mongoServer.getUri()
-        await mongoose.connect(mongoUri);
-    })
+    beforeAll(async () => {
+        await setupTestDB();
+    });
     afterAll(async () => {
-        await mongoose.disconnect();
-        await mongoServer.stop();
-    })
+        await teardownTestDB();
+    });
 // Test deleting all data from the testing endpoint and expecting a status code of 204
     it('1.Should return status 204 (/delete)', async () => {
         await request(app)

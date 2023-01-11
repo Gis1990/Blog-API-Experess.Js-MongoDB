@@ -1,12 +1,12 @@
-import {CommentDBClass} from "../classes/classes";
+import {CommentDBClass, CommentViewModelClass} from "../classes/classes";
 import {CommentsModelClass} from "./db";
 import {injectable} from "inversify";
 
 @injectable()
 export class CommentsRepository {
-    async createComment(comment: CommentDBClass): Promise<CommentDBClass> {
+    async createComment(comment: CommentDBClass): Promise<CommentViewModelClass> {
         await CommentsModelClass.insertMany([comment]);
-        return comment;
+        return comment.transformToCommentViewModelClass();
     }
 
     async deleteCommentById(id: string): Promise<boolean> {

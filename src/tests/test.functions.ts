@@ -1,3 +1,22 @@
+import mongoose from "mongoose";
+import {MongoMemoryServer} from "mongodb-memory-server";
+
+
+let mongoServer: MongoMemoryServer;
+
+export async function setupTestDB() {
+    mongoose.set('strictQuery', true);
+    mongoServer = await MongoMemoryServer.create();
+    const mongoUri = mongoServer.getUri();
+    await mongoose.connect(mongoUri);
+}
+
+export async function teardownTestDB() {
+    await mongoose.disconnect();
+    await mongoServer.stop();
+}
+
+
 
 
 export let randomString=(length:number)=> {
@@ -9,7 +28,6 @@ export let randomString=(length:number)=> {
     }
     return result;
 }
-
 
 
 
@@ -68,7 +86,7 @@ export const createOutputCommentForTesting = (
 
 
 
-export const creatingBlogForTests = (nameLen:number,descriptionLen:number,correct:boolean) => {
+export const createBlogForTests = (nameLen:number, descriptionLen:number, correct:boolean) => {
     let url
     if (correct){
         url="https://www.somesite.com/"+randomString(5)
@@ -109,4 +127,46 @@ export const createDbReturnDataForAllBlogs = (pagesCount:number,page:number,page
         totalCount: totalCount,
         items: [blogs]
     }
+}
+
+export const emptyAllPostsDbReturnData = {
+    pagesCount: 0,
+    page: 1,
+    pageSize: 10,
+    totalCount: 0,
+    items: [],
+};
+export const createOutputPostForTesting = (
+    title: string,
+    shortDescription: string,
+    content: string,
+    blogId: string,
+    blogName: string,
+    likesCount: number,
+    dislikesCount: number,
+    newestLikes: [],
+) => {
+    return {
+        id: expect.any(String),
+        title: title,
+        shortDescription: shortDescription,
+        content: content,
+        blogId: blogId,
+        blogName: blogName,
+        createdAt: expect.any(String),
+        extendedLikesInfo: {
+            likesCount: likesCount,
+            dislikesCount: dislikesCount,
+            myStatus: expect.any(String),
+            newestLikes: newestLikes,
+        },
+    };
+};
+
+export const emptyAllUsersDbReturnData={
+    pagesCount: 0,
+    page: 1,
+    pageSize: 10,
+    totalCount: 0,
+    items: []
 }

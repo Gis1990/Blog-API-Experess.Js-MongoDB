@@ -16,14 +16,9 @@ export class CommentsQueryRepository {
         if (!comment) {
             return null
         }
-        const commentDB = comment as CommentDBClass;
-        commentDB.returnUsersLikeStatusForComment(userId);
-        return new CommentViewModelClass(commentDB.id,
-            commentDB.content,
-            commentDB.userId,
-            commentDB.userLogin,
-            commentDB.createdAt,
-            commentDB.likesInfo);
+        const commentDb=comment as CommentDBClass
+        await commentDb.returnUsersLikeStatusForComment(userId);
+        return commentDb.transformToCommentViewModelClass();
     }
     async getAllCommentsForSpecificPost(obj:{pageNumber?:number,pageSize?:number,sortBy?:string,sortDirection?:string},
                                         postId: string,
@@ -43,15 +38,9 @@ export class CommentsQueryRepository {
         const cursor = await CommentsModelClass.find({}).sort(sortObj).skip(skips).limit(pageSize);
         const cursorWithCorrectViewModel: CommentViewModelClass[]=[]
         cursor.forEach((elem) => {
-            const commentDB = elem as CommentDBClass;
-            commentDB.returnUsersLikeStatusForComment(userId);
-            cursorWithCorrectViewModel.push(new CommentViewModelClass(commentDB.id,
-                commentDB.content,
-                commentDB.userId,
-                commentDB.userLogin,
-                commentDB.createdAt,
-                commentDB.likesInfo))
-        })
+            elem.returnUsersLikeStatusForComment(userId);
+            cursorWithCorrectViewModel.push(elem.transformToCommentViewModelClass())
+        });
         const totalCount = await CommentsModelClass.count({postId: postId})
         return new CommentDBPaginationClass(
             Math.ceil(totalCount / pageSize),

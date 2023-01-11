@@ -1,5 +1,3 @@
-import {MongoMemoryServer} from "mongodb-memory-server";
-import mongoose from "mongoose";
 import request from "supertest";
 import {app} from "../index";
 import {
@@ -7,7 +5,7 @@ import {
     createOutputCommentForTesting,
     createPostForTesting,
     createUserForTesting,
-    creatingBlogForTests
+    createBlogForTests, setupTestDB, teardownTestDB
 } from "../tests/test.functions";
 
 
@@ -15,16 +13,12 @@ import {
 
 
 describe('endpoint /comments ',  () => {
-    let mongoServer: MongoMemoryServer;
-    beforeAll( async () => {
-        mongoServer = await MongoMemoryServer.create()
-        const mongoUri = mongoServer.getUri()
-        await mongoose.connect(mongoUri);
-    })
+    beforeAll(async () => {
+        await setupTestDB();
+    });
     afterAll(async () => {
-        await mongoose.disconnect();
-        await mongoServer.stop();
-    })
+        await teardownTestDB();
+    });
     it('1.Should return status 204 (/delete)', async () => {
         await request(app)
             .delete('/testing/all-data')
@@ -48,7 +42,7 @@ describe('endpoint /comments ',  () => {
             .send({loginOrEmail: correctUser1.login,password:correctUser1.password})
             .expect(200)
         const accessToken1=response1.body.accessToken
-        const correctBlog = creatingBlogForTests(10, 5,true)
+        const correctBlog = createBlogForTests(10, 5,true)
         const response2=await request(app)
             .post('/blogs')
             .set('authorization', 'Basic YWRtaW46cXdlcnR5')
