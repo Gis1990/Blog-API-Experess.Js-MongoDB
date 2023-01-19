@@ -1,7 +1,7 @@
 import {NextFunction, Request, Response} from "express";
 import {header, validationResult} from "express-validator";
 import {JwtService} from "../domain/jwt-service";
-import {UsersQueryRepository} from "../repositories/users-query-repository";
+import {UsersQueryRepository} from "../repositories/query-repositories/users-query-repository";
 import {inject, injectable} from "inversify";
 
 

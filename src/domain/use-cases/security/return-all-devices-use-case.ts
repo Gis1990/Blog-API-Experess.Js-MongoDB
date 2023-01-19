@@ -1,7 +1,7 @@
 import {UserDevicesDataClass} from "../../../classes/classes";
 import {inject, injectable} from "inversify";
 import {JwtService} from "../../jwt-service";
-import {UsersQueryRepository} from "../../../repositories/users-query-repository";
+import {UsersQueryRepository} from "../../../repositories/query-repositories/users-query-repository";
 
 @injectable()
 export class ReturnAllDevicesUseCase {

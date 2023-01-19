@@ -1,7 +1,7 @@
 import {UserDevicesDataClass} from "../../../classes/classes";
 import {inject, injectable} from "inversify";
 import {AuthService} from "../../auth-service";
-import {UsersQueryRepository} from "../../../repositories/users-query-repository";
+import {UsersQueryRepository} from "../../../repositories/query-repositories/users-query-repository";
 import {UsersRepository} from "../../../repositories/users-repository";
 import {JwtService} from "../../jwt-service";
 

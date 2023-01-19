@@ -1,8 +1,8 @@
 import {
     UserAccountDBClass,
     UserDBPaginationClass,
-} from "../classes/classes";
-import {UsersAccountModelClass} from "./db";
+} from "../../classes/classes";
+import {UsersAccountModelClass} from "../db";
 import {injectable} from "inversify";
 
 

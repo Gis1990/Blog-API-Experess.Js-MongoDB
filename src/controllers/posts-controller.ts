@@ -4,7 +4,7 @@ import {DeletePostUseCase} from "../domain/use-cases/posts/delete-post-use-case"
 import {CreatePostUseCase} from "../domain/use-cases/posts/create-post-use-case";
 import {UpdatePostUseCase} from "../domain/use-cases/posts/update-post-use-case";
 import {LikeOperationForPostUseCase} from "../domain/use-cases/posts/like-operation-for-post-use-case";
-import {PostsQueryRepository} from "../repositories/posts-query-repository";
+import {PostsQueryRepository} from "../repositories/query-repositories/posts-query-repository";
 
 @injectable()
 export class PostsController {

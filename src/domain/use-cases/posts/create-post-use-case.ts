@@ -1,7 +1,7 @@
 import {ExtendedLikesInfoClass, PostDBClass, PostViewModelClass, UsersLikesInfoClass} from "../../../classes/classes";
 import {ObjectId} from "mongodb";
 import {PostsRepository} from "../../../repositories/posts-repository";
-import {BlogsQueryRepository} from "../../../repositories/blogs-query-repository";
+import {BlogsQueryRepository} from "../../../repositories/query-repositories/blogs-query-repository";
 import {inject, injectable} from "inversify";
 
 @injectable()

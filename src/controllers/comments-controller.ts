@@ -4,7 +4,7 @@ import {CreateCommentUseCase} from "../domain/use-cases/comments/create-comment-
 import {UpdateCommentUseCase} from "../domain/use-cases/comments/update-comment-use-case";
 import {DeleteCommentUseCase} from "../domain/use-cases/comments/delete-comment-use-case";
 import {LikeOperationForCommentUseCase} from "../domain/use-cases/comments/like-operation-for-comment-use-case";
-import {CommentsQueryRepository} from "../repositories/comments-query-repository";
+import {CommentsQueryRepository} from "../repositories/query-repositories/comments-query-repository";
 
 @injectable()
 export class CommentsController{

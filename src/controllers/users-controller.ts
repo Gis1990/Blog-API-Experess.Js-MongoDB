@@ -1,6 +1,6 @@
 import {Request,Response} from "express";
 import {AuthService} from "../domain/auth-service";
-import {UsersQueryRepository} from "../repositories/users-query-repository";
+import {UsersQueryRepository} from "../repositories/query-repositories/users-query-repository";
 import {inject, injectable} from "inversify";
 import {DeleteUserUseCase} from "../domain/use-cases/users/delete-user-use-case";
 import {

@@ -1,5 +1,5 @@
 import {inject, injectable} from "inversify";
-import {UsersQueryRepository} from "../../../repositories/users-query-repository";
+import {UsersQueryRepository} from "../../../repositories/query-repositories/users-query-repository";
 import {UsersRepository} from "../../../repositories/users-repository";
 
 

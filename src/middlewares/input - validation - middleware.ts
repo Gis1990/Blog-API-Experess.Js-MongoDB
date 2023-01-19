@@ -5,10 +5,10 @@ import {
     container
 
 } from "../composition-root";
-import {UsersQueryRepository} from "../repositories/users-query-repository";
-import {CommentsQueryRepository} from "../repositories/comments-query-repository";
-import {BlogsQueryRepository} from "../repositories/blogs-query-repository";
-import {PostsQueryRepository} from "../repositories/posts-query-repository";
+import {UsersQueryRepository} from "../repositories/query-repositories/users-query-repository";
+import {CommentsQueryRepository} from "../repositories/query-repositories/comments-query-repository";
+import {BlogsQueryRepository} from "../repositories/query-repositories/blogs-query-repository";
+import {PostsQueryRepository} from "../repositories/query-repositories/posts-query-repository";
 
 const pattern=/^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/
 const patternForEmail=/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/

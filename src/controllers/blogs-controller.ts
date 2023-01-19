@@ -1,5 +1,5 @@
 import {Request, Response} from "express";
-import {BlogsQueryRepository} from "../repositories/blogs-query-repository";
+import {BlogsQueryRepository} from "../repositories/query-repositories/blogs-query-repository";
 import {inject, injectable} from "inversify";
 import {CreateBlogUseCase} from "../domain/use-cases/blogs/create-blog-use-case";
 import {UpdateBlogUseCase} from "../domain/use-cases/blogs/update-blog-use-case";

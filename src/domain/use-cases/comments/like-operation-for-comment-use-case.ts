@@ -1,5 +1,5 @@
 import {inject, injectable} from "inversify";
-import {CommentsQueryRepository} from "../../../repositories/comments-query-repository";
+import {CommentsQueryRepository} from "../../../repositories/query-repositories/comments-query-repository";
 import {CommentsRepository} from "../../../repositories/comments-repository";
 
 
