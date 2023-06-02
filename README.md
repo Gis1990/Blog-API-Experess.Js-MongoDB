@@ -1,3 +1,1 @@
-Hello,this is my pet-project/study project.It's made according to [this](https://api-swagger.it-incubator.ru/swagger/index.html?urls.primaryName=h12%20API) swagger documentation.
-Used framework: Express.js.
-Used database: MongoDB
+Hello,[link](https://github.com/Gis1990/Bloggers-API-on-Nest.js-MongoDB) to the main repo with full description.

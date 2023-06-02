@@ -1,6 +1,6 @@
 {
   "name": "blogs-api-on-express.js",
-  "version": "1.0.0",
+  "version": "0.25.2",
   "main": "index.js",
   "license": "MIT",
   "author": "Anton Pavlovskiy",
